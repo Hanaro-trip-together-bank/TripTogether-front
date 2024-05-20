@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { HTMLAttributes, useEffect, useState } from "react";
 import StatusBar from "../TopBars/StatusBar";
 import cn from "../../../utils/cn";

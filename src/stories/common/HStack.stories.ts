@@ -35,7 +35,7 @@ export const Rotated: Story = {
     ],
   },
 };
-export const withSpacer: Story = {
+export const WithSpacer: Story = {
   args: {
     className: "w-96",
     rotated: false,

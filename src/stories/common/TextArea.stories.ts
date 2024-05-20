@@ -22,6 +22,6 @@ export const Border: Story = {
 export const Label: Story = {
   args: { border: true, label: "Label" },
 };
-export const largeRounded: Story = {
+export const LargeRounded: Story = {
   args: { border: true, largeRounded: true, label: "Label" },
 };

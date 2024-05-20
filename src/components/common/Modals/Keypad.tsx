@@ -62,9 +62,9 @@ function Keypad({
       return (
         <VStack className="mt-8">
           <HStack className="justify-evenly">
-            {[1, 5, 10, 100].map((value, index) => (
+            {[1, 5, 10, 100].map((value) => (
               <MiniButton
-                key={index}
+                key={value}
                 label={`+${value}만`}
                 onClick={() => onAdd(value * 10000)}
               />
@@ -72,10 +72,10 @@ function Keypad({
             <MiniButton label="지우기" onClick={onClear} />
           </HStack>
           <HStack className="flex-wrap !gap-0">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((value, index) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((value) => (
               <BigButton
                 className="w-4/12"
-                key={index}
+                key={value}
                 label={`${value}`}
                 onClick={() => onAppend(value)}
               />
@@ -90,38 +90,41 @@ function Keypad({
           </HStack>
         </VStack>
       );
-    case 2:
+    case 2: {
       // 초기 버튼 리스트
       const numberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
       // 두 개의 랜덤한 인덱스 선택
       const indices: number[] = [];
       while (indices.length < 2) {
-        let randomIndex = Math.floor(Math.random() * (numberList.length + 1));
+        const randomIndex = Math.floor(Math.random() * (numberList.length + 1));
         if (!indices.includes(randomIndex)) indices.push(randomIndex);
       }
       // 인덱스를 오름차순으로 정렬 (뒤에서부터 삽입하면 인덱스가 어긋나지 않음)
       indices.sort((a, b) => a - b);
-      // 선택한 인덱스에 0을 끼워넣기
+      // 선택한 인덱스에 -1, -2 끼워넣기
       indices.forEach((index) => {
-        numberList.splice(index, 0, -1);
+        numberList.splice(index, 0, -index - 1);
       });
       return (
         <VStack className="mt-8">
           <HStack className="flex-wrap !gap-0">
-            {numberList.map((value, index) =>
+            {numberList.map((value) =>
               value >= 0 ? (
                 <BigButton
                   className="w-3/12"
-                  key={index}
+                  key={value}
                   label={`${value}`}
                   onClick={() => onAppend(value)}
                 />
               ) : (
-                <HStack className="items-center justify-center w-3/12 text-primary opacity-50">
+                <HStack
+                  key={value}
+                  className="items-center justify-center w-3/12 text-primary opacity-50"
+                >
                   <svg fill="currentColor" width="30" height="30">
                     <g transform="matrix(1.3333333,0,0,-1.3333333,-66.666576,536.66305)">
                       <g id="g21">
-                        <g id="g23" clip-path="url(#clipPath27)">
+                        <g id="g23" clipPath="url(#clipPath27)">
                           <g id="g595" transform="translate(66.3243,389.0586)">
                             <path d="M 0,0 C -0.059,0.346 -0.152,0.681 -0.291,0.991 -0.729,1.937 -1.338,2.73 -2.254,3.264 -3.675,4.094 -5.394,4.088 -6.801,3.235 -7.437,2.851 -7.961,2.297 -8.299,1.632 -8.413,1.406 -8.506,1.17 -8.582,0.929 c -0.371,-1.178 -0.357,-2.763 0.311,-3.838 0.218,-0.352 0.533,-0.651 0.918,-0.801 0.386,-0.148 0.843,-0.133 1.19,0.093 0.448,0.288 0.527,0.841 0.444,1.331 -0.105,0.625 -0.185,1.242 0.044,1.855 0.075,0.196 0.179,0.384 0.329,0.53 0.092,0.087 0.2,0.16 0.315,0.214 0.242,0.119 0.519,0.172 0.785,0.128 0.467,-0.076 0.847,-0.436 1.055,-0.861 0.206,-0.423 0.262,-0.903 0.285,-1.374 0.097,-2.053 -0.393,-4.18 -0.916,-6.151 -0.054,-0.204 -0.11,-0.406 -0.167,-0.608 -0.046,-0.156 -0.124,-0.354 -0.026,-0.507 0.043,-0.064 0.111,-0.11 0.183,-0.139 0.305,-0.123 0.553,0.063 0.757,0.269 1.204,1.211 1.975,2.773 2.503,4.379 0.197,0.599 0.366,1.211 0.48,1.832 C 0.063,-1.868 0.152,-0.896 0,0" />
                           </g>
@@ -143,6 +146,7 @@ function Keypad({
           </HStack>
         </VStack>
       );
+    }
     default:
       return <>잘못된 키보드 타입입니다. </>;
   }

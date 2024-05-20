@@ -28,7 +28,7 @@ function Select({ className = "", options, onSelect }: SelectProps) {
     <HStack className={processedClassName}>
       {options.map((option, idx) => (
         <button
-          key={idx}
+          key={option}
           onClick={() => select(idx)}
           className={
             selectedOption == idx

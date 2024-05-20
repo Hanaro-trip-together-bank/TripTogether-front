@@ -129,7 +129,7 @@ function App() {
       <TextArea
         label={"제목"}
         rows={4}
-        placeholder="pcadsfs "
+        placeholder="pcadsfs"
         border
         largeRounded
       />
