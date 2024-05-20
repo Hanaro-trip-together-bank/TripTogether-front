@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #000000;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  .shadowed {
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .shadowed {
+    box-shadow: rgba(159, 180, 216, 0.25) 0px 4px 8px -2px, rgba(159, 180, 216, 0.08) 0px 0px 0px 1px;
+  }
+}
+
+.bg-primary {
+  background-color: #009591;
+}
+.text-primary {
+  color: #009591;
+}
+.border-primary {
+  border-color: #009591;
+}
+.bg-primary-disabled {
+  background-color: #8d9695;
+}
+.bg-secondary {
+  background-color: #353a4e;
+}
+.bg-secondary-accent {
+  background-color: #454962;
+}
+.hover-bg-secondary-accent:hover {
+  background-color: #454962;
+}
+.w-iPhone {
+  width: 390px;
+}
+.h-iPhone {
+  height: 844px;
+}
