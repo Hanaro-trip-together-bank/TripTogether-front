@@ -1,26 +1,26 @@
-import '../src/index.css';
-import type { Preview } from '@storybook/react';
+import "../src/index.css";
+import type { Preview } from "@storybook/react";
 
 const preview: Preview = {
   parameters: {
     backgrounds: {
-      default: 'secondary',
+      default: "secondary",
       values: [
         {
-          name: 'gray',
-          value: '#dddddd',
+          name: "gray",
+          value: "#dddddd",
         },
         {
-          name: 'white',
-          value: '#ffffff',
+          name: "white",
+          value: "#ffffff",
         },
         {
-          name: 'black',
-          value: '#000000',
+          name: "black",
+          value: "#000000",
         },
         {
-          name: 'secondary',
-          value: '#353a4e',
+          name: "secondary",
+          value: "#353a4e",
         },
       ],
     },
