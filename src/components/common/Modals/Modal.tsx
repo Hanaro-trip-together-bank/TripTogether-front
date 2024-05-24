@@ -61,7 +61,7 @@ function Modal({
       >
         {/* 백드롭(어두운 오버레이) + 상단 스테이터스바 흰색버전 */}
         <div className={processedBackDropClassName}>
-          <div className="absolute w-iPhone px-0.5">
+          <div className="absolute w-iPhone border-x border-transparent">
             <StatusBar white />
           </div>
           <div

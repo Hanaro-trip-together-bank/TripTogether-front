@@ -17,7 +17,12 @@ function NavigationBar({
 }: NavigationBarProps) {
   const color = white ? "white" : "black";
   return (
-    <VStack className="w-full h-12 items-center justify-center">
+    <VStack
+      className={cn(
+        "w-full h-12 items-center justify-center sticky top-0 -z-10",
+        white ? "bg-secondary" : "bg-white"
+      )}
+    >
       <div className={cn("absolute", white ? "text-white" : "text-black")}>
         <Title>{title}</Title>
       </div>

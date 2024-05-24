@@ -20,7 +20,7 @@ function MiniButton({ label, onClick, className = "" }: KeyPadButtonProps) {
 }
 function BigButton({ label, onClick, className = "" }: KeyPadButtonProps) {
   const baseClassName =
-    "text-center text-white text-2xl hover-bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
+    "text-center text-white text-2xl hover:bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
   const processedClassName = cn(baseClassName, className);
   return (
     <button className={processedClassName} onClick={onClick}>
@@ -30,7 +30,7 @@ function BigButton({ label, onClick, className = "" }: KeyPadButtonProps) {
 }
 function BackButton({ onClick, className = "" }: KeyPadButtonProps) {
   const baseClassName =
-    "flex flex-row justify-center items-center hover-bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
+    "flex flex-row justify-center items-center hover:bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
   const processedClassName = cn(baseClassName, className);
   return (
     <button className={processedClassName} onClick={onClick}>
