@@ -5,9 +5,10 @@ import cn from "../../../utils/cn";
 
 interface StatusBarProps {
   white?: boolean;
+  className?: string;
 }
 
-function StatusBar({ white = false }: StatusBarProps) {
+function StatusBar({ className = "", white = false }: StatusBarProps) {
   const [time, setTime] = useState<string>(currentTime());
   useEffect(() => {
     const interval = setInterval(() => {
@@ -20,7 +21,8 @@ function StatusBar({ white = false }: StatusBarProps) {
     <HStack
       className={cn(
         "items-center py-2 px-8 font-bold text-lg w-full",
-        white ? "text-white" : "text-black"
+        white ? "text-white" : "text-black",
+        className
       )}
     >
       {/* 시계 */}

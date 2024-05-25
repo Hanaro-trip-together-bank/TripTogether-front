@@ -19,7 +19,7 @@ function NavigationBar({
   return (
     <VStack
       className={cn(
-        "w-full h-12 items-center justify-center sticky top-0 -z-10",
+        "sticky w-full h-12 items-center justify-center top-0 z-10",
         white ? "bg-secondary" : "bg-white"
       )}
     >
