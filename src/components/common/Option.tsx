@@ -12,10 +12,10 @@ function Option({
   ...props
 }: PropsWithChildren<OptionProps>) {
   const baseClassName =
-    "text-sm font-bold rounded-full transition-all p-1 px-2.5 w-fit mr-2";
+    "text-sm font-bold rounded-full transition-all p-1 px-2.5 w-fit mr-2 border-2 border-transparent";
   // 선택 처리
   const selectedClassName = selected
-    ? "bg-white text-primary border-2 border-primary"
+    ? "bg-white text-primary border-primary"
     : "bg-gray-100 text-black";
   // 나머지 클래스네임
   const processedClassName = cn(baseClassName, selectedClassName, className);
