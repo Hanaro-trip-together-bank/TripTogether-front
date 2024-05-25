@@ -45,7 +45,9 @@ function NavigationStack() {
             "absolute w-full h-full transition-all ease-in",
             index < path.length - 2 ? "hidden" : "",
             index == path.length - 1 ? "z-10 opacity-100" : "z-0 opacity-80",
-            index == path.length - 1 && !isPushAnimationStarted
+            path.length > 1 &&
+              index == path.length - 1 &&
+              !isPushAnimationStarted
               ? "translate-x-iPhone"
               : ""
           )}

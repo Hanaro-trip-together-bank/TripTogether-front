@@ -1,3 +1,4 @@
+import { useNavigation } from "../../../contexts/useNavigation";
 import cn from "../../../utils/cn";
 import { HStack, Spacer, VStack } from "../Stack";
 import Title from "../Title";
@@ -15,6 +16,7 @@ function NavigationBar({
   onHome,
   title,
 }: NavigationBarProps) {
+  const { path } = useNavigation();
   const color = white ? "white" : "black";
   return (
     <VStack
@@ -28,11 +30,13 @@ function NavigationBar({
       </div>
       <HStack className="items-center py-2 pl-4 pr-6 font-bold text-lg w-full border-none">
         {/* 뒤로가기 화살표 */}
-        <button onClick={onBack}>
-          <svg className="w-6 h-6" viewBox="0 0 1024 1024" fill={color}>
-            <path d="M652.949333 865.706667c11.690667 11.946667 30.613333 11.946667 42.282667 0a31.146667 31.146667 0 0 0 0-43.306667l-295.765333-302.933333a10.666667 10.666667 0 0 1 0-14.933334l295.765333-302.933333a31.146667 31.146667 0 0 0 0-43.306667 29.397333 29.397333 0 0 0-42.282667 0L328.768 490.346667a31.146667 31.146667 0 0 0 0 43.306666L652.949333 865.706667z" />
-          </svg>
-        </button>
+        {path.length > 1 && (
+          <button onClick={onBack}>
+            <svg className="w-6 h-6" viewBox="0 0 1024 1024" fill={color}>
+              <path d="M652.949333 865.706667c11.690667 11.946667 30.613333 11.946667 42.282667 0a31.146667 31.146667 0 0 0 0-43.306667l-295.765333-302.933333a10.666667 10.666667 0 0 1 0-14.933334l295.765333-302.933333a31.146667 31.146667 0 0 0 0-43.306667 29.397333 29.397333 0 0 0-42.282667 0L328.768 490.346667a31.146667 31.146667 0 0 0 0 43.306666L652.949333 865.706667z" />
+            </svg>
+          </button>
+        )}
         <Spacer />
         {/* 페이지 타이틀 */}
         <Spacer />
