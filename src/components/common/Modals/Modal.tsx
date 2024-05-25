@@ -55,17 +55,19 @@ function Modal({
     return (
       <div
         className={cn(
-          "absolute w-iPhone h-iPhone",
+          "absolute top-0 left-0 w-iPhone h-iPhone z-40",
           showContent ? "" : "delay-100"
         )}
+        style={{ translate: "0.25px -0.25px" }}
       >
         {/* 백드롭(어두운 오버레이) + 상단 스테이터스바 흰색버전 */}
         <div className={processedBackDropClassName}>
-          <div className="absolute w-iPhone border-x border-transparent">
-            <StatusBar white />
-          </div>
+          <StatusBar className="absolute" white />
           <div
-            className="absolute w-iPhone h-iPhone bg-black opacity-50 z-30 rounded-3xl"
+            className={cn(
+              "absolute w-iPhone h-iPhone bg-black z-30 rounded-3xl transition-opacity",
+              showContent ? "opacity-50" : "opacity-0"
+            )}
             onClick={() => {
               if (backDrop) onClose();
             }}

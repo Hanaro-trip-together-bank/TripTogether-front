@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import cn from "../../../utils/cn";
 import { useNavigation } from "../../../contexts/useNavigation";
+import StatusBar from "../TopBars/StatusBar";
 
 function NavigationStack() {
   const { path, prevPage } = useNavigation();
@@ -33,33 +34,38 @@ function NavigationStack() {
   };
 
   return (
-    <div className="relative w-full h-full bg-black">
+    <div className="relative w-full h-full bg-white">
+      <StatusBar className="absolute bg-white" />
       {path.map((page, index) => (
         <div
           // 키가 일정하게 유지되어야 리렌더되어도 내용/스크롤 초기화 안 됨 => 인덱스 사용
           // eslint-disable-next-line react/no-array-index-key
           key={`navigationStack#${index}`}
           className={cn(
-            "absolute w-full h-full overflow-scroll bg-white transition-all ease-in",
-            index < path.length - 2 ? "hidden !translate-x-0" : "",
-            index == path.length - 1
-              ? "z-10 opacity-100"
-              : "z-0 !translate-x-0  opacity-80",
-            isPushAnimationStarted ? "" : "translate-x-iPhone"
+            "absolute w-full h-full transition-all ease-in",
+            index < path.length - 2 ? "hidden" : "",
+            index == path.length - 1 ? "z-10 opacity-100" : "z-0 opacity-80",
+            index == path.length - 1 && !isPushAnimationStarted
+              ? "translate-x-iPhone"
+              : ""
           )}
         >
-          {page}
+          <div className="mt-12 bg-white w-full h-full overflow-scroll">
+            {page}
+          </div>
         </div>
       ))}
       {prevPage && (
         <div
           key={`navigationStack#${path.length}`}
           className={cn(
-            "absolute w-full h-full overflow-scroll bg-white transition-transform ease-in z-20",
+            "absolute w-full h-full transition-all ease-in",
             isPopAnimationStarted ? "translate-x-iPhone" : ""
           )}
         >
-          {prevPage}
+          <div className="mt-12 bg-white w-full h-full overflow-scroll">
+            {prevPage}
+          </div>
         </div>
       )}
     </div>

@@ -18,7 +18,7 @@ function Arrow({ direction }: ArrowProps) {
     }
   })();
   return (
-    <button className={cn("text-gray-500 p-2 transition-all", rotation)}>
+    <button className={cn("text-gray-500 p-2 transition-all z-0", rotation)}>
       ^
     </button>
   );
