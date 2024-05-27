@@ -1,15 +1,22 @@
-import { PropsWithChildren, ReactNode } from "react";
+import { PropsWithChildren } from "react";
 import { useNavigation } from "../../../contexts/useNavigation";
+import Route from "../../../types/Route";
 
 interface NavigationLinkProps {
-  to: ReactNode;
+  to: Route;
+  className?: string;
 }
 
 function NavigationLink({
   to,
+  className = "",
   children,
 }: PropsWithChildren<NavigationLinkProps>) {
   const { navigateTo } = useNavigation();
-  return <button onClick={() => navigateTo(to)}>{children}</button>;
+  return (
+    <button className={className} onClick={() => navigateTo(to)}>
+      {children}
+    </button>
+  );
 }
 export default NavigationLink;

@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import {
   PropsWithChildren,
-  ReactNode,
   createContext,
   useCallback,
   useEffect,
@@ -9,21 +8,23 @@ import {
 } from "react";
 import { useContext, useReducer } from "react";
 import uuid from "../utils/uuid";
-import DemoPage from "../components/pages/DemoPage";
+import Route from "../types/Route";
+import MainPage from "../pages/Main/MainPage";
 
 type NavigationContextProp = {
-  path: ReactNode[];
-  prevPage: ReactNode | null;
-  navigateTo: (newPath: ReactNode) => void;
+  path: Route[];
+  prevRoute: Route | null;
+  navigateTo: (newPath: Route) => void;
   back: () => void;
   home: () => void;
-  setPath: (path: ReactNode[]) => void;
+  setPath: (path: Route[]) => void;
 };
+
 const BLANK_FUNC = () => {};
 
 const NavigationContext = createContext<NavigationContextProp>({
   path: [],
-  prevPage: null,
+  prevRoute: null,
   navigateTo: BLANK_FUNC,
   back: BLANK_FUNC,
   home: BLANK_FUNC,
@@ -31,16 +32,13 @@ const NavigationContext = createContext<NavigationContextProp>({
 });
 
 type PathAction =
-  | { type: "push"; payload: ReactNode }
+  | { type: "push"; payload: Route }
   | { type: "pop"; payload: null }
   | { type: "clear"; payload: null }
-  | { type: "set"; payload: ReactNode[] };
+  | { type: "set"; payload: Route[] };
 
-const reducer = (
-  path: ReactNode[],
-  { type, payload }: PathAction
-): ReactNode[] => {
-  let newPath: ReactNode[];
+const reducer = (path: Route[], { type, payload }: PathAction): Route[] => {
+  let newPath: Route[];
   switch (type) {
     case "push":
       newPath = [...path, payload];
@@ -58,13 +56,18 @@ const reducer = (
 };
 
 export const NavigationProvider = ({ children }: PropsWithChildren) => {
-  const [prevPage, setPrevPage] = useState<ReactNode | null>(null);
-  const [path, dispatch] = useReducer(reducer, [<DemoPage key={uuid()} />]);
+  const [prevRoute, setPrevPage] = useState<Route | null>(null);
+  const [path, dispatch] = useReducer(reducer, []);
   useEffect(() => {
-    if (path.length == 0) setPath([<DemoPage key={uuid()} />]), [path];
+    if (path.length == 0)
+      setPath([
+        // { page: <MoimServiceMainPage key={uuid()} /> },
+        { backgroundColor: "bg-[#e3e7e9]", page: <MainPage key={uuid()} /> },
+      ]),
+        [path];
   });
 
-  const navigateTo = useCallback((newPath: ReactNode) => {
+  const navigateTo = useCallback((newPath: Route) => {
     dispatch({ type: "push", payload: newPath });
   }, []);
   const back = useCallback(() => {
@@ -74,7 +77,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren) => {
   const home = useCallback(() => {
     dispatch({ type: "clear", payload: null });
   }, []);
-  const setPath = useCallback((path: ReactNode[]) => {
+  const setPath = useCallback((path: Route[]) => {
     dispatch({ type: "set", payload: path });
   }, []);
 
@@ -82,7 +85,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren) => {
     <NavigationContext.Provider
       value={{
         path,
-        prevPage,
+        prevRoute,
         navigateTo,
         back,
         home,

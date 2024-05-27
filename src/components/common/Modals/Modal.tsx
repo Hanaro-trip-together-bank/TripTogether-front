@@ -55,7 +55,7 @@ function Modal({
     return (
       <div
         className={cn(
-          "absolute top-0 left-0 w-iPhone h-iPhone z-40",
+          "absolute top-0 left-0 w-iPhone h-iPhone z-40  backdrop-blur-sm",
           showContent ? "" : "delay-100"
         )}
         style={{ translate: "0.25px -0.25px" }}

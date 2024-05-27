@@ -52,6 +52,9 @@ body {
 .text-primary {
   color: #009591;
 }
+.text-primary-disabled {
+  color: #8d9695;
+}
 .border-primary {
   border-color: #009591;
 }

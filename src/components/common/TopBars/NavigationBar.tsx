@@ -18,9 +18,11 @@ function NavigationBar({
   disableHome = false,
   onBack,
   onHome,
-
   title,
 }: NavigationBarProps) {
+  const { back, home } = useNavigation();
+  if (!onBack) onBack = back;
+  if (!onHome) onHome = home;
   const { path } = useNavigation();
   const color = white ? "white" : "black";
   return (
