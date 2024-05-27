@@ -52,7 +52,7 @@ function NavigationStack() {
               : ""
           )}
         >
-          <div className="mt-12 bg-white w-full h-full overflow-scroll">
+          <div className="mt-12 pb-12 bg-white w-full h-full overflow-scroll">
             {page}
           </div>
         </div>
@@ -65,7 +65,7 @@ function NavigationStack() {
             isPopAnimationStarted ? "translate-x-iPhone" : ""
           )}
         >
-          <div className="mt-12 bg-white w-full h-full overflow-scroll">
+          <div className="mt-12 pb-12 bg-white w-full h-full overflow-scroll">
             {prevPage}
           </div>
         </div>
