@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import cn from "../../../utils/cn";
 import { HStack, VStack } from "../Stack";
 
@@ -19,7 +20,7 @@ function MiniButton({ label, onClick, className = "" }: KeyPadButtonProps) {
 }
 function BigButton({ label, onClick, className = "" }: KeyPadButtonProps) {
   const baseClassName =
-    "text-center text-white text-2xl hover-bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
+    "text-center text-white text-2xl hover:bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
   const processedClassName = cn(baseClassName, className);
   return (
     <button className={processedClassName} onClick={onClick}>
@@ -29,7 +30,7 @@ function BigButton({ label, onClick, className = "" }: KeyPadButtonProps) {
 }
 function BackButton({ onClick, className = "" }: KeyPadButtonProps) {
   const baseClassName =
-    "flex flex-row justify-center items-center hover-bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
+    "flex flex-row justify-center items-center hover:bg-secondary-accent rounded-xl h-16 mb-2 transition-colors";
   const processedClassName = cn(baseClassName, className);
   return (
     <button className={processedClassName} onClick={onClick}>
@@ -57,6 +58,24 @@ function Keypad({
   onClear,
   onDone,
 }: KeypadProps) {
+  const [numberList, setNumberList] = useState<number[]>([]);
+  useEffect(() => {
+    // 초기 버튼 리스트
+    const numberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+    // 두 개의 랜덤한 인덱스 선택
+    const indices: number[] = [];
+    while (indices.length < 2) {
+      const randomIndex = Math.floor(Math.random() * (numberList.length + 1));
+      if (!indices.includes(randomIndex)) indices.push(randomIndex);
+    }
+    // 인덱스를 오름차순으로 정렬 (뒤에서부터 삽입하면 인덱스가 어긋나지 않음)
+    indices.sort((a, b) => a - b);
+    // 선택한 인덱스에 -1, -2 끼워넣기
+    indices.forEach((index) => {
+      numberList.splice(index, 0, -index - 1);
+    });
+    setNumberList(numberList);
+  }, []);
   switch (type) {
     case 1:
       return (
@@ -91,20 +110,6 @@ function Keypad({
         </VStack>
       );
     case 2: {
-      // 초기 버튼 리스트
-      const numberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-      // 두 개의 랜덤한 인덱스 선택
-      const indices: number[] = [];
-      while (indices.length < 2) {
-        const randomIndex = Math.floor(Math.random() * (numberList.length + 1));
-        if (!indices.includes(randomIndex)) indices.push(randomIndex);
-      }
-      // 인덱스를 오름차순으로 정렬 (뒤에서부터 삽입하면 인덱스가 어긋나지 않음)
-      indices.sort((a, b) => a - b);
-      // 선택한 인덱스에 -1, -2 끼워넣기
-      indices.forEach((index) => {
-        numberList.splice(index, 0, -index - 1);
-      });
       return (
         <VStack className="mt-8">
           <HStack className="flex-wrap !gap-0">

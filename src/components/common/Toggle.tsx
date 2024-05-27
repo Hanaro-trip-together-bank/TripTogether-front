@@ -14,16 +14,11 @@ function Toggle({ selected = false, label, onClick }: ToggleProps) {
     >
       <div
         className={cn(
-          "w-8 h-4 rounded-full transition-all",
-          selected ? "bg-primary" : "bg-primary-disabled"
+          "w-8 h-4 rounded-full transition-all flex flex-row items-center",
+          selected ? "bg-primary" : "bg-primary-disabled pl-3"
         )}
       >
-        <div
-          className={cn(
-            "w-5 h-5 shadowed bg-white rounded-full transition-all -translate-y-0.5",
-            selected ? "translate-x-3.5" : "-translate-x-0.5"
-          )}
-        />
+        <div className={cn("w-5 h-5 shadowed bg-white rounded-full")} />
       </div>
       {label && <span className="leading-none">{label}</span>}
     </button>
