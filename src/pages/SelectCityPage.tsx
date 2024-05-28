@@ -13,6 +13,7 @@ import { Pagination } from "swiper/modules";
 import TripView from "../components/common/TripView";
 import { useCountryCartManager } from "../contexts/Country-Cart-Context";
 import Button from "../components/common/Button";
+import NavigationBar from "../components/common/TopBars/NavigationBar";
 
 const europe = [
   {
@@ -101,7 +102,11 @@ export default function SelectCityPage() {
 
   return (
     <VStack className="border border-red-500 w-full h-full">
-      <HStack className="snap-x overflow-x-scroll border border-blue-500">
+      <NavigationBar title={"나라 선택"} />
+      {/* <div className="text-xl !text-center m-3">
+        {"여행, 어디로 떠나시나요? 🛫"}
+      </div> */}
+      <HStack className="my-3 h-12 !pb-2 snap-x overflow-x-scroll border border-blue-500">
         {mockContinents.map((con) => (
           <Option
             className="text-nowrap snap-start !min-h-7"
@@ -114,7 +119,7 @@ export default function SelectCityPage() {
         ))}
       </HStack>
 
-      <VStack className="border border-orange-500 overflow-y-scroll !h-3/5">
+      <VStack className="border border-orange-500 overflow-y-scroll !h-5/7">
         {cities.map((c) => (
           <TripView
             key={c.countryGeoId}
@@ -129,9 +134,11 @@ export default function SelectCityPage() {
 
       {/* TODO 이름 긴 나라를 어떻게 할 것인가? */}
       <div className="h-2/5">
-        <HStack className="border !gap-2 border-purple-500 h-28 text-center text-sm text-gray-400 justify-center">
+        <HStack className="!p-3 !gap-2 flex-wrap border border-purple-500 h-40 text-center justify-center items-center">
           {cart.length == 0 ? (
-            <span>도시를 선택해주세요!</span>
+            <span className="flex justify-center items-center text-xl">
+              도시를 선택해주세요 🛣️
+            </span>
           ) : (
             cart.map((c) => (
               <div key={c.countryGeoId}>
@@ -140,7 +147,7 @@ export default function SelectCityPage() {
                   src={c.image}
                   alt={c.countryGeoId.toString()}
                 />
-                <span className="w-full overflow-hidden text-nowrap text-ellipsis">
+                <span className="w-full overflow-hidden text-sm text-gray-400 text-nowrap text-ellipsis">
                   {c.nameKo}
                 </span>
               </div>
@@ -148,7 +155,7 @@ export default function SelectCityPage() {
           )}
         </HStack>
 
-        <HStack className="gap-3 justify-center">
+        <HStack className="gap-5 justify-center m-3">
           <Button roundedFull gray>
             취소
           </Button>

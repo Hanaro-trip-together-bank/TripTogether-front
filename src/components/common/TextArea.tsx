@@ -1,5 +1,5 @@
 import { TextareaHTMLAttributes } from "react";
-import { VStack } from "./Stack";
+import { HStack, VStack } from "./Stack";
 import cn from "../../utils/cn";
 
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -22,9 +22,11 @@ function TextArea({
     borderClassName,
     roundedClassName
   );
+
+  console.log(processedClassName);
   return (
     <VStack>
-      {label && <span> {label}</span>}
+      {label && <span className="font-bold"> {label}</span>}
       <textarea className={processedClassName} {...props} />
     </VStack>
   );

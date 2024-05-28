@@ -17,6 +17,7 @@ type CountryCartContextProps = {
   addCountry: (country: Country) => void;
   removeCountry: (id: number) => void;
   resetCart: () => void;
+  countryIds: number[];
 };
 
 const CountryCartContext = createContext<CountryCartContextProps>({
@@ -24,6 +25,7 @@ const CountryCartContext = createContext<CountryCartContextProps>({
   addCountry: () => {},
   removeCountry: () => {},
   resetCart: () => {},
+  countryIds: [],
 });
 
 type ReducerAction =
@@ -70,9 +72,11 @@ export const CountryCartProvider = ({ children }: PropsWithChildren) => {
     });
   };
 
+  const countryIds = cart.map((c) => c.countryGeoId);
+
   return (
     <CountryCartContext.Provider
-      value={{ cart, addCountry, removeCountry, resetCart }}
+      value={{ cart, addCountry, removeCountry, resetCart, countryIds }}
     >
       {children}
     </CountryCartContext.Provider>
