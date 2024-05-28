@@ -14,7 +14,7 @@ function Select2({ className = "", options, onSelect }: Select2Props) {
     setSelectedOption(idx);
     onSelect(idx);
   };
-  const baseClassName = "h-8 justify-evenly border-b border-gray-200";
+  const baseClassName = "h-fit justify-evenly border-b border-gray-200";
   // 나머지 클래스네임
   const processedClassName = cn(baseClassName, className);
 
@@ -28,14 +28,18 @@ function Select2({ className = "", options, onSelect }: Select2Props) {
         <button
           key={option}
           onClick={() => select(idx)}
-          className={
-            selectedOption == idx
-              ? selectedOptionClassName
-              : notSelectedOptionClassName
-          }
+          className="pt-2 px-16"
           disabled={selectedOption == idx}
         >
-          {option}
+          <span
+            className={
+              selectedOption == idx
+                ? selectedOptionClassName
+                : notSelectedOptionClassName
+            }
+          >
+            {option}
+          </span>
         </button>
       ))}
     </HStack>

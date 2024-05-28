@@ -4,6 +4,7 @@ import { HStack, Spacer, VStack } from "../Stack";
 import Title from "../Title";
 
 interface NavigationBarProps {
+  className?: string;
   white?: boolean;
   title: string;
   disableBack?: boolean;
@@ -13,6 +14,7 @@ interface NavigationBarProps {
 }
 
 function NavigationBar({
+  className = "",
   white = false,
   disableBack = false,
   disableHome = false,
@@ -28,8 +30,9 @@ function NavigationBar({
   return (
     <VStack
       className={cn(
+        className,
         "sticky w-full h-12 items-center justify-center top-0 z-10",
-        white ? "bg-secondary" : "bg-white"
+        white ? "bg-secondary" : ""
       )}
     >
       <div className={cn("absolute", white ? "text-white" : "text-black")}>
@@ -51,7 +54,7 @@ function NavigationBar({
         {!disableHome && (
           <button onClick={onHome}>
             <svg className="w-8 h-6" viewBox="0 0 1024 1024" fill={color}>
-              <path d="M495.68256 30.53568a28.29824 28.29824 0 0 1 31.94368 0l406.75328 280.29952a61.5936 61.5936 0 0 1 26.8288 50.8416l2.57536 609.11104a28.29824 28.29824 0 0 1-28.29824 28.29824H89.73824A28.29824 28.29824 0 0 1 61.44 970.78784l1.46944-609.11104a61.5936 61.5936 0 0 1 26.8288-50.8416L495.68256 30.53568zM512 88.18176L120.2176 357.5552a4.992 4.992 0 0 0-2.18112 4.1216v580.8128h792.3712V361.6768a4.992 4.992 0 0 0-2.17088-4.1216L512 88.18176zM332.12416 811.008a29.1328 29.1328 0 1 1 0-58.2656h366.22336a29.1328 29.1328 0 1 1 0 58.2656H332.12416z" />{" "}
+              <path d="M495.68256 30.53568a28.29824 28.29824 0 0 1 31.94368 0l406.75328 280.29952a61.5936 61.5936 0 0 1 26.8288 50.8416l2.57536 609.11104a28.29824 28.29824 0 0 1-28.29824 28.29824H89.73824A28.29824 28.29824 0 0 1 61.44 970.78784l1.46944-609.11104a61.5936 61.5936 0 0 1 26.8288-50.8416L495.68256 30.53568zM512 88.18176L120.2176 357.5552a4.992 4.992 0 0 0-2.18112 4.1216v580.8128h792.3712V361.6768a4.992 4.992 0 0 0-2.17088-4.1216L512 88.18176zM332.12416 811.008a29.1328 29.1328 0 1 1 0-58.2656h366.22336a29.1328 29.1328 0 1 1 0 58.2656H332.12416z" />
             </svg>
           </button>
         )}

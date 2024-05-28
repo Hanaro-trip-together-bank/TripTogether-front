@@ -20,9 +20,9 @@ function Select({ className = "", options, onSelect }: SelectProps) {
   const processedClassName = cn(baseClassName, className);
 
   const selectedOptionClassName =
-    "px-4 py-2 text-sm font-bold bg-white rounded-md text-black transition-all";
+    "px-4 py-2 flex-grow text-sm font-bold bg-white rounded-md text-black transition-all";
   const notSelectedOptionClassName =
-    "px-4 py-2 text-sm text-gray-500 transition-all";
+    "px-4 py-2 flex-grow text-sm text-gray-500 transition-all";
 
   return (
     <HStack className={processedClassName}>

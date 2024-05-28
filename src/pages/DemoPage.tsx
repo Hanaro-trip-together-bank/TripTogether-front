@@ -1,18 +1,16 @@
 import { useState } from "react";
-import Arrow from "../common/Arrow";
-import Button from "../common/Button";
-import Select from "../common/Select";
-import Select2 from "../common/Select2";
-import { VStack, HStack, Spacer } from "../common/Stack";
-import TextArea from "../common/TextArea";
-import Title from "../common/Title";
-import Toggle from "../common/Toggle";
-import XButton from "../common/Xbutton";
-import Option from "../common/Option";
-import { useNavigation } from "../../contexts/useNavigation";
-import NavigationBar from "../common/TopBars/NavigationBar";
-import Modal from "../common/Modals/Modal";
-import NavigationLink from "../common/Navigation/NavigationLink";
+import Arrow from "../components/common/Arrow";
+import Button from "../components/common/Button";
+import Modal from "../components/common/Modals/Modal";
+import Select from "../components/common/Select";
+import Select2 from "../components/common/Select2";
+import { VStack, HStack, Spacer } from "../components/common/Stack";
+import TextArea from "../components/common/TextArea";
+import Title from "../components/common/Title";
+import Toggle from "../components/common/Toggle";
+import NavigationBar from "../components/common/TopBars/NavigationBar";
+import { useNavigation } from "../contexts/useNavigation";
+import Option from "../components/common/Option";
 
 function DemoPage() {
   const [selectedOption, setSelectedOption] = useState(1);
@@ -30,11 +28,11 @@ function DemoPage() {
           <Title> Button </Title>
           <Button disabled>확인</Button>
           <Button>확인</Button>
-          <Button disabled fullyRounded>
+          <Button disabled roundedFull>
             확인
           </Button>
-          <Button fullyRounded>확인</Button>
-          <Button fullyRounded disabled={!bool} className="!px-16 ">
+          <Button roundedFull>확인</Button>
+          <Button roundedFull disabled={!bool} className="!px-16 ">
             저장
           </Button>
           <VStack>
@@ -127,7 +125,7 @@ function DemoPage() {
               className="flex-grow"
               onClick={() => {
                 toggle();
-                navigateTo(<DemoPage />);
+                navigateTo({ page: <DemoPage /> });
               }}
             >
               확인
