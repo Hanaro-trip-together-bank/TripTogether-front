@@ -4,6 +4,7 @@ import NavigationBar from "../../components/common/TopBars/NavigationBar";
 import { useNavigation } from "../../contexts/useNavigation";
 import Keypad from "../../components/common/Modals/Keypad";
 import cn from "../../utils/cn";
+import usePassword from "../../hooks/usePassword";
 
 interface LoginPageProps {
   onLoginDone: () => void;
@@ -11,7 +12,7 @@ interface LoginPageProps {
 
 function LoginPage({ onLoginDone }: LoginPageProps) {
   const { back } = useNavigation();
-  const [password, setPassword] = useState<string>("");
+  const { password, append, remove } = usePassword();
   useEffect(() => {
     if (password.length == 6) {
       // TODO: 로그인 로직
@@ -19,16 +20,6 @@ function LoginPage({ onLoginDone }: LoginPageProps) {
       back();
     }
   }, [onLoginDone, back, password]);
-
-  const append = (number: number) => {
-    setPassword((password) => {
-      if (password.length > 5) return password;
-      return password + number;
-    });
-  };
-  const remove = () => {
-    setPassword((password) => password.slice(0, password.length - 1));
-  };
   return (
     <VStack className="h-full justify-between">
       <NavigationBar title={""} disableHome white />
