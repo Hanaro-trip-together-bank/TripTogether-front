@@ -10,6 +10,7 @@ interface ModalProps extends HTMLAttributes<HTMLDivElement> {
   show: boolean;
   xButton?: boolean;
   dark?: boolean;
+  hideBackDrop?: boolean;
   modalType?: "modal" | "sheet";
   backDrop?: boolean;
   onClose: () => void;
@@ -19,6 +20,7 @@ function Modal({
   show,
   xButton = false,
   dark = false,
+  hideBackDrop = false,
   modalType = "modal",
   backDrop = false,
   onClose,
@@ -55,18 +57,18 @@ function Modal({
     return (
       <div
         className={cn(
-          "absolute top-0 left-0 w-iPhone h-iPhone z-40  backdrop-blur-sm",
-          showContent ? "" : "delay-100"
+          "absolute top-0 left-0 w-iPhone h-iPhone z-40",
+          !hideBackDrop && showContent ? "backdrop-blur-sm" : "delay-100"
         )}
         style={{ translate: "0.25px -0.25px" }}
       >
         {/* 백드롭(어두운 오버레이) + 상단 스테이터스바 흰색버전 */}
         <div className={processedBackDropClassName}>
-          <StatusBar className="absolute" white />
+          {!hideBackDrop && <StatusBar className="absolute" white />}
           <div
             className={cn(
               "absolute w-iPhone h-iPhone bg-black z-30 rounded-3xl transition-opacity",
-              showContent ? "opacity-50" : "opacity-0"
+              !hideBackDrop && showContent ? "opacity-50" : "opacity-0"
             )}
             onClick={() => {
               if (backDrop) onClose();
