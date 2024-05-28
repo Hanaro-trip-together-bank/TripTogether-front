@@ -28,11 +28,11 @@ function DemoPage() {
           <Title> Button </Title>
           <Button disabled>확인</Button>
           <Button>확인</Button>
-          <Button disabled fullyRounded>
+          <Button disabled roundedFull>
             확인
           </Button>
-          <Button fullyRounded>확인</Button>
-          <Button fullyRounded disabled={!bool} className="!px-16 ">
+          <Button roundedFull>확인</Button>
+          <Button roundedFull disabled={!bool} className="!px-16 ">
             저장
           </Button>
           <VStack>

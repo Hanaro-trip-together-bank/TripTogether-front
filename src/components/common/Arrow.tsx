@@ -18,7 +18,7 @@ function Arrow({ direction }: ArrowProps) {
     }
   })();
   return (
-    <button className={cn("text-gray-500 transition-all z-0", rotation)}>
+    <div className={cn("text-gray-500 transition-all z-0", rotation)}>
       <svg
         width="16px"
         height="16px"
@@ -32,7 +32,7 @@ function Arrow({ direction }: ArrowProps) {
           strokeWidth="8"
         />
       </svg>
-    </button>
+    </div>
   );
 }
 

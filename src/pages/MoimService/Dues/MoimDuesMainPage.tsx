@@ -29,10 +29,7 @@ function MoimDeusMainPage({}: MoimDeusMainPageProps) {
   return (
     <VStack className="min-h-full h-full bg-white pb-8">
       <NavigationBar title={"회비내역"} />
-      <Select2
-        options={["입금", "지출"]}
-        onSelect={setDepositOrExpenses}
-      ></Select2>
+      <Select2 options={["입금", "지출"]} onSelect={setDepositOrExpenses} />
       {depositOrExpenses == 0 ? (
         // 입금 탭
         <>

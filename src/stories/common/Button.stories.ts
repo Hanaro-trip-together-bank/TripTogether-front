@@ -30,10 +30,10 @@ export const Disabled: Story = {
     children: "Disabled(unclickable)",
   },
 };
-export const FullyRounded: Story = {
+export const RoundedFull: Story = {
   args: {
-    fullyRounded: true,
-    children: "FullyRounded",
+    roundedFull: true,
+    children: "RoundedFull",
   },
 };
 export const Custom: Story = {
