@@ -64,10 +64,10 @@ export const NavigationProvider = ({ children }: PropsWithChildren) => {
     //여기에 페이지 넣으면 초깃값 이걸로 적용됨
     {
       page: (
-        // <CountryCartProvider>
-        //   <SelectCityPage />
-        // </CountryCartProvider>
-        <CreateTripPage />
+        <CountryCartProvider>
+          <SelectCityPage />
+        </CountryCartProvider>
+        // <CreateTripPage />
       ),
       backgroundColor: "bg-gray-50",
     },
