@@ -73,3 +73,6 @@ body {
 .h-iPhone {
   height: 844px;
 }
+.border-b-0\.5 {
+  border-bottom-width: 0.5px;
+}

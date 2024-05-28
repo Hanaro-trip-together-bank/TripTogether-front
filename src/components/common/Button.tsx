@@ -3,13 +3,13 @@ import cn from "../../utils/cn";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   gray?: boolean;
-  fullyRounded?: boolean;
+  roundedFull?: boolean;
 }
 
 function Button({
   gray = false,
   disabled = false,
-  fullyRounded = false,
+  roundedFull = false,
   className = "",
   children,
   ...props
@@ -20,7 +20,7 @@ function Button({
   // 마우스커서
   const cursorClassName = disabled ? "cursor-default" : "";
   // 코너 라운드 처리
-  const roundedClassName = fullyRounded ? "rounded-full" : "rounded-md";
+  const roundedClassName = roundedFull ? "rounded-full" : "rounded-md";
   // 나머지 클래스네임
   const processedClassName = cn(
     baseClassName,
