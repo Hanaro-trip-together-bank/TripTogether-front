@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Arrow from "../../../components/common/Arrow";
 import Button from "../../../components/common/Button";
 import { VStack, HStack, Spacer } from "../../../components/common/Stack";
@@ -10,154 +10,308 @@ import Keypad from "../../../components/common/Modals/Keypad";
 import { printMoney } from "../../../utils/printMoney";
 import useToggle from "../../../hooks/useToggle";
 import { useNavigation } from "../../../contexts/useNavigation";
+import useKeypadMappedNumber from "../../../hooks/useKeypadMappedNumber";
+import usePassword from "../../../hooks/usePassword";
 
 interface MoimDepositPageProps {}
 
 function MoimDepositPage({}: MoimDepositPageProps) {
   const { back } = useNavigation();
-  const [isAmountFocused, toggleIsAmountFocused] = useToggle();
-  const [showNotice, toggleShowNotice] = useToggle();
-  const [showCancelModal, toggleShowCancelModal] = useToggle();
-  const [amount, setAmount] = useState<number>(0);
-  const append = (number: number) => {
-    setAmount(amount * 10 + number);
-  };
-  const remove = () => {
-    setAmount(Math.floor(amount / 10));
-  };
-  const add = (number: number) => {
-    setAmount(amount + number);
-  };
-  const clear = () => {
-    setAmount(0);
-  };
+  const [isAmountFocused, toggleIsAmountFocused] = useToggle(); // 금액 포커스하면서 숫자패드 열기
+  const [showNotice, toggleShowNotice] = useToggle(); // 이용안내 보이기
+  const [showCancelModal, toggleShowCancelModal] = useToggle(); // 입금취소 확인 모달 보이기
+  const [showConfirmModal, toggleShowConfirmModal] = useToggle(); // 입금확인 시트 보이기
+  const [showPasswordModal, toggleShowPasswordModal] = useToggle(); // 입금확인->간편비밀번호 시트 보이기
+  const { amount, append, remove, add, clear } = useKeypadMappedNumber(); // 금액 관련
+  const { password, remove: removePw, append: appendPw } = usePassword(); // 간편비밀번호 관련
+  const [isDepositDone, toggleIsDepositDone] = useToggle(); // 입금 완료 여부
+  const [memo, setMemo] = useState<string>(""); // 입금통장표시
+  useEffect(() => {
+    if (password.length == 6) {
+      toggleShowPasswordModal();
+      toggleIsDepositDone();
+    }
+  }, [password, toggleIsDepositDone, toggleShowPasswordModal]);
 
-  return (
-    <>
-      <VStack className="min-h-full h-full bg-gray-50 pb-8">
-        <NavigationBar onBack={toggleShowCancelModal} title={"입금"} />
-        <VStack className="w-full h-full p-6 gap-4">
-          {/* 입금계좌 */}
-          <VStack>
-            <span>입금계좌</span>
-            <HStack className="bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
-              <HanaSvg />
-              <VStack className="!gap-0">
-                <span>하나로</span>
-                <span className="text-gray-500 text-sm">123-123456-12345</span>
-              </VStack>
-            </HStack>
-          </VStack>
-          {/* 출금계좌 */}
-          <VStack>
-            <span>출금계좌</span>
-            <HStack className="h-full bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
-              <VStack className="flex-grow">
-                <HStack className="items-center">
-                  <HanaSvg />
-                  <VStack className="!gap-0">
-                    <span>하나은행 통장</span>
-                    <span className="text-gray-500 text-sm">
-                      321-654321-54321
-                    </span>
-                  </VStack>
-                </HStack>
-                <span className="text-end text-gray-500 text-sm">
-                  출금가능금액 1,000,000,000,000.0 원
-                </span>
-              </VStack>
-              <Arrow direction="down" />
-            </HStack>
-          </VStack>
-          {/* 금액 */}
-          <VStack>
-            <button onClick={toggleIsAmountFocused}>
-              <VStack
-                className={cn(
-                  "items-start bg-white border p-2 rounded-md transition-all box-border",
-                  isAmountFocused
-                    ? "border-primary border-2 relative z-50"
-                    : "border-gray-300"
-                )}
-              >
-                <span className="text-sm text-gray-500"> 금액 </span>
-                <HStack className="w-full justify-end">
-                  <span>{amount.toLocaleString()}</span>
-                  <span>원</span>
-                </HStack>
-              </VStack>
-            </button>
-            <span className="w-full text-gray-500 text-end">
-              {printMoney(amount)}원
-            </span>
-          </VStack>
-          <div className="h-4" />
-          <TextArea border placeholder="입금통장표시"></TextArea>
-          <HStack className="items-center">
-            <span>이용안내</span>
-            <button onClick={toggleShowNotice}>
-              <Arrow direction={showNotice ? "up" : "down"} />
-            </button>
-          </HStack>
-          {showNotice && (
+  // 1: 입금 진행
+  if (!isDepositDone)
+    return (
+      <>
+        <VStack className="min-h-full h-full bg-gray-50 pb-8">
+          <NavigationBar onBack={toggleShowCancelModal} title={"입금"} />
+          <VStack className="w-full h-full p-6 gap-4">
+            {/* 입금계좌 */}
             <VStack>
-              <span className="text-sm">다른은행 출금 안내(오픈뱅킹)</span>
-              <span className="text-xs font-thin">
-                {"* 시스템 점검 시간 (23:30~24:30, 은행별 적용)에는 이용 불가"}
-              </span>
-              <span className="text-xs font-thin">
-                {
-                  "* 오픈뱅킹 잔여 출금한도(전 금융기관 합산 1일 1천만원) 이내에서 거래 가능"
-                }
+              <span>입금계좌</span>
+              <HStack className="bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
+                <HanaSvg />
+                <VStack className="!gap-0">
+                  <span>하나로</span>
+                  <span className="text-gray-500 text-sm">
+                    123-123456-12345
+                  </span>
+                </VStack>
+              </HStack>
+            </VStack>
+            {/* 출금계좌 */}
+            <VStack>
+              <span>출금계좌</span>
+              <HStack className="h-full bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
+                <VStack className="flex-grow">
+                  <HStack className="items-center">
+                    <HanaSvg />
+                    <VStack className="!gap-0">
+                      <span>하나은행 통장</span>
+                      <span className="text-gray-500 text-sm">
+                        321-654321-54321
+                      </span>
+                    </VStack>
+                  </HStack>
+                  <span className="text-end text-gray-500 text-sm">
+                    출금가능금액 1,000,000,000,000.0 원
+                  </span>
+                </VStack>
+                <Arrow direction="down" />
+              </HStack>
+            </VStack>
+            {/* 금액 */}
+            <VStack>
+              <button onClick={toggleIsAmountFocused}>
+                <VStack
+                  className={cn(
+                    "items-start bg-white border p-2 rounded-md transition-all box-border",
+                    isAmountFocused
+                      ? "border-primary border-2 relative z-50"
+                      : "border-gray-300"
+                  )}
+                >
+                  <span className="text-sm text-gray-500"> 금액 </span>
+                  <HStack className="w-full justify-end">
+                    <span>{amount.toLocaleString()}</span>
+                    <span>원</span>
+                  </HStack>
+                </VStack>
+              </button>
+              <span className="w-full text-gray-500 text-end">
+                {printMoney(amount)}원
               </span>
             </VStack>
-          )}
+            <div className="h-4" />
+            <TextArea
+              border
+              placeholder="입금통장표시"
+              onChange={(e) => {
+                setMemo(e.target.value);
+              }}
+            ></TextArea>
+            <HStack className="items-center">
+              <span>이용안내</span>
+              <button onClick={toggleShowNotice}>
+                <Arrow direction={showNotice ? "up" : "down"} />
+              </button>
+            </HStack>
+            {showNotice && (
+              <VStack>
+                <span className="text-sm">다른은행 출금 안내(오픈뱅킹)</span>
+                <span className="text-xs font-thin">
+                  {
+                    "* 시스템 점검 시간 (23:30~24:30, 은행별 적용)에는 이용 불가"
+                  }
+                </span>
+                <span className="text-xs font-thin">
+                  {
+                    "* 오픈뱅킹 잔여 출금한도(전 금융기관 합산 1일 1천만원) 이내에서 거래 가능"
+                  }
+                </span>
+              </VStack>
+            )}
+            <Spacer />
+            <Button
+              className="!w-full"
+              roundedFull
+              onClick={toggleShowConfirmModal}
+              disabled={amount == 0}
+            >
+              다음
+            </Button>
+          </VStack>
+        </VStack>
+        {/* 키패드 시트 */}
+        <Modal
+          xButton
+          modalType="sheet"
+          backDrop
+          dark
+          show={isAmountFocused}
+          onClose={toggleIsAmountFocused}
+        >
+          <Keypad
+            onAdd={add}
+            onClear={clear}
+            onAppend={append}
+            onRemove={remove}
+            onDone={toggleIsAmountFocused}
+          />
+        </Modal>
+        {/* 입금 중단 확인 모달 */}
+        <Modal
+          xButton
+          backDrop
+          show={showCancelModal}
+          onClose={toggleShowCancelModal}
+        >
+          <VStack className="w-72 items-center gap-4">
+            <span>입금을 중단하시겠습니까?</span>
+            <HStack className="w-full">
+              <Button gray roundedFull onClick={toggleShowCancelModal}>
+                취소
+              </Button>
+              <Button className="flex-grow" roundedFull onClick={back}>
+                확인
+              </Button>
+            </HStack>
+          </VStack>
+        </Modal>
+        {/* 입금 확인 시트 */}
+        <Modal
+          xButton
+          backDrop
+          modalType="sheet"
+          show={showConfirmModal}
+          onClose={toggleShowConfirmModal}
+        >
+          <VStack className="w-full items-center gap-4">
+            <span className="text-center">
+              <span className="font-bold">하나로</span>
+              님 계좌로
+              <br />
+              <span className="font-bold">{amount.toLocaleString()}</span>
+              원을 입금합니다.
+            </span>
+            <VStack className="w-full border-y border-gray-200 py-4 mb-4">
+              <DepositConfirmItem
+                label={"입금계좌"}
+                value={"하나로"}
+                value2="123-123456-12345"
+              />
+              <DepositConfirmItem
+                label={"출금계좌"}
+                value={"하나로"}
+                value2="321-654321-54321"
+              />
+              <DepositConfirmItem
+                label={"입금통장표시"}
+                value={"최지웅"}
+                value2={memo}
+              />
+            </VStack>
+            <HStack className="w-full">
+              <Button gray roundedFull onClick={toggleShowConfirmModal}>
+                취소
+              </Button>
+              <Button
+                className="flex-grow"
+                roundedFull
+                onClick={() => {
+                  toggleShowConfirmModal();
+                  toggleShowPasswordModal();
+                }}
+              >
+                입금
+              </Button>
+            </HStack>
+          </VStack>
+        </Modal>
+        {/* 입금 확인 간편 비밀번호 시트 */}
+        <Modal
+          xButton
+          modalType="sheet"
+          dark
+          show={showPasswordModal}
+          onClose={toggleShowPasswordModal}
+        >
+          <VStack className="w-full items-center">
+            <span className="text-white text-xl mb-8"> 간편비밀번호 입력 </span>
+            <HStack className="gap-4">
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "w-4 h-4 rounded-full border border-gray-400",
+                    password.length > index ? "bg-gray-400" : ""
+                  )}
+                />
+              ))}
+            </HStack>
+          </VStack>
+          <Keypad
+            type={2}
+            onAppend={appendPw}
+            onRemove={removePw}
+            onAdd={() => {}}
+            onClear={() => {}}
+            onDone={() => {}}
+          />
+        </Modal>
+      </>
+    );
+  // 2: 입금 완료
+  if (isDepositDone)
+    return (
+      <VStack className="min-h-full h-full pb-8">
+        <NavigationBar disableBack title={"입금"} />
+        <VStack className="h-full items-center p-6 gap-6 pt-12">
+          {/* 동그라미 속 체크 */}
+          <div className="border-2 border-black rounded-full p-2 text-primary">
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <polyline
+                points="20 6 9 17 4 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+            </svg>
+          </div>
+          <span className="w-full text-2xl text-center font-bold">
+            {"하나로"} 계좌로
+            <br />
+            <span className="text-primary">{amount.toLocaleString()}원</span>이
+            입금되었습니다.
+          </span>
+          <VStack className="w-full border-y border-gray-200 py-4 mb-4">
+            <DepositConfirmItem
+              label={"입금계좌"}
+              value={"하나로"}
+              value2="123-123456-12345"
+            />
+            <DepositConfirmItem
+              label={"출금계좌"}
+              value={"하나로"}
+              value2="321-654321-54321"
+            />
+            <DepositConfirmItem
+              label={"입금통장표시"}
+              value={"최지웅"}
+              value2={memo}
+            />
+          </VStack>
           <Spacer />
-          <Button className="!w-full" roundedFull>
-            다음
+          <Button className="w-full" roundedFull onClick={back}>
+            확인
           </Button>
         </VStack>
       </VStack>
-      <Modal
-        xButton
-        modalType="sheet"
-        backDrop
-        dark
-        show={isAmountFocused}
-        onClose={toggleIsAmountFocused}
-      >
-        <Keypad
-          onAdd={add}
-          onClear={clear}
-          onAppend={append}
-          onRemove={remove}
-          onDone={toggleIsAmountFocused}
-        />
-      </Modal>
-      <Modal
-        xButton
-        backDrop
-        show={showCancelModal}
-        onClose={toggleShowCancelModal}
-      >
-        <VStack className="w-72 items-center gap-4">
-          <span>입금을 중단하시겠습니까?</span>
-          <HStack className="w-full">
-            <Button gray roundedFull onClick={toggleShowCancelModal}>
-              취소
-            </Button>
-            <Button className="flex-grow" roundedFull onClick={back}>
-              확인
-            </Button>
-          </HStack>
-        </VStack>
-      </Modal>
-    </>
-  );
+    );
 }
 
 export default MoimDepositPage;
 
+// 하나은행 마크 svg
 function HanaSvg() {
   return (
     <div className="text-primary scale-75">
@@ -179,5 +333,26 @@ function HanaSvg() {
         </g>
       </svg>
     </div>
+  );
+}
+
+// 입금 확인 시트 행
+function DepositConfirmItem({
+  label,
+  value,
+  value2,
+}: {
+  label: string;
+  value: string;
+  value2?: string;
+}) {
+  return (
+    <HStack className="w-full justify-between items-center">
+      <span className="font-thin">{label}</span>
+      <VStack className="items-end !gap-0">
+        <span>{value}</span>
+        {value2 && <span>{value2}</span>}
+      </VStack>
+    </HStack>
   );
 }

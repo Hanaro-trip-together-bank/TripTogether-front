@@ -7,7 +7,8 @@ export const printMoney = (money: number) => {
   while (strNumber.length > 4) {
     const chunk = strNumber.slice(-4);
     strNumber = strNumber.slice(0, -4);
-    result = (+chunk).toLocaleString() + units[unitIndex] + (result ?? "");
+    if (+chunk > 0)
+      result = (+chunk).toLocaleString() + units[unitIndex] + (result ?? "");
     unitIndex++;
   }
   result = (+strNumber).toLocaleString() + units[unitIndex] + (result ?? "");

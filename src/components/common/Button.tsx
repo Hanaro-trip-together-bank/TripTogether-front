@@ -31,7 +31,7 @@ function Button({
   );
 
   return (
-    <button className={processedClassName} {...props}>
+    <button className={processedClassName} {...props} disabled={disabled}>
       {children}
     </button>
   );

@@ -8,6 +8,7 @@ import NavigationLink from "../../../components/common/Navigation/NavigationLink
 import DemoPage from "../../DemoPage";
 import Select from "../../../components/common/Select";
 import MoimDepositPage from "./MoimDepositPage";
+import MoimDuesSetPage from "./MoimDuesSetPage";
 
 // 조회결과 없을 때 표시
 function NoResultView() {
@@ -44,7 +45,7 @@ function MoimDeusMainPage({}: MoimDeusMainPageProps) {
             </HStack>
           </VStack>
           <VStack className="p-4 h-full">
-            <NavigationLink className="mb-4" to={{ page: <DemoPage /> }}>
+            <NavigationLink className="mb-4" to={{ page: <MoimDuesSetPage /> }}>
               <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                 <span className="text-gray-500">
                   {"매월 1일 "}
