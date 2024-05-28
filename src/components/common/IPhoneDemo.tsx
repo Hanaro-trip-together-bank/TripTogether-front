@@ -6,6 +6,34 @@ import Modal from "./Modals/Modal";
 import { useState } from "react";
 import Toggle from "./Toggle";
 import Keypad from "./Modals/Keypad";
+import TripView from "./TripView";
+import SelectCityPage from "../../pages/SelectCityPage";
+import { CountryCartProvider } from "../../contexts/Country-Cart-Context";
+
+// TODO: mustDelete
+const mockTripData = [
+  {
+    id: 1,
+    name: "포켓몬 센터 메가 도쿄",
+    category: "쇼핑",
+    image:
+      "http://media-cdn.tripadvisor.com/media/photo-o/1a/2c/d4/38/photo8jpg.jpg",
+  },
+  {
+    id: 2,
+    name: "츠지한",
+    category: "맛집",
+    image:
+      "http://media-cdn.tripadvisor.com/media/photo-o/1b/da/38/2d/tsujihan.jpg",
+  },
+  {
+    id: 3,
+    name: "도쿄 국립 신 미술관",
+    category: "관광명소",
+    image:
+      "https://search.pstatic.net/common?src=https://search.pstatic.net/common?src=https://dbscthumb-phinf.pstatic.net/5885_000_16/20211223144425153_BFGX9I7VU.jpg/fb521_17_i2.jpg?type=w540_fst",
+  },
+];
 
 function IPhoneDemo() {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -29,7 +57,6 @@ function IPhoneDemo() {
     <VStack className="relative w-iPhone h-iPhone rounded-3xl overflow-hidden border-2 border-black items-center !gap-0">
       <Modal
         show={showModal}
-        backDrop
         modalType={modalType}
         onClose={() => setShowModal(false)}
         xButton
@@ -81,6 +108,17 @@ function IPhoneDemo() {
         onClick={toggleKeyPadModal}
         label="계산기 모달"
       />
+      {/* <VStack className="w-full p-1">
+        {mockTripData.map((trip) => (
+          <TripView key={trip.id} {...trip} />
+        ))} */}
+      {/* <TripView />
+        <TripView />
+        <TripView /> */}
+      {/* </VStack> */}
+      <CountryCartProvider>
+        <SelectCityPage />
+      </CountryCartProvider>
     </VStack>
   );
 }
