@@ -12,6 +12,7 @@ import MoimDepositPage from "./Dues/MoimDepositPage";
 import MoimDeusMainPage from "./Dues/MoimDuesMainPage";
 import Avatar from "../../components/common/Avatar";
 import MoimMembersMainPage from "./Members/MoimMembersMainPage";
+import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
 interface MoimDetailPageProps {}
 
 function MoimDetailPage({}: MoimDetailPageProps) {
@@ -70,9 +71,16 @@ function MoimDetailPage({}: MoimDetailPageProps) {
               <span className="text-gray-500">
                 즐겨찾기한 여행일정이 없습니다.
               </span>
-              <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
-                +
-              </Button>
+              <NavigationLink
+                to={{
+                  backgroundColor: "bg-gray-50",
+                  page: <MoimTripsMainPage />,
+                }}
+              >
+                <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
+                  +
+                </Button>
+              </NavigationLink>
             </VStack>
           </SwiperSlide>
         </Swiper>
@@ -95,13 +103,20 @@ function MoimDetailPage({}: MoimDetailPageProps) {
             <span className="font-semibold text-center">회비관리</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
-              <img
-                className="h-12 w-12 p-1"
-                src={`/images/moim/moim-menu-02.png`}
-                alt="main-tab-02"
-              />
-            </button>
+            <NavigationLink
+              to={{
+                backgroundColor: "bg-gray-50",
+                page: <MoimTripsMainPage />,
+              }}
+            >
+              <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+                <img
+                  className="h-12 w-12 p-1"
+                  src={`/images/moim/moim-menu-02.png`}
+                  alt="main-tab-02"
+                />
+              </button>
+            </NavigationLink>
             <span className="font-semibold text-center">여행관리</span>
           </VStack>
           <VStack>
