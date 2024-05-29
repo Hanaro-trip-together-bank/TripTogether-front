@@ -23,34 +23,36 @@ function Avatar({
   crown = false,
 }: AvatarProps) {
   return (
-    <VStack
-      className={cn(
-        "relative justify-center items-center w-16 h-16 rounded-full",
-        backgroundColor
-      )}
-    >
-      {/* 피부 */}
+    <div className="w-8 h-8">
       <VStack
         className={cn(
-          "!gap-0 items-center justify-center w-8 h-8 rounded-xl",
-          skinColors[skinColor]
+          "relative scale-50 justify-center items-center w-16 h-16 rounded-full -translate-y-4 -translate-x-4",
+          backgroundColor
         )}
       >
-        {/* 눈 */}
-        <HStack className="!gap-0">
-          <Eye type={eye} />
-          <Eye type={eye} />
-        </HStack>
-        {/* 입 */}
-        <Mouth type={mouth} />
+        {/* 피부 */}
+        <VStack
+          className={cn(
+            "!gap-0 items-center justify-center w-8 h-8 rounded-xl",
+            skinColors[skinColor]
+          )}
+        >
+          {/* 눈 */}
+          <HStack className="!gap-0">
+            <Eye type={eye} />
+            <Eye type={eye} />
+          </HStack>
+          {/* 입 */}
+          <Mouth type={mouth} />
+        </VStack>
+        {/* 왕관 */}
+        {crown && (
+          <div className="absolute top-1 right-1 rounded-full p-1 bg-yellow-400">
+            <Crown />
+          </div>
+        )}
       </VStack>
-      {/* 왕관 */}
-      {crown && (
-        <div className="absolute top-1 right-1 rounded-full p-1 bg-yellow-400">
-          <Crown />
-        </div>
-      )}
-    </VStack>
+    </div>
   );
 }
 

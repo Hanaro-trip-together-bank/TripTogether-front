@@ -10,6 +10,7 @@ import Arrow from "../../components/common/Arrow";
 import NavigationLink from "../../components/common/Navigation/NavigationLink";
 import MoimDepositPage from "./Dues/MoimDepositPage";
 import MoimDeusMainPage from "./Dues/MoimDuesMainPage";
+import Avatar from "../../components/common/Avatar";
 interface MoimDetailPageProps {}
 
 function MoimDetailPage({}: MoimDetailPageProps) {
@@ -34,6 +35,7 @@ function MoimDetailPage({}: MoimDetailPageProps) {
           <SwiperSlide className="!h-fit">
             <VStack className="!gap-0 bg-white shadowed rounded-2xl h-64 m-2 mb-8 p-4">
               <HStack className="items-center">
+                <Avatar crown />
                 <span className="text-lg font-bold">하나로</span>
                 <span className="text-lg text-primary font-bold"> 1</span>
                 <Arrow direction="right" />
@@ -81,41 +83,61 @@ function MoimDetailPage({}: MoimDetailPageProps) {
           <VStack>
             <NavigationLink
               to={{ page: <MoimDeusMainPage /> }}
-              className="bg-gray-100 shadowed rounded-xl w-16 h-16"
+              className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16"
             >
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+              <img
+                className="h-12 w-12 p-1"
+                src={`/images/moim/moim-menu-01.png`}
+                alt="main-tab-01"
+              />
             </NavigationLink>
             <span className="font-semibold text-center">회비관리</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+              <img
+                className="h-12 w-12 p-1"
+                src={`/images/moim/moim-menu-02.png`}
+                alt="main-tab-02"
+              />
             </button>
             <span className="font-semibold text-center">여행관리</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+              <Avatar backgroundColor="bg-indigo-300" skinColor="white" />
             </button>
             <span className="font-semibold text-center">모임원</span>
           </VStack>
         </HStack>
         <HStack className="justify-evenly">
           <VStack>
-            <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+              <img
+                className="h-12 w-12 p-1"
+                src={`/images/moim/moim-menu-04.png`}
+                alt="main-tab-04"
+              />
             </button>
             <span className="font-semibold text-center">잔액분배</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+              <img
+                className="h-12 w-12 p-1"
+                src={`/images/moim/moim-menu-05.png`}
+                alt="main-tab-05"
+              />
             </button>
             <span className="font-semibold text-center">환율</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-              {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+              <img
+                className="h-12 w-12 p-1"
+                src={`/images/moim/moim-menu-06.png`}
+                alt="main-tab-06"
+              />
             </button>
             <span className="font-semibold text-center">설정</span>
           </VStack>
