@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { HStack, Spacer, VStack } from "../../../components/common/Stack";
+import { useState } from "react";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
-import Arrow from "../../../components/common/Arrow";
+import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import useKeypadMappedNumber from "../../../hooks/useKeypadMappedNumber";
-import useToggle from "../../../hooks/useToggle";
-import Modal from "../../../components/common/Modals/Modal";
-import Keypad from "../../../components/common/Modals/Keypad";
-import Button from "../../../components/common/Button";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { useNavigation } from "../../../contexts/useNavigation";
+import Keypad from "../../../components/common/Modals/Keypad";
+import Modal from "../../../components/common/Modals/Modal";
+import Button from "../../../components/common/Button";
+import Arrow from "../../../components/common/Arrow";
+import { Swiper, SwiperSlide } from "swiper/react";
+import useToggle from "../../../hooks/useToggle";
+import "swiper/css";
 
 interface MoimDuesSetPageProps {}
 
@@ -59,7 +59,7 @@ function MoimDuesSetPage({}: MoimDuesSetPageProps) {
             </button>
           </VStack>
           <Spacer />
-          <Button className="w-full" onClick={back}>
+          <Button className="w-full" onClick={back} disabled={amount == 0}>
             저장
           </Button>
         </VStack>
