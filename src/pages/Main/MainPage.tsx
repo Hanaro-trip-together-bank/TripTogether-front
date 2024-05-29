@@ -60,7 +60,11 @@ function MainPage() {
                 <VStack className="w-full items-center p-4">
                   <span className="text-sm">하나은행 ATM 수수료 0원</span>
                   <span className="text-xl font-bold">모바일 전용통장</span>
-                  {/* TODO: 모바일 전용통장 이미지 넣기 */}
+                  <img
+                    className="h-24"
+                    src={`/images/main/account.png`}
+                    alt="account"
+                  />
                   <div className="border-b w-full border-gray-200" />
                   <NavigationLink to={{ page: <MainPage /> }}>
                     <div className="m-2 text-primary font-bold">가입하기</div>
@@ -70,8 +74,13 @@ function MainPage() {
                 <VStack className="w-full items-center p-4">
                   <span className="text-sm">로그인하고 안전하게</span>
                   <span className="text-xl font-bold">잔액을 조회하세요</span>
-                  {/* TODO: 모바일 전용통장 이미지 넣기 */}
+                  <img
+                    className="h-24"
+                    src={`/images/main/account.png`}
+                    alt="account"
+                  />
                   <div className="border-b w-full border-gray-200" />
+
                   <NavigationLink
                     to={{
                       backgroundColor: "bg-secondary",
@@ -89,7 +98,11 @@ function MainPage() {
               <VStack className="w-full items-center p-4">
                 <span className="text-sm">알아서 관리해 주는</span>
                 <span className="text-xl font-bold">모임통장 서비스</span>
-                {/* TODO: 모임통장 이미지 넣기 */}
+                <img
+                  className="h-24"
+                  src={`/images/main/moim.png`}
+                  alt="moim"
+                />
                 <div className="border-b w-full border-gray-200" />
                 <NavigationLink to={{ page: <MoimServiceMainPage /> }}>
                   <div className="m-2 text-primary font-bold">
@@ -105,19 +118,31 @@ function MainPage() {
       <HStack className="justify-evenly my-4">
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-01.png`}
+              alt="main-menu-01"
+            />
           </button>
           <span className="font-semibold text-center">전체계좌</span>
         </VStack>
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-02.png`}
+              alt="main-menu-02"
+            />
           </button>
           <span className="font-semibold text-center">영하나</span>
         </VStack>
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-03.png`}
+              alt="main-menu-03"
+            />
           </button>
           <span className="font-semibold text-center">이벤트</span>
         </VStack>
@@ -125,19 +150,31 @@ function MainPage() {
       <HStack className="justify-evenly">
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-04.png`}
+              alt="main-menu-04"
+            />
           </button>
           <span className="font-semibold text-center">주식추천</span>
         </VStack>
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-05.png`}
+              alt="main-menu-05"
+            />
           </button>
           <span className="font-semibold text-center">펀드</span>
         </VStack>
         <VStack>
           <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
-            {/* TODO: 메뉴 이미지/svg 넣기 */}
+            <img
+              className="h-12 w-12 mx-auto"
+              src={`/images/main/main-menu-06.png`}
+              alt="main-menu-06"
+            />
           </button>
           <span className="font-semibold text-center">맞춤설정</span>
         </VStack>
@@ -177,28 +214,43 @@ function MainPage() {
       {/* 하단 탭바 */}
       <HStack className="absolute bottom-0 w-full h-24 bg-white/50  backdrop-blur-sm">
         <VStack className="text-primary font-bold items-center flex-grow border-t-2 border-primary">
-          {/* TODO: 메뉴 이미지/svg 넣기 */}
-          <div className="w-8 h-8 rounded-full opacity-30 bg-slate-500 my-2" />
+          <img
+            className="h-12 w-12 opacity-80 p-1"
+            src={`/images/main/main-tab-01.png`}
+            alt="main-tab-01"
+          />
           <span> 홈 </span>
         </VStack>
         <VStack className="text-primary-disabled font-bold items-center flex-grow">
-          {/* TODO: 메뉴 이미지/svg 넣기 */}
-          <div className="w-8 h-8 rounded-full opacity-30 bg-slate-500 my-2" />
+          <img
+            className="h-12 w-12 opacity-80 p-1"
+            src={`/images/main/main-tab-02.png`}
+            alt="main-tab-02"
+          />
           <span> 상품 </span>
         </VStack>
         <VStack className="text-primary-disabled font-bold items-center flex-grow">
-          {/* TODO: 메뉴 이미지/svg 넣기 */}
-          <div className="w-8 h-8 rounded-full opacity-30 bg-slate-500 my-2" />
+          <img
+            className="h-12 w-12 opacity-80 p-1"
+            src={`/images/main/main-tab-03.png`}
+            alt="main-tab-03"
+          />
           <span> 자산 </span>
         </VStack>
         <VStack className="text-primary-disabled font-bold items-center flex-grow">
-          {/* TODO: 메뉴 이미지/svg 넣기 */}
-          <div className="w-8 h-8 rounded-full opacity-30 bg-slate-500 my-2" />
+          <img
+            className="h-12 w-12 opacity-80 p-1"
+            src={`/images/main/main-tab-04.png`}
+            alt="main-tab-04"
+          />
           <span> 결제 </span>
         </VStack>
         <VStack className="text-primary-disabled font-bold items-center flex-grow">
-          {/* TODO: 메뉴 이미지/svg 넣기 */}
-          <div className="w-8 h-8 rounded-full opacity-30 bg-slate-500 my-2" />
+          <img
+            className="h-12 w-12 opacity-80 p-1"
+            src={`/images/main/main-tab-05.png`}
+            alt="main-tab-05"
+          />
           <span> 메뉴 </span>
         </VStack>
       </HStack>
