@@ -25,7 +25,7 @@ function Avatar({
   return (
     <VStack
       className={cn(
-        "justify-center items-center w-16 h-16 rounded-full",
+        "relative justify-center items-center w-16 h-16 rounded-full",
         backgroundColor
       )}
     >
@@ -46,7 +46,7 @@ function Avatar({
       </VStack>
       {/* 왕관 */}
       {crown && (
-        <div className="absolute top-1 right-1 rounded-full p-1 bg-yellow-500">
+        <div className="absolute top-1 right-1 rounded-full p-1 bg-yellow-400">
           <Crown />
         </div>
       )}
