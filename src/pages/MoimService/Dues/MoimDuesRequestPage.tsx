@@ -24,19 +24,22 @@ function MoimDuesRequestPage({ requestees }: MoimDuesRequestPageProps) {
       <>
         <VStack className="min-h-full h-full bg-white pb-8">
           <NavigationBar title={"회비요청"} />
-          <VStack className="h-full py-4 px-6">
-            <span className="text-xl font-bold pb-4"> 얼마씩 요청할까요? </span>
-            <HStack className="font-bold">
-              <button
-                className="border-b border-black"
-                onClick={toggleShowKeypad}
-              >
-                <span className="text-primary">
-                  {amount.toLocaleString()}원
-                </span>
-              </button>
-              <span>요청하기</span>
-            </HStack>
+          <VStack className="w-full h-full items-center py-4 px-6">
+            <img className="w-40" src={`/images/moim/money.png`} alt="money" />
+            <VStack className="w-full items-start">
+              <span className="text-xl font-bold pb-4">얼마씩 요청할까요?</span>
+              <HStack className="font-bold">
+                <button
+                  className="border-b border-black"
+                  onClick={toggleShowKeypad}
+                >
+                  <span className="text-primary">
+                    {amount.toLocaleString()}원
+                  </span>
+                </button>
+                <span>요청하기</span>
+              </HStack>
+            </VStack>
             <Spacer />
             <Button
               className="w-full"
@@ -75,6 +78,13 @@ function MoimDuesRequestPage({ requestees }: MoimDuesRequestPageProps) {
         <VStack className="min-h-full h-full bg-white pb-8">
           <NavigationBar title={"회비요청 완료"} />
           <VStack className="h-full py-4 px-6">
+            <HStack className="w-full justify-center">
+              <img
+                className="w-40"
+                src={`/images/moim/money.png`}
+                alt="money"
+              />
+            </HStack>
             <span className="text-xl text-center pb-4">
               <span className="font-bold">회비 입금</span>을 <br />
               요청했어요
