@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Arrow from "../../../components/common/Arrow";
 import Button from "../../../components/common/Button";
 import { VStack, HStack, Spacer } from "../../../components/common/Stack";
@@ -348,8 +348,8 @@ function DepositConfirmItem({
 }) {
   return (
     <HStack className="w-full justify-between items-center">
-      <span className="font-thin">{label}</span>
-      <VStack className="items-end !gap-0">
+      <span className="font-thin text-nowrap">{label}</span>
+      <VStack className="items-end text-end !gap-0">
         <span>{value}</span>
         {value2 && <span>{value2}</span>}
       </VStack>

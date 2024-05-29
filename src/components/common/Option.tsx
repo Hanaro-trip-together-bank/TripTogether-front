@@ -12,7 +12,7 @@ function Option({
   ...props
 }: PropsWithChildren<OptionProps>) {
   const baseClassName =
-    "text-sm font-bold rounded-full transition-all p-1 px-2.5 w-fit mr-2 border-2 border-transparent";
+    "text-nowrap text-sm font-bold rounded-full transition-all p-1 px-2.5 w-fit mr-2 border-2 border-transparent";
   // 선택 처리
   const selectedClassName = selected
     ? "bg-white text-primary border-primary"

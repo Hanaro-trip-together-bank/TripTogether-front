@@ -84,11 +84,13 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
           <VStack className="w-full items-center">
             <span>초대하기</span>
             <HStack className="m-6 gap-4">
-              <div className="w-12 h-12 rounded-full shadowed" />
-              <div className="w-12 h-12 rounded-full shadowed" />
-              <div className="w-12 h-12 rounded-full shadowed" />
+              <img
+                className="h-20"
+                src={`/images/moim/invite.png`}
+                alt="invite"
+              />
             </HStack>
-            <Button className="w-72" onClick={closeInvitationModal}>
+            <Button className="w-full" onClick={closeInvitationModal}>
               확인
             </Button>
           </VStack>
@@ -103,6 +105,16 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
         <VStack className="w-full h-full items-center p-6 gap-6">
           {/* 모임 타입 선택 */}
           <span className="w-full text-2xl font-bold">어떤 모임인가요?</span>
+          <img className="h-40" src={`/images/moim/plain.png`} alt="plain" />
+          <span>여행</span>
+          <HStack className="w-full overflow-x-scroll">
+            <Option>모임</Option>
+            <Option>가족</Option>
+            <Option>결혼</Option>
+            <Option selected>여행</Option>
+            <Option>쇼핑</Option>
+            <Option>저축</Option>
+          </HStack>
           {/* 모임 이름 입력 */}
           <input
             type="text"

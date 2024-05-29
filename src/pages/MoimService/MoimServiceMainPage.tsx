@@ -31,7 +31,7 @@ function MoimServiceMainPage({}: MoimServiceMainPageProps) {
           >
             <VStack className="rounded-2xl h-32 w-full bg-white shadowed px-6 py-4 mb-4">
               <HStack className="w-full justify-between mb-4">
-                <VStack>
+                <VStack className="items-start">
                   <span className="font-bold">하나로</span>
                   <span className="text-gray-500">123-123456-12345</span>
                 </VStack>
