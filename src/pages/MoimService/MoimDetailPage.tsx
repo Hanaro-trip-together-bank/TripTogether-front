@@ -11,6 +11,7 @@ import NavigationLink from "../../components/common/Navigation/NavigationLink";
 import MoimDepositPage from "./Dues/MoimDepositPage";
 import MoimDeusMainPage from "./Dues/MoimDuesMainPage";
 import Avatar from "../../components/common/Avatar";
+import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 interface MoimDetailPageProps {}
 
 function MoimDetailPage({}: MoimDetailPageProps) {
@@ -104,9 +105,16 @@ function MoimDetailPage({}: MoimDetailPageProps) {
             <span className="font-semibold text-center">여행관리</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
-              <Avatar backgroundColor="bg-indigo-300" skinColor="white" />
-            </button>
+            <NavigationLink
+              to={{
+                backgroundColor: "bg-gray-50",
+                page: <MoimMembersMainPage />,
+              }}
+            >
+              <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+                <Avatar backgroundColor="bg-indigo-300" skinColor="white" />
+              </button>
+            </NavigationLink>
             <span className="font-semibold text-center">모임원</span>
           </VStack>
         </HStack>
