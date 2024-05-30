@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
+// const { data, error, isLoading } =  useFetch<RequestDto, ResponseDto>(uri, method, requestData)
+// 화면 로드되는 즉시 페치하고 싶을 때 사용
+// 통신 상태에 따라 isLoading, error, data 필드 채워짐
+// 이후 useEffect를 통해 처리 로직 만들면 됨
+// ex) useEffect(()=>{ if(data) alert(data) },[data]);
+
 export function useFetch<RequestDtoType, ResponseDtoType>(
   uri: string,
   method: FetchMethod,
-  requestData: RequestDtoType
+  requestData: RequestDtoType | null = null
 ) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
@@ -12,32 +18,33 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
 
   useEffect(() => {
     if (!uri) return;
-    setIsLoading(true);
     const headers = { "Content-Type": "application/json" };
     const body =
-      method === "POST" || method === "PUT" ? JSON.stringify(requestData) : "";
+      method === "POST" || method === "PUT"
+        ? JSON.stringify(requestData)
+        : undefined;
     const controller = new AbortController();
     const { signal } = controller;
+    setIsLoading(true);
+    setError("");
     (async () => {
       try {
+        console.log(uri, method, body);
         const res = await fetch(uri, { method, headers, body, signal });
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         const json = await res.json();
+        console.log(json);
         setData(json as ResponseDtoType);
         setError("");
+        setIsLoading(false);
       } catch (error) {
         if (error instanceof Error) setError(error.message);
-        setIsLoading(false);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     })();
     return () => controller.abort(); //강제중지
-  }, [method, requestData, uri]);
+  }, [uri, method, requestData]);
 
-  return {
-    data: data,
-    error: error,
-    isLoading: isLoading,
-  };
+  return { data, error, isLoading };
 }

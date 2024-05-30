@@ -28,14 +28,20 @@ export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
     const { signal } = controller;
     (async () => {
       try {
-        const res = await fetch(uri, { method, body, signal, headers });
+        console.log(uri, method, body);
+        const res = await fetch(uri, {
+          method,
+          body,
+          signal,
+          headers,
+        });
         if (!res.ok) throw new Error(`Error: ${res.status}`);
         const json = await res.json();
+        console.log(json);
         setData(json as ResponseDtoType);
         setError(undefined);
       } catch (error) {
         if (error instanceof Error) setError(error.message ?? "");
-        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
