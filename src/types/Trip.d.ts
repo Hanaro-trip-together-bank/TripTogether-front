@@ -7,7 +7,7 @@
 //   “trip_start_day”: “2024-07-12”
 //   }
 
-type Trip = {
+export type Trip = {
   countryIds: number[];
   tripName: string;
   tripContent: string | undefined;
@@ -15,3 +15,15 @@ type Trip = {
   tripDay: number;
   tripStartDay: string | undefined;
 };
+
+export type TripResDto = {
+  teamIdx:number,
+  teamName:number,
+  tripIdx:number,
+  tripName:string,
+  tripContent:string,
+  tripGoalAmount:number,
+  tripDay:number,
+  tripStartDay:string,
+  cities:CityResDto[]
+}
