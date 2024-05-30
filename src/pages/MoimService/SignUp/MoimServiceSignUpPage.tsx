@@ -105,7 +105,7 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
         <VStack className="w-full h-full items-center p-6 gap-6">
           {/* 모임 타입 선택 */}
           <span className="w-full text-2xl font-bold">어떤 모임인가요?</span>
-          <img className="h-40" src={`/images/moim/plain.png`} alt="plain" />
+          <img className="h-40" src={`/images/moim/plane.png`} alt="plane" />
           <span>여행</span>
           <HStack className="w-full overflow-x-scroll">
             <Option>모임</Option>
