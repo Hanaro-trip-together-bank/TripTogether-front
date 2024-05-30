@@ -13,6 +13,7 @@ import MoimDeusMainPage from "./Dues/MoimDuesMainPage";
 import Avatar from "../../components/common/Avatar";
 import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
+import MoimManagementPage from "./Management/MoimManagementPage";
 interface MoimDetailPageProps {}
 
 function MoimDetailPage({}: MoimDetailPageProps) {
@@ -46,6 +47,7 @@ function MoimDetailPage({}: MoimDetailPageProps) {
                 <span className="text-sm text-gray-500">|</span>
                 <span className="text-sm text-gray-500 underline">환전</span>
               </HStack>
+
               <span className="text-sm text-gray-500">123-123456-12345</span>
               <span className="text-xl font-bold">0원</span>
               <span className="text-xl font-bold text-indigo-500">99.99$</span>
@@ -155,13 +157,20 @@ function MoimDetailPage({}: MoimDetailPageProps) {
             <span className="font-semibold text-center">환율</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
-              <img
-                className="h-12 w-12 p-1"
-                src={`/images/moim/moim-menu-06.png`}
-                alt="main-tab-06"
-              />
-            </button>
+            <NavigationLink
+              to={{
+                backgroundColor: "bg-gray-50",
+                page: <MoimManagementPage />,
+              }}
+            >
+              <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+                <img
+                  className="h-12 w-12 p-1"
+                  src={`/images/moim/moim-menu-06.png`}
+                  alt="main-tab-06"
+                />
+              </button>
+            </NavigationLink>
             <span className="font-semibold text-center">설정</span>
           </VStack>
         </HStack>
