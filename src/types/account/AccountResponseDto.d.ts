@@ -1,9 +1,3 @@
-export type UpdateAccBalanceReq = {
-  accIdx: number;
-  amount: number;
-  memo: string;
-};
-
 export type AccountsResDto = {
   accIdx: number;
   accNumber: string;
