@@ -100,3 +100,6 @@ body {
   background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSI2IiBmaWxsPSJub25lIiBzdHJva2U9IiM0NDQiIHZpZXdCb3g9IjAgMCAxMCA2Ij4gPHBvbHlsaW5lIHBvaW50cz0iMSAxIDUgNSA5IDEiIC8+PC9zdmc+")
     no-repeat right 0.5rem center/1.5rem 0.5rem;
 }
+.border-b-0\.5 {
+  border-bottom-width: 0.5px;
+}
