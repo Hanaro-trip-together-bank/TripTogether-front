@@ -22,8 +22,8 @@ function MoimDetailPage({}: MoimDetailPageProps) {
 
   return (
     <>
-      <VStack className="min-h-full bg-gray-100">
-        <NavigationBar className="bg-white" title={"모임서비스"} />
+      <VStack className="min-h-full bg-gray-50">
+        <NavigationBar title={"모임서비스"} />
         {/* 공지사항 */}
         <div className="w-full py-4 px-6">
           <Button

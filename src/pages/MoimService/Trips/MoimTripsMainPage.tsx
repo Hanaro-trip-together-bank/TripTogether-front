@@ -62,7 +62,10 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
             </HStack>
             <NavigationLink
               className="w-full"
-              to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
+              to={{
+                backgroundColor: "bg-gray-50",
+                page: <MoimDetailPage />,
+              }}
             >
               <Button className="w-full">더보기</Button>
             </NavigationLink>
@@ -100,7 +103,7 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
             </HStack>
             <NavigationLink
               className="w-ful"
-              to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
+              to={{ backgroundColor: "bg-gray-50", page: <MoimDetailPage /> }}
             >
               <Button className="w-full">더보기</Button>
             </NavigationLink>

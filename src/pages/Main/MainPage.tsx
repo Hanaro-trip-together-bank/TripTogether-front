@@ -106,7 +106,8 @@ function MainPage() {
                 <div className="border-b w-full border-gray-200" />
                 <NavigationLink
                   to={{
-                    page: <MoimServiceMainPage memberIdx={member.memberIdx} />,
+                    backgroundColor: "bg-gray-50",
+                    page: <MoimServiceMainPage />,
                   }}
                 >
                   <div className="m-2 text-primary font-bold">
