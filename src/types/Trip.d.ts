@@ -17,13 +17,13 @@ export type Trip = {
 };
 
 export type TripResDto = {
-  teamIdx:number,
-  teamName:number,
-  tripIdx:number,
-  tripName:string,
-  tripContent:string,
-  tripGoalAmount:number,
-  tripDay:number,
-  tripStartDay:string,
-  cities:CityResDto[]
-}
+  teamIdx: number;
+  teamName: string;
+  tripIdx: number;
+  tripName: string;
+  tripContent: string;
+  tripGoalAmount: number;
+  tripDay: number;
+  tripStartDay: string;
+  cities: CityResDto[];
+};
