@@ -1,34 +1,34 @@
 export type TripPlaceAddReqDTO = {
-  trip_idx: number;
-  trip_date: number;
-  place_idx: number;
-  place_amount: number;
-  place_memo: string;
-  member_id: string;
+  tripIdx: number;
+  tripDate: number;
+  placeIdx: number;
+  placeAmount: number;
+  placeMemo: string;
+  memberIdx: number;
 };
 
 export type TripPlaceOrderInfoReqDTO = {
-  trip_place_idx: number;
+  tripPlaceIdx: number;
 };
 
 export type TripPlaceUpdateReqDTO = {
-  trip_idx: number;
-  place_amount: number;
-  place_memo: string;
-  member_id: string;
+  tripIdx: number;
+  placeAmount: number;
+  placeMemo: string;
+  memberIdx: number;
 };
 
 export type TripPlaceUpdateOrderReqDTO = {
-  member_id: string;
-  trip_Date: number;
+  memberIdx: number;
+  tripDate: number;
   orders: TripPlaceOrderInfo[];
 };
 
 export type TripPlaceResDTO = {
-  trip_place_idx: number;
-  trip_date: number;
-  place_order: number;
-  place_idx: number;
-  place_amount: number;
-  place_memo: string;
+  tripPlaceIdx: number;
+  tripDate: number;
+  placeOrder: number;
+  placeIdx: number;
+  placeAmount: number;
+  placeMemo: string;
 };

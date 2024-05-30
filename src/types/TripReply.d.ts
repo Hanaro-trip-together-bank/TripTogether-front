@@ -1,24 +1,24 @@
 export type TripReplyReqDto = {
-  team_member_idx:number,
-  trip_reply_content:string
+  teamMemberIdx: number;
+  tripReplyContent: number;
 };
 
 export type TripReplyDeleteReqDto = {
-  team_member_idx:number,
-  trip_reply_idx:number
+  teamMemberIdx: number;
+  tripReplyIdx: number;
 };
 
 export type TripReplyUpdateReqDto = {
-  team_member_idx:number,
-  trip_reply_idx:number,
-  trip_reply_content:string
+  teamMemberIdx: number;
+  tripReplyIdx: number;
+  tripReplyContent: string;
 };
 
 export type TripReplyResDto = {
-  trip_reply_idx:number,
-  team_member_idx:number,
-  team_member_nickname:string,
-  trip_reply_content:string,
-  created_at:string,
-  last_modified_at:string
+  tripReplyIdx: number;
+  teamMemberIdx: number;
+  teamMemberNickname: string;
+  tripReplyContent: string;
+  createdAt: string;
+  lastModifiedAt: string;
 };
