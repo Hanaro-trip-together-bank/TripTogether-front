@@ -7,8 +7,8 @@ import { useState } from "react";
 import Toggle from "./Toggle";
 import Keypad from "./Modals/Keypad";
 import TripView from "./TripView";
-import SelectCityPage from "../../pages/SelectCityPage";
-import { CountryCartProvider } from "../../contexts/Country-Cart-Context";
+import SelectCityPage from "../../pages/SelectCountryPage";
+import { CountryCartProvider } from "../../contexts/City-Cart-Context";
 
 // TODO: mustDelete
 const mockTripData = [

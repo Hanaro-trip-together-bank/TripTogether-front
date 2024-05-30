@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import { HStack, VStack } from "../components/common/Stack";
-import { Swiper, SwiperSlide } from "swiper/react";
 import Option from "../components/common/Option";
 
-import "swiper/css";
-import "swiper/css/scrollbar";
-import "swiper/css/pagination";
-import "swiper/css";
-
-import { Scrollbar } from "swiper/modules";
-import { Pagination } from "swiper/modules";
 import TripView from "../components/common/TripView";
-import { useCountryCartManager } from "../contexts/Country-Cart-Context";
 import Button from "../components/common/Button";
 import NavigationBar from "../components/common/TopBars/NavigationBar";
+import { useNavigation } from "../contexts/useNavigation";
+import NavigationLink from "../components/common/Navigation/NavigationLink";
+import SelectCitiesPage from "./SelectCitiesPage";
+import { CityCartProvider } from "../contexts/City-Cart-Context";
 
 const europe = [
   {
@@ -91,22 +86,16 @@ type CountryPreview = {
   image: string;
 };
 
-export default function SelectCityPage() {
+export default function SelectCountryPage() {
+  const { back } = useNavigation();
   const [selected, setSelected] = useState("유럽");
-  const [cities, setCities] = useState(europe);
-
-  const { cart } = useCountryCartManager();
-  // useEffect(() => {});
-
-  console.log(cart);
+  const [countries, setCountries] = useState(europe);
 
   return (
-    <VStack className="border border-red-500 w-full h-full">
-      <NavigationBar title={"나라 선택"} />
-      {/* <div className="text-xl !text-center m-3">
-        {"여행, 어디로 떠나시나요? 🛫"}
-      </div> */}
-      <HStack className="my-3 h-12 !pb-2 snap-x overflow-x-scroll border border-blue-500">
+    <VStack className="w-full h-full">
+      <NavigationBar title={"어디로 떠나시나요? 🛫"} />
+
+      <HStack className="my-3 mx-2 h-12 !pb-2 snap-x overflow-x-scroll">
         {mockContinents.map((con) => (
           <Option
             className="text-nowrap snap-start !min-h-7"
@@ -119,49 +108,45 @@ export default function SelectCityPage() {
         ))}
       </HStack>
 
-      <VStack className="border border-orange-500 overflow-y-scroll !h-5/7">
-        {cities.map((c) => (
-          <TripView
+      <VStack className="border border-gray-400 overflow-y-scroll">
+        {countries.map((c) => (
+          <NavigationLink
             key={c.countryGeoId}
-            id={c.countryGeoId}
-            name={c.nameKo}
-            category=""
-            image={c.image}
-            roundedFull={true}
-          />
+            to={{
+              page: (
+                <CityCartProvider>
+                  <SelectCitiesPage />
+                </CityCartProvider>
+              ),
+            }}
+          >
+            <TripView
+              id={c.countryGeoId}
+              nameKo={c.nameKo}
+              nameEn={c.nameEn}
+              subtitle={c.nameEn}
+              image={c.image}
+              roundedFull={true}
+              hasArrowButton={true}
+            />
+          </NavigationLink>
         ))}
       </VStack>
 
-      {/* TODO 이름 긴 나라를 어떻게 할 것인가? */}
-      <div className="h-2/5">
-        <HStack className="!p-3 !gap-2 flex-wrap border border-purple-500 h-40 text-center justify-center items-center">
-          {cart.length == 0 ? (
-            <span className="flex justify-center items-center text-xl">
-              도시를 선택해주세요 🛣️
-            </span>
-          ) : (
-            cart.map((c) => (
-              <div key={c.countryGeoId}>
-                <img
-                  className="rounded-xl "
-                  src={c.image}
-                  alt={c.countryGeoId.toString()}
-                />
-                <span className="w-full overflow-hidden text-sm text-gray-400 text-nowrap text-ellipsis">
-                  {c.nameKo}
-                </span>
-              </div>
-            ))
-          )}
-        </HStack>
-
+      <div className="mx-6 my-3">
+        <Button gray className="w-full" onClick={back}>
+          이전
+        </Button>
+      </div>
+      {/* TODO 이름 긴 나라를 어떻게 할 것인가?
+      <div>
         <HStack className="gap-5 justify-center m-3">
-          <Button roundedFull gray>
-            취소
+          <Button roundedFull gray onClick={back}>
+            뒤로
           </Button>
           <Button roundedFull>완료</Button>
         </HStack>
-      </div>
+      </div> */}
     </VStack>
   );
 }

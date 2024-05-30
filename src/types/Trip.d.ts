@@ -10,8 +10,8 @@
 type Trip = {
   countryIds: number[];
   tripName: string;
-  tripContent: string;
+  tripContent: string | undefined;
   tripGoalAmount: number;
   tripDay: number;
-  tripStartDay: Date | null;
+  tripStartDay: string | undefined;
 };

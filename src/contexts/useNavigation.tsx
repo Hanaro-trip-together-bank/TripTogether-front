@@ -1,18 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
+import { PropsWithChildren, createContext, useCallback } from "react";
 import { useContext, useReducer } from "react";
 import Route from "../types/Route";
 import MainPage from "../pages/Main/MainPage";
 import MoimDepositPage from "../pages/MoimService/Dues/MoimDepositPage";
-import SelectCityPage from "../pages/SelectCityPage";
-import { CountryCartProvider } from "./Country-Cart-Context";
+import SelectCityPage from "../pages/SelectCountryPage";
+import { CityCartProvider, CountryCartProvider } from "./City-Cart-Context";
 import CreateTripPage from "../pages/CreateTripPage";
+import { TripProvider } from "./Trip-Context";
+import SelectCitiesPage from "../pages/SelectCitiesPage";
 
 type NavigationContextProp = {
   path: Route[];
@@ -62,15 +59,6 @@ export const NavigationProvider = ({ children }: PropsWithChildren) => {
   const [prevRoute, setPrevPage] = useState<Route | null>(null);
   const [path, dispatch] = useReducer(reducer, [
     //여기에 페이지 넣으면 초깃값 이걸로 적용됨
-    {
-      page: (
-        <CountryCartProvider>
-          <SelectCityPage />
-        </CountryCartProvider>
-        // <CreateTripPage />
-      ),
-      backgroundColor: "bg-gray-50",
-    },
   ]);
   // 홈 버튼 누르면 네비게이션 스택 비워진 후 아래로 채워짐 => 메인페이지로 이동됨
   useEffect(() => {

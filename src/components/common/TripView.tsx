@@ -1,30 +1,33 @@
 import { useState } from "react";
 import Button from "./Button";
-import { HStack } from "./Stack";
+import { HStack, VStack } from "./Stack";
 import cn from "../../utils/cn";
-import { useCountryCartManager } from "../../contexts/Country-Cart-Context";
+import { useCityCartManager } from "../../contexts/City-Cart-Context";
+import Arrow from "./Arrow";
 
 interface TripViewProps {
   id: number;
-  name: string;
-  category: string;
+  nameKo: string;
+  nameEn: string;
+  subtitle: string;
   image: string;
   roundedFull?: boolean;
+  hasArrowButton?: boolean;
 }
 
 function TripView({
   id,
-  name,
-  category,
+  nameKo,
+  nameEn,
+  subtitle,
   image,
   roundedFull = false,
+  hasArrowButton = false,
 }: TripViewProps) {
   const [selected, setSelect] = useState(false);
-  const { addCountry, removeCountry } = useCountryCartManager();
+  const { addCity, removeCity } = useCityCartManager();
   const onClickSelect = () => {
-    selected
-      ? removeCountry(id)
-      : addCountry({ countryGeoId: id, image, nameKo: name });
+    selected ? removeCity(id) : addCity({ cityIdx: id, image, nameKo, nameEn });
     setSelect(!selected);
   };
 
@@ -37,14 +40,16 @@ function TripView({
   );
 
   return (
-    <HStack className="p-2 border-b-0.5 items-center w-full font-bold">
-      <img className={processedImageClassName} src={image} alt={name} />
-      <div className="mx-3 mt-1 my-auto">
-        <p className="">{name}</p>
-        <p className="text-sm text-gray-400 mt-2">{category}</p>
-      </div>
+    <HStack className="p-2 border-b-0.5 items-center w-full font-bold hover:bg-gray-200">
+      <img className={processedImageClassName} src={image} alt={nameKo} />
+      <VStack className="mx-3 mt-1 items-start">
+        <p className="">{nameKo}</p>
+        <p className="text-sm text-gray-400 mt-0">{subtitle}</p>
+      </VStack>
       <div className="ml-auto">
-        {!selected ? (
+        {hasArrowButton ? (
+          <Arrow direction="right" />
+        ) : !selected ? (
           <Button
             // gray={false}
             roundedFull={true}

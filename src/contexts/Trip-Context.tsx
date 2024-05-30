@@ -1,11 +1,16 @@
-import { PropsWithChildren, createContext, useReducer } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useReducer,
+} from "react";
 
 type TripBasicInfo = {
   tripName: string;
-  tripContent: string;
+  tripContent: string | undefined;
   tripGoalAmount: number;
   tripDay: number;
-  tripStartDay: Date | null;
+  tripStartDay: string | undefined;
 };
 
 type TripContextProps = {
@@ -33,7 +38,6 @@ const reducer = (trip: Trip | null, action: ReducerAction) => {
     default:
       return trip;
   }
-  return trip;
 };
 
 export const TripProvider = ({ children }: PropsWithChildren) => {
@@ -59,3 +63,6 @@ export const TripProvider = ({ children }: PropsWithChildren) => {
     </TripContext.Provider>
   );
 };
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useTrip = () => useContext(TripContext);
