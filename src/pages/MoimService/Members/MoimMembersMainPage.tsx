@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Arrow from "../../../components/common/Arrow";
 import Avatar from "../../../components/common/Avatar";
 import Button from "../../../components/common/Button";
@@ -5,7 +6,18 @@ import Modal from "../../../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import { useNavigation } from "../../../contexts/useNavigation";
+import { useFetch } from "../../../hooks/useFetch";
 import useToggle from "../../../hooks/useToggle";
+import {
+  AcceptTeamMembersReqDto,
+  TeamMembersReqDto,
+} from "../../../types/teamMember/TeamMemberRequestDto";
+import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
+import {
+  AcceptTeamMembersPutURL,
+  TeamMembersPostURL,
+} from "../../../utils/urlFactory";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimMembersMainPageProps {}
 
@@ -13,24 +25,49 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const { home } = useNavigation();
   const [showMoimExitModal, toggleShowMoimExitModal] = useToggle();
   const [showMoimExitedModal, toggleShowMoimExitedModal] = useToggle();
+
+  // Todo: teamIdx 가져오기
+  const requestData: TeamMembersReqDto = { teamIdx: 1 };
+
+  // 모임원 전체 정보 가져오기
+  const { data, isLoading } = useFetch<TeamMembersReqDto, TeamMembersResDto[]>(
+    TeamMembersPostURL(),
+    "POST",
+    requestData
+  );
+
+  useEffect(() => {
+    if (!data) return;
+  }, [data]);
+
   return (
     <>
       <VStack className="min-h-full bg-gray-50 pb-8">
         <NavigationBar title={"모임원 관리"} />
         <HStack className="justify-between items-center mx-6 py-4 border-b border-gray-200">
-          <span>2명 참여 중</span>
+          <span>{data?.length}명 참여 중</span>
           <Button className="!bg-gray-200 !text-black">초대하기</Button>
         </HStack>
         <VStack className="min-w-full overflow-y-scroll px-6 gap-8">
           {/* 총무 */}
           <VStack className="w-full gap-4">
             <span className="text-sm"> 총무 </span>
-            <HStack className="items-center gap-4">
-              <Avatar crown />
-              <span> 문혜영</span>
-              <Spacer />
-              <span className="text-sm text-gray-500 underline">총무변경</span>
-            </HStack>
+            {data?.map(
+              (member) =>
+                member.teamMemberState === "총무" && (
+                  <HStack
+                    key={member.teamMemberIdx}
+                    className="items-center gap-4"
+                  >
+                    <Avatar crown />
+                    <span>{member.memberName}</span>
+                    <Spacer />
+                    <span className="text-sm text-gray-500 underline">
+                      총무변경
+                    </span>
+                  </HStack>
+                )
+            )}
           </VStack>
           {/* 대기 중 */}
           <VStack className="w-full gap-4">
@@ -40,17 +77,29 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
                 전체 수락하기
               </span>
             </HStack>
-            <HStack className="items-center gap-4">
-              <Avatar
-                backgroundColor="bg-cyan-200"
-                skinColor="white"
-                eye="smile"
-              />
-              <span> 이신광</span>
-              <Spacer />
-              <span className="text-sm text-gray-500 underline">거절</span>
-              <span className="text-sm text-gray-500 underline">수락</span>
-            </HStack>
+            {data?.map(
+              (member) =>
+                member.teamMemberState === "수락대기" && (
+                  <HStack
+                    key={member.teamMemberIdx}
+                    className="items-center gap-4"
+                  >
+                    <Avatar
+                      backgroundColor="bg-cyan-200"
+                      skinColor="white"
+                      eye="smile"
+                    />
+                    <span>{member.memberName}</span>
+                    <Spacer />
+                    <span className="text-sm text-gray-500 underline">
+                      거절
+                    </span>
+                    <span className="text-sm text-gray-500 underline">
+                      수락
+                    </span>
+                  </HStack>
+                )
+            )}
           </VStack>
           {/* 모임원 */}
           <VStack className="w-full gap-4">
@@ -60,17 +109,27 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
                 전체 내보내기
               </span>
             </HStack>
-            <HStack className="items-center gap-4">
-              <Avatar
-                crown
-                backgroundColor="bg-purple-400"
-                mouth="upset"
-                eye="upset"
-              />
-              <span> 문혜영</span>
-              <Spacer />
-              <span className="text-sm text-gray-500 underline">내보내기</span>
-            </HStack>
+            {data?.map(
+              (member) =>
+                member.teamMemberState === "모임원" && (
+                  <HStack
+                    key={member.teamMemberIdx}
+                    className="items-center gap-4"
+                  >
+                    <Avatar
+                      crown
+                      backgroundColor="bg-purple-400"
+                      mouth="upset"
+                      eye="upset"
+                    />
+                    <span>{member.memberName}</span>
+                    <Spacer />
+                    <span className="text-sm text-gray-500 underline">
+                      내보내기
+                    </span>
+                  </HStack>
+                )
+            )}
           </VStack>
         </VStack>
         <Spacer />
