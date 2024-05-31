@@ -29,3 +29,8 @@ export type UpdateTeamNoticeReq = {
 export type MyTeamListReqDto = {
   memberIdx: number;
 };
+
+export type DetailTeamReqDto = {
+  teamIdx: number;
+  teamMemberIdx: number;
+};
