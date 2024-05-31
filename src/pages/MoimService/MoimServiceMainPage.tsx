@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modals/Modal";
-import { HStack, VStack } from "../../components/common/Stack";
+import { HStack, Spacer, VStack } from "../../components/common/Stack";
 import NavigationBar from "../../components/common/TopBars/NavigationBar";
 import NavigationLink from "../../components/common/Navigation/NavigationLink";
 import MoimServiceSignUpPage from "./SignUp/MoimServiceSignUpPage";
@@ -66,13 +66,19 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
                 to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
               >
                 <VStack className="rounded-2xl h-32 w-full bg-white shadowed px-6 py-4 mb-4">
-                  <HStack className="w-full justify-between mb-4">
+                  <HStack className="w-full justify-between mb-4 gap-4">
                     <VStack className="items-start">
                       <span className="font-bold">{moim.teamName}</span>
                       <span className="text-gray-500">
                         {formatString(moim.accNumber)}
                       </span>
                     </VStack>
+                    <Spacer />
+                    {moim.teamMemberState === "총무" && (
+                      <span className="rounded-full  w-fit h-fit py-0.5 px-2 text-red-400 text-sm leading-none border border-red-400">
+                        총무
+                      </span>
+                    )}
                     <VStack className="text-xs gap-0 text-gray-500 scale-50">
                       <span>●</span>
                       <span>●</span>
