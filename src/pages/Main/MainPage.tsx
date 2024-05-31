@@ -104,16 +104,29 @@ function MainPage() {
                   alt="moim"
                 />
                 <div className="border-b w-full border-gray-200" />
-                <NavigationLink
-                  to={{
-                    backgroundColor: "bg-gray-50",
-                    page: <MoimServiceMainPage memberIdx={member.memberIdx} />,
-                  }}
-                >
-                  <div className="m-2 text-primary font-bold">
-                    모임 조회하기
-                  </div>
-                </NavigationLink>
+                {member.memberName ? (
+                  <NavigationLink
+                    to={{
+                      backgroundColor: "bg-gray-50",
+                      page: (
+                        <MoimServiceMainPage memberIdx={member.memberIdx} />
+                      ),
+                    }}
+                  >
+                    <div className="m-2 text-primary font-bold">
+                      모임 조회하기
+                    </div>
+                  </NavigationLink>
+                ) : (
+                  <NavigationLink
+                    to={{
+                      backgroundColor: "bg-secondary",
+                      page: <LoginPage />,
+                    }}
+                  >
+                    <div className="m-2 text-primary font-bold">로그인</div>
+                  </NavigationLink>
+                )}
               </VStack>
             </div>
           </SwiperSlide>
