@@ -5,32 +5,32 @@ import { VStack, HStack } from "../../components/common/Stack";
 import NavigationLink from "../../components/common/Navigation/NavigationLink";
 import { Scrollbar } from "swiper/modules";
 import { currentTime2 } from "../../utils/currentTime";
-import { useState } from "react";
 import Arrow from "../../components/common/Arrow";
 import LoginPage from "./LoginPage";
 import MoimServiceMainPage from "../MoimService/MoimServiceMainPage";
+import { useAuth } from "../../contexts/useAuth";
 function MainPage() {
-  const [login, setLogin] = useState<boolean>(false);
+  const { member } = useAuth();
   return (
     <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] min-h-full pt-4">
       {/* 상단 바로가기메뉴 (이름, 원큐지갑, QR, 알림) */}
       <VStack className="px-6">
         <HStack className="w-full">
           <div className="text-2xl font-bold underline-offset-4 mr-1">
-            {login ? (
-              <span className="underline">최지웅</span>
+            {member.memberName ? (
+              <span className="underline">{member.memberName}</span>
             ) : (
               <NavigationLink
                 to={{
                   backgroundColor: "bg-secondary",
-                  page: <LoginPage onLoginDone={() => setLogin(true)} />,
+                  page: <LoginPage />,
                 }}
               >
                 <span className="underline"> 로그인</span>
               </NavigationLink>
             )}
           </div>
-          {login && (
+          {member.memberName && (
             <div className="border border-black rounded-full px-2 font-bold text-center py-0.5">
               전체계좌
             </div>
@@ -38,7 +38,7 @@ function MainPage() {
         </HStack>
         <HStack className="items-center !gap-0">
           <span className="text-gray-600">
-            {login
+            {member.memberName
               ? "청년내일저축계좌 간편자격조회"
               : "첫 급여손님께 달달한 혜택을🍯"}
           </span>
@@ -56,7 +56,7 @@ function MainPage() {
         >
           <SwiperSlide className="!h-fit">
             <div className="bg-white shadowed rounded-lg m-4 mb-8">
-              {login ? (
+              {member.memberName ? (
                 <VStack className="w-full items-center p-4">
                   <span className="text-sm">하나은행 ATM 수수료 0원</span>
                   <span className="text-xl font-bold">모바일 전용통장</span>
@@ -84,7 +84,7 @@ function MainPage() {
                   <NavigationLink
                     to={{
                       backgroundColor: "bg-secondary",
-                      page: <LoginPage onLoginDone={() => setLogin(true)} />,
+                      page: <LoginPage />,
                     }}
                   >
                     <div className="m-2 text-primary font-bold">로그인</div>
@@ -185,15 +185,17 @@ function MainPage() {
         <VStack className="rounded-2xl w-full bg-indigo-500 px-6 py-4">
           <HStack className="text-gray-200 justify-between">
             <span>하나은행 자산</span>
-            {login && <span className="text-sm">{currentTime2()}</span>}
+            {member.memberName && (
+              <span className="text-sm">{currentTime2()}</span>
+            )}
           </HStack>
           <HStack className="gap-0 items-end mb-2">
             <span className="text-3xl text-white font-bold">
-              {login ? +0 : "???"}
+              {member.memberName ? +0 : "???"}
             </span>
             <span className="text-lg text-white font-bold"> 원 </span>
           </HStack>
-          {!login && (
+          {!member.memberName && (
             <span className="text-white mb-2">로그인하고 확인해 보세요 👀</span>
           )}
           <HStack className="font-bold text-white justify-evenly items-center border-t pt-4 border-indigo-200">
