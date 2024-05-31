@@ -104,7 +104,11 @@ function MainPage() {
                   alt="moim"
                 />
                 <div className="border-b w-full border-gray-200" />
-                <NavigationLink to={{ page: <MoimServiceMainPage /> }}>
+                <NavigationLink
+                  to={{
+                    page: <MoimServiceMainPage memberIdx={member.memberIdx} />,
+                  }}
+                >
                   <div className="m-2 text-primary font-bold">
                     모임 조회하기
                   </div>

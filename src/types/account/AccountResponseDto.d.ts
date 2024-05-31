@@ -10,4 +10,5 @@ export type TeamServiceListResDto = {
   accBalance: number;
   teamName: string;
   teamIdx: number;
+  teamMemberIdx: number;
 };
