@@ -12,3 +12,7 @@ export const TripsPostURL = () => `${BASE_URL}/trips`;
 
 // GET - 여행 상세 정보 읽기: () -> TripResDto
 export const TripsGetURL = (tripIdx: number) => `${BASE_URL}/trips/${tripIdx}`;
+
+//------------------- 내 모임 --------------------------
+// POST - 내 모임 서비스 조회
+export const MyMoimGetURL = () => `${BASE_URL}/account`;
