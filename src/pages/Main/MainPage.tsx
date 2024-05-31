@@ -107,7 +107,7 @@ function MainPage() {
                 <NavigationLink
                   to={{
                     backgroundColor: "bg-gray-50",
-                    page: <MoimServiceMainPage />,
+                    page: <MoimServiceMainPage memberIdx={member.memberIdx} />,
                   }}
                 >
                   <div className="m-2 text-primary font-bold">
