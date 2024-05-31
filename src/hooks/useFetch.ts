@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 

@@ -14,7 +14,8 @@ function Button({
   children,
   ...props
 }: PropsWithChildren<ButtonProps>) {
-  const baseClassName = "text-white transition-all p-2 px-8 w-fit h-fit";
+  const baseClassName =
+    "text-white text-nowrap transition-all p-2 px-8 w-fit h-fit";
   // 배경색
   const bgClassName = disabled || gray ? "bg-primary-disabled" : "bg-primary";
   // 마우스커서
