@@ -25,6 +25,11 @@ module.exports = {
     "react-hooks/exhaustive-deps": "warn",
     "react/prop-types": "off",
     "react/no-array-index-key": "error",
-    "prettier/prettier": "error",
+    "prettier/prettier": [
+      "error",
+      {
+        endOfLine: "auto",
+      },
+    ],
   },
 };
