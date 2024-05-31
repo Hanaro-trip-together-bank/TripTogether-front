@@ -4,10 +4,10 @@ import Modal from "../../../components/common/Modals/Modal";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import { VStack, HStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
-import MoimDetailPage from "../MoimDetailPage";
 import MoimServiceSignUpPage from "../SignUp/MoimServiceSignUpPage";
 import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
+import MoimTripDetailPage from "./MoimTripDetailPage";
 
 interface MoimTripsMainPageProps {}
 
@@ -62,7 +62,9 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
             </HStack>
             <NavigationLink
               className="w-full"
-              to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
+              to={{
+                page: <MoimTripDetailPage />,
+              }}
             >
               <Button className="w-full">더보기</Button>
             </NavigationLink>
@@ -100,7 +102,7 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
             </HStack>
             <NavigationLink
               className="w-ful"
-              to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
+              to={{ page: <MoimTripDetailPage /> }}
             >
               <Button className="w-full">더보기</Button>
             </NavigationLink>

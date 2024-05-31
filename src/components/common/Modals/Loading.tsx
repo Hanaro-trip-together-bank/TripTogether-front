@@ -11,7 +11,7 @@ function Loading({ show, label = "" }: LoadingProps) {
     <VStack
       className={cn(
         "absolute top-0 left-0 w-iPhone h-iPhone z-30 rounded-3xl transition-opacity justify-center items-center  backdrop-blur-sm bg-black/50",
-        show ? "pointer-events-auto" : "pointer-events-none opacity-0 delay-150"
+        show ? "pointer-events-auto" : "pointer-events-none opacity-0 delay-300"
       )}
     >
       <HStack>

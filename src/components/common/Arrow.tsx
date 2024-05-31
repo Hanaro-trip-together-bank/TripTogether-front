@@ -2,9 +2,11 @@ import cn from "../../utils/cn";
 
 interface ArrowProps {
   direction: "up" | "down" | "left" | "right";
+  className?: string;
+  strokeWidth?: number;
 }
 
-function Arrow({ direction }: ArrowProps) {
+function Arrow({ direction, className = "", strokeWidth = 8 }: ArrowProps) {
   const rotation = (() => {
     switch (direction) {
       case "up":
@@ -18,7 +20,9 @@ function Arrow({ direction }: ArrowProps) {
     }
   })();
   return (
-    <div className={cn("text-gray-500 transition-all z-0", rotation)}>
+    <div
+      className={cn("text-gray-500 transition-all z-0", rotation, className)}
+    >
       <svg
         width="16px"
         height="16px"
@@ -29,7 +33,7 @@ function Arrow({ direction }: ArrowProps) {
           d="M10 60 L50 20 L90 60"
           fill="none"
           stroke="currentColor"
-          strokeWidth="8"
+          strokeWidth={strokeWidth}
         />
       </svg>
     </div>

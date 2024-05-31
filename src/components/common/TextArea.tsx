@@ -10,7 +10,13 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (props, ref) => {
-    const { label, border = false, largeRounded = false, ...rest } = props;
+    const {
+      className = "",
+      label,
+      border = false,
+      largeRounded = false,
+      ...rest
+    } = props;
     const baseClassName = "resize-none border-gray-300 p-2 transition-all";
     const borderClassName = border ? "border" : "";
     const roundedClassName = largeRounded ? "rounded-3xl" : "rounded-md";
@@ -21,7 +27,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     );
 
     return (
-      <VStack>
+      <VStack className={className}>
         {label && (
           <label className="font-bold" htmlFor={label}>
             {label}
