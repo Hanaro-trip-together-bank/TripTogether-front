@@ -44,7 +44,7 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
       }
     })();
     return () => controller.abort(); //강제중지
-  }, [uri, method, requestData]);
+  }, []);
 
   return { data, error, isLoading };
 }
