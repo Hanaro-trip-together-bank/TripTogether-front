@@ -86,7 +86,9 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
                     </VStack>
                   </HStack>
                   <HStack className="justify-end items-end">
-                    <span className="font-bold text-lg">{moim.accBalance}</span>
+                    <span className="font-bold text-lg">
+                      {moim.accBalance.toLocaleString()}
+                    </span>
                     <span>원</span>
                   </HStack>
                 </VStack>
