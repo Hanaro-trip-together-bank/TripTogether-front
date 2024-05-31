@@ -20,6 +20,18 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
+
+  // 현재 날짜를 기준으로 초기값 설정
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  // 상태 설정
+  const [year, setYear] = useState(currentYear);
+  const [month, setMonth] = useState(currentMonth);
+
+  const years = Array.from(new Array(20), (_, index) => currentYear - 10 + index);
+  const months = Array.from(new Array(12), (_, index) => index + 1);
+
   return (
     <>
       <VStack className="min-h-full h-full bg-white pb-8">
@@ -36,8 +48,20 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
           <>
             <VStack className="p-4">
               <HStack className="items-center text-sm">
-                <span>2024년 05월</span>
-                <Arrow direction="down" />
+                <select value={year} onChange={(e) => setYear(parseInt(e.target.value, 10))}>
+                  {years.map((y) => (
+                    <option key={y} value={y}>
+                      {y}년
+                    </option>
+                  ))}
+                </select>
+                <select value={month} onChange={(e) => setMonth(parseInt(e.target.value, 10))}>
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}월
+                    </option>
+                  ))}
+                </select>
               </HStack>
               <HStack className="items-end !gap-0 font-bold">
                 <span className="text-xl">21,000</span>
