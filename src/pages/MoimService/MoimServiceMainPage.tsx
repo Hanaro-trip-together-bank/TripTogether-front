@@ -53,7 +53,7 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
               <NavigationLink
                 key={moim.teamIdx}
                 to={{
-                  backgroundColor: "bg-white",
+                  backgroundColor: "bg-gray-50",
                   page: (
                     <MoimDetailPage
                       teamIdx={moim.teamIdx}
