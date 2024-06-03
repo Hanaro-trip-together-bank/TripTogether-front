@@ -9,14 +9,16 @@ import NavigationBar from "../../components/common/TopBars/NavigationBar";
 import Arrow from "../../components/common/Arrow";
 import NavigationLink from "../../components/common/Navigation/NavigationLink";
 import MoimDepositPage from "./Dues/MoimDepositPage";
-import MoimDeusMainPage from "./Dues/MoimDuesMainPage";
 import Avatar from "../../components/common/Avatar";
 import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
-import MoimManagementPage from "./Management/MoimManagementPage";
-interface MoimDetailPageProps {}
+import MoimDuesMainPage from "./Dues/MoimDuesMainPage";
+interface MoimDetailPageProps {
+  teamIdx: number;
+  accIdx:  number;
+}
 
-function MoimDetailPage({}: MoimDetailPageProps) {
+function MoimDetailPage({ accIdx, teamIdx }: MoimDetailPageProps) {
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
 
@@ -93,7 +95,7 @@ function MoimDetailPage({}: MoimDetailPageProps) {
         <HStack className="justify-evenly my-4">
           <VStack>
             <NavigationLink
-              to={{ page: <MoimDeusMainPage /> }}
+              to={{ page: <MoimDuesMainPage accIdx={accIdx} teamIdx={teamIdx} /> }}
               className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16"
             >
               <img
