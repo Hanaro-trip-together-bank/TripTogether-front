@@ -56,6 +56,10 @@ export const PlacesGetByCategoriesAndCitiesURL = (
 //GET - 장소(명소) 카테고리 목록 읽기
 export const CategoriesGetURL = () => `${BASE_URL}/categories`;
 
+// GET - 모임 여행 목록 읽기: () -> TripResDto[]
+export const TeamTripsGetURL = (teamIdx: number) =>
+  `${BASE_URL}/trips/teams/${teamIdx}`;
+
 //--------------- 회비 ---------------//
 
 export const DuesGetRuleURL = (teamIdx: number) =>
