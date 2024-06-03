@@ -191,14 +191,11 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
           <NavigationLink
             to={{
               page: (
+                //TODO: request data mapping
                 <MoimDuesRequestPage
-                  requestees={[
-                    "최지웅",
-                    "최지웅",
-                    "최지웅",
-                    "최지웅",
-                    "최지웅",
-                  ]}
+                  teamIdx={1}
+                  teamName="팀이름"
+                  requestees={[{ memberIdx: 5, memberName: "최지웅" }]}
                 />
               ),
             }}
