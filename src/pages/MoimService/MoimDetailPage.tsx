@@ -13,6 +13,7 @@ import Avatar from "../../components/common/Avatar";
 import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
 import MoimDuesMainPage from "./Dues/MoimDuesMainPage";
+import MoimManagementPage from "./Management/MoimManagementPage.tsx";
 interface MoimDetailPageProps {
   teamIdx: number;
   accIdx:  number;

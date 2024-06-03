@@ -33,6 +33,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
   const [dueMembers, setDueMembers] = useState<DueMember[]>([]);
+  const [total, setTotal] = useState<number>(0);
 
   // 현재 날짜를 기준으로 초기값 설정
   const currentYear = new Date().getFullYear();
@@ -44,7 +45,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
 
   const years = Array.from(
     new Array(20),
-    (_, index) => currentYear - 10 + index,
+    (_, index) => currentYear - 10 + index
   );
   const months = Array.from(new Array(12), (_, index) => index + 1);
 
@@ -68,6 +69,12 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
     if (paidOrNot == 0) duesGetTrueStatusFetcher.trigger(null);
     else duesGetFalseStatusFetcher.trigger(null);
   }, [paidOrNot, year, month]);
+
+  useEffect(() => {
+    setTotal(0);
+    if (duesGetTrueStatusFetcher.data?.data?.duesTotalAmount)
+      setTotal(duesGetTrueStatusFetcher.data.data.duesTotalAmount);
+  }, [year, month, duesGetTrueStatusFetcher.data]);
 
   useEffect(() => {
     if (duesGetTrueStatusFetcher.data?.data.memberResponseDtos)
@@ -117,7 +124,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                 </select>
               </HStack>
               <HStack className="items-end !gap-0 font-bold">
-                <span className="text-xl">21,000</span>
+                <span className="text-xl">{total}</span>
                 <span>원</span>
               </HStack>
             </VStack>
@@ -172,7 +179,9 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                           className="w-full"
                           key={member.memberIdx}
                           to={{
-                            page: <MoimDeusDetailPage name={member.memberName} />,
+                            page: (
+                              <MoimDeusDetailPage name={member.memberName} />
+                            ),
                           }}
                         >
                           <MemberRow
@@ -183,9 +192,10 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                       ))}
                       <HStack className="absolute bottom-0 left-0 right-0 text-sm text-gray-500 items-start">
                         <span>※</span>
-                        <span>회비내역의 입금인은 총무가 편집할 수 있으므로, 실제 계좌
-                        거래내역의 입금인과 다를 수 있습니다.
-                      </span>
+                        <span>
+                          회비내역의 입금인은 총무가 편집할 수 있으므로, 실제
+                          계좌 거래내역의 입금인과 다를 수 있습니다.
+                        </span>
                       </HStack>
                     </VStack>
                   ) : (
@@ -314,12 +324,14 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
             </Button>
           </NavigationLink>
         </VStack>
-        <Loading show={duesGetRuleFetcher.isLoading} label="입금 내역 조회 중입니다." />
-      </Modal>;
-      ;
+        <Loading
+          show={duesGetRuleFetcher.isLoading}
+          label="입금 내역 조회 중입니다."
+        />
+      </Modal>
+      ; ;
     </>
-  )
-    ;
+  );
 }
 
 export default MoimDuesMainPage;
@@ -328,8 +340,7 @@ export default MoimDuesMainPage;
 function NoResultView() {
   return (
     <VStack className="items-center h-full justify-center">
-      <div
-        className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
+      <div className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
         !
       </div>
       <span className="text-lg">조회 결과가 없어요.</span>
