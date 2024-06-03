@@ -19,20 +19,78 @@ import {
   DueRuleReqDto,
   DueRuleResDto,
 } from "../../../types/due/Due";
-import { DuesGetRuleURL, DuesGetStatusUrl } from "../../../utils/urlFactory.ts";
+import {
+  DuesGetRuleURL,
+  DuesGetStatusUrl,
+  TeamMembersPostURL,
+} from "../../../utils/urlFactory.ts";
 import Loading from "../../../components/common/Modals/Loading.tsx";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
+import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDto";
+import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
 
 interface MoimDuesMainPageProps {
   accIdx: number;
   teamIdx: number;
+  teamName: string;
 }
 
-function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
+function MoimDuesMainPage({
+  accIdx,
+  teamIdx,
+  teamName,
+}: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
   const [dueMembers, setDueMembers] = useState<DueMember[]>([]);
+  const [canRequest, setCanRequest] = useState<boolean>(false);
+  const [selectedMembers, setSelectedMembers] = useState<TeamMembersResDto[]>(
+    []
+  );
+  const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
+
+  const { data, trigger } = useFetchTrigger<
+    TeamMembersReqDto,
+    TeamMembersResDto[]
+  >(TeamMembersPostURL(), "POST");
+
+  const handleRequest = () => {
+    trigger(requestData);
+    toggleShowDuesRequest();
+    setCanRequest(false);
+    setSelectedMembers([]);
+  };
+
+  const onCheck = (memberIdx: number) => {
+    setSelectedMembers((prevMembers) => {
+      const isContains = prevMembers.some(
+        (member) => member.memberIdx === memberIdx
+      );
+
+      let updatedMembers;
+      if (isContains) {
+        updatedMembers = prevMembers.filter(
+          (member) => member.memberIdx !== memberIdx
+        );
+      } else {
+        const memberToAdd = data!.find(
+          (member) => member.memberIdx === memberIdx
+        );
+        updatedMembers = memberToAdd
+          ? [...prevMembers, memberToAdd]
+          : prevMembers;
+      }
+      setCanRequest(updatedMembers.length === 0);
+      return updatedMembers;
+    });
+  };
+  useEffect(() => {
+    if (showDuesRequest) {
+      setSelectedMembers([]);
+      setCanRequest(true);
+    }
+  }, [showDuesRequest]);
 
   // 현재 날짜를 기준으로 초기값 설정
   const currentYear = new Date().getFullYear();
@@ -44,7 +102,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
 
   const years = Array.from(
     new Array(20),
-    (_, index) => currentYear - 10 + index,
+    (_, index) => currentYear - 10 + index
   );
   const months = Array.from(new Array(12), (_, index) => index + 1);
 
@@ -172,7 +230,9 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                           className="w-full"
                           key={member.memberIdx}
                           to={{
-                            page: <MoimDeusDetailPage name={member.memberName} />,
+                            page: (
+                              <MoimDeusDetailPage name={member.memberName} />
+                            ),
                           }}
                         >
                           <MemberRow
@@ -183,9 +243,10 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                       ))}
                       <HStack className="absolute bottom-0 left-0 right-0 text-sm text-gray-500 items-start">
                         <span>※</span>
-                        <span>회비내역의 입금인은 총무가 편집할 수 있으므로, 실제 계좌
-                        거래내역의 입금인과 다를 수 있습니다.
-                      </span>
+                        <span>
+                          회비내역의 입금인은 총무가 편집할 수 있으므로, 실제
+                          거래내역의 입금인과 다를 수 있습니다.
+                        </span>
                       </HStack>
                     </VStack>
                   ) : (
@@ -194,7 +255,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                 </VStack>
                 {true ? (
                   /* 총무라면 회비요청버튼 */
-                  <Button className="!w-full" onClick={toggleShowDuesRequest}>
+                  <Button className="!w-full" onClick={handleRequest}>
                     회비 요청하기
                   </Button>
                 ) : (
@@ -265,58 +326,48 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
             모임원 선택
           </span>
           <VStack className="max-h-72 overflow-scroll">
-            <HStack className="gap-2 my-2">
-              <Check />
-              <span>전체</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check />
-              <span>안나영</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check checked />
-              <span>최지웅</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check checked />
-              <span>최지웅</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check checked />
-              <span>최지웅</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check checked />
-              <span>최지웅</span>
-            </HStack>
-            <HStack className="gap-2 my-2">
-              <Check checked />
-              <span>최지웅</span>
-            </HStack>
+            {data?.map((member) => {
+              if (member.teamMemberState === "모임원") {
+                return (
+                  <HStack key={member.memberIdx} className="gap-2 my-2">
+                    <Check onClick={() => onCheck(member.memberIdx)} />
+                    <span>{member.memberName}</span>
+                  </HStack>
+                );
+              }
+              return null;
+            })}
           </VStack>
           <NavigationLink
             to={{
               page: (
-                //TODO: request data mapping
                 <MoimDuesRequestPage
-                  teamIdx={1}
-                  teamName="팀이름"
-                  requestees={[{ memberIdx: 5, memberName: "최지웅" }]}
+                  teamIdx={teamIdx}
+                  teamName={teamName}
+                  requestees={selectedMembers?.map((member) => ({
+                    memberIdx: member.memberIdx,
+                    memberName: member.memberName,
+                  }))}
                 />
               ),
             }}
           >
-            <Button className="w-full" onClick={toggleShowDuesRequest}>
+            <Button
+              className="w-full"
+              disabled={canRequest}
+              onClick={toggleShowDuesRequest}
+            >
               확인
             </Button>
           </NavigationLink>
         </VStack>
-        <Loading show={duesGetRuleFetcher.isLoading} label="입금 내역 조회 중입니다." />
-      </Modal>;
-      ;
+        <Loading
+          show={duesGetRuleFetcher.isLoading}
+          label="입금 내역 조회 중입니다."
+        />
+      </Modal>
     </>
-  )
-    ;
+  );
 }
 
 export default MoimDuesMainPage;
@@ -325,8 +376,7 @@ export default MoimDuesMainPage;
 function NoResultView() {
   return (
     <VStack className="items-center h-full justify-center">
-      <div
-        className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
+      <div className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
         !
       </div>
       <span className="text-lg">조회 결과가 없어요.</span>
