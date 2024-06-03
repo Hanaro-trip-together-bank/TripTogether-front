@@ -21,10 +21,6 @@ export type ManageTeamReqDto = {
   memberIdx: number;
 };
 
-export type ToggleAlarmReqDto = {
-  memberIdx: number;
-};
-
 export type UpdateTeamNoticeReq = {
   teamIdx: number;
   teamNotice: string;

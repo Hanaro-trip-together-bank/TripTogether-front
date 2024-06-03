@@ -1,5 +1,4 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
-
 //--------------- 메인 ---------------//
 
 // POST - 간편 로그인: LoginReqDto -> LoginResDto
@@ -27,6 +26,8 @@ export const DuesGetStatusUrl = (
   teamIdx: number
 ) =>
   `${BASE_URL}/dues?paid=${status}&date=${year}-${month.toString().padStart(2, "0")}&accIdx=${accIdx}&teamIdx=${teamIdx}`;
+
+export const DuesSetRuleURL = () => `${BASE_URL}/dues/rule`;
 
 //--------------- 모임원 ---------------//
 
@@ -61,18 +62,3 @@ export const ExportTeamPutURL = () => `${BASE_URL}/team/export-team`;
 
 // POST - 내 모임 서비스 조회
 export const MyMoimGetURL = () => `${BASE_URL}/account`;
-
-//--------------- 모임서비스 가입 ---------------//
-
-// POST - 전체 계좌 조회 (계좌 선택 기능): AccountsReqDto -> AccountsResDto
-export const AccountListPostURL = () => `${BASE_URL}/accounts`;
-
-// POST - 모임서비스 가입: AddTeamReqDto -> 200 OK
-export const AddTeamPostURL = () => `${BASE_URL}/account/add`;
-
-//--------------- 모임관리 ---------------//
-
-// POST - 모임관리 페이지: ManageTeamReqDto -> ManageTeamResDto
-export const ManageTeamPostURL = () => `${BASE_URL}/account/set`;
-// PUT - 알림설정 (on/off): ToggleAlarmReqDto -> 200 ok
-export const ToggleAlarmPutURL = () => `${BASE_URL}/account/alarm`;
