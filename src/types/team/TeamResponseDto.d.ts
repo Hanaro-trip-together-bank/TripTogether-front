@@ -1,9 +1,9 @@
 export type DetailTeamResDto = {
-  teamIdx: number;
   teamNotice: string;
   teamName: string;
   accNumber: string;
   accBalance: number;
+  teamMemberState: string;
 };
 
 export type InviteTeamResDto = {

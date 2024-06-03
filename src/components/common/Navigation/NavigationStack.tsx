@@ -62,7 +62,7 @@ function NavigationStack() {
         >
           <div
             className={cn(
-              "mt-12 pb-12 w-full h-full overflow-scroll",
+              "mt-12 pb-12 w-full h-full",
               route.backgroundColor ?? "bg-white"
             )}
           >
@@ -80,7 +80,7 @@ function NavigationStack() {
         >
           <div
             className={cn(
-              "mt-12 pb-12 w-full h-full overflow-scroll",
+              "mt-12 pb-12 w-full h-full",
               prevRoute.backgroundColor ?? "bg-white"
             )}
           >

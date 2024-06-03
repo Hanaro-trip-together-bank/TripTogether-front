@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -44,7 +45,7 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
       }
     })();
     return () => controller.abort(); //강제중지
-  }, [uri, method, requestData]);
+  }, []);
 
   return { data, error, isLoading };
 }

@@ -24,3 +24,7 @@ export type RejectTeamMembersReqDto = {
   teamIdx: number;
   memberIdx: number;
 };
+
+export type TeamMembersReqDto = {
+  teamIdx: number;
+};
