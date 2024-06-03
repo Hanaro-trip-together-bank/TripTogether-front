@@ -11,6 +11,7 @@ import { MyMoimGetURL } from "../../utils/urlFactory";
 import { TeamServiceListResDto } from "../../types/account/AccountResponseDto";
 import { MyTeamListReqDto } from "../../types/team/TeamRequestDto";
 import Loading from "../../components/common/Modals/Loading";
+import formatAccNo from "../../utils/formatAccNo";
 
 interface MoimServiceMainPageProps {
   memberIdx: number;
@@ -34,18 +35,6 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
     }
   }, [data]);
 
-  function formatString(input: string): string {
-    if (input.length !== 14) {
-      throw new Error("Input string must be exactly 14 characters long");
-    }
-
-    const part1 = input.slice(0, 3);
-    const part2 = input.slice(3, 9);
-    const part3 = input.slice(9, 14);
-
-    return `${part1}-${part2}-${part3}`;
-  }
-
   return (
     <>
       <VStack className="h-full">
@@ -63,14 +52,22 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
             data.map((moim) => (
               <NavigationLink
                 key={moim.teamIdx}
-                to={{ backgroundColor: "bg-white", page: <MoimDetailPage /> }}
+                to={{
+                  backgroundColor: "bg-white",
+                  page: (
+                    <MoimDetailPage
+                      teamIdx={moim.teamIdx}
+                      accIdx={moim.accIdx}
+                    />
+                  ),
+                }}
               >
                 <VStack className="rounded-2xl h-32 w-full bg-white shadowed px-6 py-4 mb-4">
                   <HStack className="w-full justify-between mb-4 gap-4">
                     <VStack className="items-start">
                       <span className="font-bold">{moim.teamName}</span>
                       <span className="text-gray-500">
-                        {formatString(moim.accNumber)}
+                        {formatAccNo(moim.accNumber)}
                       </span>
                     </VStack>
                     <Spacer />

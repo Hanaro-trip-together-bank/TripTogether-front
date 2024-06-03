@@ -3,3 +3,7 @@ export type UpdateAccBalanceReq = {
   amount: number;
   memo: string;
 };
+
+export type AccountsReqDto = {
+  memberIdx: number;
+};
