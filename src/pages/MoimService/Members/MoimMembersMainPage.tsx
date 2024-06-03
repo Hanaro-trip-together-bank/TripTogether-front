@@ -85,13 +85,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(AcceptTeamMembersPutURL(), "PUT");
 
-  const acceptAll = async () => {
+  const acceptAll = () => {
     const acceptAllDto: AcceptTeamMembersReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await allAcceptTrigger(acceptAllDto);
+    allAcceptTrigger(acceptAllDto);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -114,7 +114,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(RejectTeamMemberPutURL(), "PUT");
 
-  const reject = async (teamMemberIdx: number | undefined) => {
+  const reject = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const rejectReqDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -122,7 +122,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await rejectTrigger(rejectReqDto);
+    rejectTrigger(rejectReqDto);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -145,7 +145,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(AcceptTeamMemberPutURL(), "PUT");
 
-  const accept = async (teamMemberIdx: number | undefined) => {
+  const accept = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const acceptDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -153,7 +153,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await acceptTrigger(acceptDto);
+    acceptTrigger(acceptDto);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -176,13 +176,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(ExportTeamMembersPutURL(), "PUT");
 
-  const exportAll = async () => {
+  const exportAll = () => {
     const exportAllDto: RejectTeamMembersReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await exportAllTrigger(exportAllDto);
+    exportAllTrigger(exportAllDto);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -205,7 +205,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(ExportTeamMemberPutURL(), "PUT");
 
-  const exportMember = async (teamMemberIdx: number | undefined) => {
+  const exportMember = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const exportDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -213,7 +213,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await exportTrigger(exportDto);
+    exportTrigger(exportDto);
     setTimeout(() => {
       window.location.reload();
     }, 1500);
@@ -236,13 +236,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(ExportTeamPutURL(), "PUT");
 
-  const exportTeam = async () => {
+  const exportTeam = () => {
     const exportTeamDto: ExportTeamReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await exportTeamTrigger(exportTeamDto);
+    exportTeamTrigger(exportTeamDto);
     setTimeout(() => {
       home();
     }, 1500);
