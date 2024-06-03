@@ -8,7 +8,7 @@ export type AddTeamReqDto = {
 
 export type ExportTeamReqDto = {
   teamIdx: number;
-  member: number;
+  memberIdx: number;
 };
 
 export type InviteTeamReqDto = {
