@@ -1,5 +1,4 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
-
 //--------------- 메인 ---------------//
 
 // POST - 간편 로그인: LoginReqDto -> LoginResDto
@@ -27,6 +26,8 @@ export const DuesGetStatusUrl = (
   teamIdx: number
 ) =>
   `${BASE_URL}/dues?paid=${status}&date=${year}-${month.toString().padStart(2, "0")}&accIdx=${accIdx}&teamIdx=${teamIdx}`;
+
+export const DuesSetRuleURL = () => `${BASE_URL}/dues/rule`;
 
 //--------------- 모임원 ---------------//
 

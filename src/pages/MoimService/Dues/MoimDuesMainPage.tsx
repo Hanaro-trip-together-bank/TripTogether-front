@@ -24,11 +24,11 @@ import Loading from "../../../components/common/Modals/Loading.tsx";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
 
 interface MoimDuesMainPageProps {
-  accIdx: number;
   teamIdx: number;
+  accIdx: number;
 }
 
-function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
+function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
@@ -131,7 +131,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
             <VStack className="p-4 h-full">
               <NavigationLink
                 className="mb-4"
-                to={{ page: <MoimDuesSetPage /> }}
+                to={{ page: <MoimDuesSetPage teamIdx={teamIdx} accIdx={accIdx} onDone={duesGetRuleFetcher.refetch}/> }}
               >
                 <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                   <span className="text-gray-500">
@@ -142,7 +142,7 @@ function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
                           {" "}
                           {duesGetRuleFetcher.data.data.duesAmount}
                         </span>
-                        씩 모아요!
+                        원씩 모아요!
                       </>
                     ) : (
                       "등록된 회비가 없어요"

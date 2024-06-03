@@ -16,7 +16,7 @@ import MoimDuesMainPage from "./Dues/MoimDuesMainPage";
 import MoimManagementPage from "./Management/MoimManagementPage.tsx";
 interface MoimDetailPageProps {
   teamIdx: number;
-  accIdx:  number;
+  accIdx: number;
 }
 
 function MoimDetailPage({ accIdx, teamIdx }: MoimDetailPageProps) {
@@ -96,7 +96,9 @@ function MoimDetailPage({ accIdx, teamIdx }: MoimDetailPageProps) {
         <HStack className="justify-evenly my-4">
           <VStack>
             <NavigationLink
-              to={{ page: <MoimDuesMainPage accIdx={accIdx} teamIdx={teamIdx} /> }}
+              to={{
+                page: <MoimDuesMainPage accIdx={accIdx} teamIdx={teamIdx} />,
+              }}
               className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16"
             >
               <img
@@ -163,7 +165,7 @@ function MoimDetailPage({ accIdx, teamIdx }: MoimDetailPageProps) {
             <NavigationLink
               to={{
                 backgroundColor: "bg-gray-50",
-                page: <MoimManagementPage />,
+                page: <MoimManagementPage teamIdx={teamIdx} />,
               }}
             >
               <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
