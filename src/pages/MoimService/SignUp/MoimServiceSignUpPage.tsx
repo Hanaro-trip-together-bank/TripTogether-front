@@ -29,7 +29,7 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   const [selectedPreferenceType, setSelectedPreferenceType] = useState("국내");
   const [teamName, setTeamName] = useState("");
 
-  const accountsRequestDto: AccountsReqDto = { ...member };
+  const accountsRequestDto: AccountsReqDto = { memberIdx: member.memberIdx };
   const accountListData = useFetch<AccountsReqDto, AccountsResDto[]>(
     AccountListPostURL(),
     "POST",
