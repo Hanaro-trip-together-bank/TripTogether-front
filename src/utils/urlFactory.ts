@@ -69,3 +69,10 @@ export const AccountListPostURL = () => `${BASE_URL}/accounts`;
 
 // POST - 모임서비스 가입: AddTeamReqDto -> 200 OK
 export const AddTeamPostURL = () => `${BASE_URL}/account/add`;
+
+//--------------- 모임관리 ---------------//
+
+// POST - 모임관리 페이지: ManageTeamReqDto -> ManageTeamResDto
+export const ManageTeamPostURL = () => `${BASE_URL}/account/set`;
+// PUT - 알림설정 (on/off): ToggleAlarmReqDto -> 200 ok
+export const ToggleAlarmPutURL = () => `${BASE_URL}/account/alarm`;
