@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import useToggle from "./useToggle";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // const { data, error, isLoading } =  useFetch<RequestDto, ResponseDto>(uri, method, requestData)
@@ -17,7 +16,6 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [data, setData] = useState<ResponseDtoType>();
-  const [trigger, toggleTrigger] = useToggle();
 
   useEffect(() => {
     if (!uri) return;
@@ -47,7 +45,7 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
       }
     })();
     return () => controller.abort(); //강제중지
-  }, [trigger]);
+  }, []);
 
-  return { data, error, isLoading, refetch: toggleTrigger };
+  return { data, error, isLoading };
 }
