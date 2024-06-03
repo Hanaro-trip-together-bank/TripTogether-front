@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select2 from "../../../components/common/Select2";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import Arrow from "../../../components/common/Arrow";
 import Button from "../../../components/common/Button";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
-import Select from "../../../components/common/Select";
 import MoimDepositPage from "./MoimDepositPage";
 import MoimDuesSetPage from "./MoimDuesSetPage";
 import useToggle from "../../../hooks/useToggle";
@@ -13,13 +12,73 @@ import Modal from "../../../components/common/Modals/Modal";
 import Check from "../../../components/common/Check";
 import MoimDuesRequestPage from "./MoimDuesRequestPage";
 import MoimDeusDetailPage from "./MoimDuesDetailPage";
+import { useFetch } from "../../../hooks/useFetch.ts";
+import {
+  DueMember,
+  DueMemStatusResDto,
+  DueRuleReqDto,
+  DueRuleResDto,
+} from "../../../types/due/Due";
+import { DuesGetRuleURL, DuesGetStatusUrl } from "../../../utils/urlFactory.ts";
+import Loading from "../../../components/common/Modals/Loading.tsx";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
 
-interface MoimDuesMainPageProps {}
+interface MoimDuesMainPageProps {
+  accIdx: number;
+  teamIdx: number;
+}
 
-function MoimDuesMainPage({}: MoimDuesMainPageProps) {
+function MoimDuesMainPage({ accIdx, teamIdx }: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
+  const [dueMembers, setDueMembers] = useState<DueMember[]>([]);
+
+  // 현재 날짜를 기준으로 초기값 설정
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  // 상태 설정
+  const [year, setYear] = useState(currentYear);
+  const [month, setMonth] = useState(currentMonth);
+
+  const years = Array.from(
+    new Array(20),
+    (_, index) => currentYear - 10 + index,
+  );
+  const months = Array.from(new Array(12), (_, index) => index + 1);
+
+  // 회비 규칙 조회
+  const duesGetRuleFetcher = useFetch<DueRuleReqDto, DueRuleResDto>(
+    DuesGetRuleURL(teamIdx),
+    "GET"
+  );
+
+  const duesGetTrueStatusFetcher = useFetchTrigger<null, DueMemStatusResDto>(
+    DuesGetStatusUrl(year, month, true, accIdx, teamIdx),
+    "GET"
+  );
+
+  const duesGetFalseStatusFetcher = useFetchTrigger<null, DueMemStatusResDto>(
+    DuesGetStatusUrl(year, month, false, accIdx, teamIdx),
+    "GET"
+  );
+
+  useEffect(() => {
+    if (paidOrNot == 0) duesGetTrueStatusFetcher.trigger(null);
+    else duesGetFalseStatusFetcher.trigger(null);
+  }, [paidOrNot, year, month]);
+
+  useEffect(() => {
+    if (duesGetTrueStatusFetcher.data?.data.memberResponseDtos)
+      setDueMembers(duesGetTrueStatusFetcher.data?.data.memberResponseDtos);
+  }, [duesGetTrueStatusFetcher.data]);
+
+  useEffect(() => {
+    if (duesGetFalseStatusFetcher.data?.data.memberResponseDtos)
+      setDueMembers(duesGetFalseStatusFetcher.data?.data.memberResponseDtos);
+  }, [duesGetFalseStatusFetcher.data]);
+
   return (
     <>
       <VStack className="min-h-full h-full bg-white pb-8">
@@ -36,8 +95,26 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
           <>
             <VStack className="p-4">
               <HStack className="items-center text-sm">
-                <span>2024년 05월</span>
-                <Arrow direction="down" />
+                <select
+                  value={year}
+                  onChange={(e) => setYear(parseInt(e.target.value, 10))}
+                >
+                  {years.map((y) => (
+                    <option key={y} value={y}>
+                      {y}년
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={month}
+                  onChange={(e) => setMonth(parseInt(e.target.value, 10))}
+                >
+                  {months.map((m) => (
+                    <option key={m} value={m}>
+                      {m}월
+                    </option>
+                  ))}
+                </select>
               </HStack>
               <HStack className="items-end !gap-0 font-bold">
                 <span className="text-xl">21,000</span>
@@ -51,58 +128,87 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
               >
                 <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                   <span className="text-gray-500">
-                    {"매월 1일 "}
-                    <span className="font-bold">10,000원</span>
-                    {" 씩 모아요!"}
+                    {duesGetRuleFetcher.data ? (
+                      <>
+                        매월 {duesGetRuleFetcher.data.data.duesDate}일
+                        <span className="font-bold">
+                          {" "}
+                          {duesGetRuleFetcher.data.data.duesAmount}
+                        </span>
+                        씩 모아요!
+                      </>
+                    ) : (
+                      "등록된 회비가 없어요"
+                    )}
                   </span>
                   <Arrow direction="right" />
                 </HStack>
               </NavigationLink>
-              <Select
-                className="w-full"
-                options={["회비 낸 사람", "안 낸 사람"]}
-                onSelect={setPaidOrNot}
-              />
-              {paidOrNot == 0 ? (
-                <NoResultView />
-              ) : (
-                <VStack className="items-center h-full justify-center overflow-y-scroll">
-                  {["문혜영", "안나영", "이신광", "이채원", "최지웅"].map(
-                    (name, amount) => (
-                      <NavigationLink
-                        className="w-full"
-                        key={name}
-                        to={{ page: <MoimDeusDetailPage name={name} /> }}
-                      >
-                        <MemberRow name={name} amount={amount} />
-                      </NavigationLink>
-                    )
+              {/*<Select*/}
+              {/*  className="w-full"*/}
+              {/*  options={["회비 낸 사람", "안 낸 사람"]}*/}
+              {/*  onSelect={setPaidOrNot}*/}
+              {/*/>*/}
+              <HStack className="flex flex-col h-full">
+                <VStack className="items-center flex-grow relative">
+                  <div className="flex justify-between w-full">
+                    <button
+                      className="w-1/2 py-2 bg-blue-500 text-white"
+                      onClick={() => setPaidOrNot(0)}
+                    >
+                      회비 낸 사람
+                    </button>
+                    <button
+                      className="w-1/2 py-2 bg-gray-500 text-white"
+                      onClick={() => setPaidOrNot(1)}
+                    >
+                      안 낸 사람
+                    </button>
+                  </div>
+                  {dueMembers.length !== 0 ? (
+                    <VStack className="flex flex-col items-center w-full h-full overflow-y-scroll">
+                      {dueMembers.map((member) => (
+                        <NavigationLink
+                          className="w-full"
+                          key={member.memberIdx}
+                          to={{
+                            page: <MoimDeusDetailPage name={member.memberName} />,
+                          }}
+                        >
+                          <MemberRow
+                            name={member.memberName}
+                            amount={member.memberAmount}
+                          />
+                        </NavigationLink>
+                      ))}
+                      <HStack className="absolute bottom-0 left-0 right-0 text-sm text-gray-500 items-start">
+                        <span>※</span>
+                        <span>회비내역의 입금인은 총무가 편집할 수 있으므로, 실제 계좌
+                        거래내역의 입금인과 다를 수 있습니다.
+                      </span>
+                      </HStack>
+                    </VStack>
+                  ) : (
+                    <NoResultView />
                   )}
-                  <HStack className="text-sm text-gray-500 items-start">
-                    <span>※</span>
-                    <span>
-                      회비내역의 입금인은 총무가 편집할 수 있으므로, 실제 계좌
-                      거래내역의 입금인과 다를 수 있습니다.
-                    </span>
-                  </HStack>
                 </VStack>
-              )}
-              {true ? (
-                /* 총무라면 회비요청버튼 */
-                <Button className="!w-full" onClick={toggleShowDuesRequest}>
-                  회비 요청하기
-                </Button>
-              ) : (
-                /* 총무 아니라면 입금버튼 */
-                <NavigationLink
-                  to={{
-                    backgroundColor: "bg-gray-50",
-                    page: <MoimDepositPage />,
-                  }}
-                >
-                  <Button className="!w-full">회비 입금하기</Button>
-                </NavigationLink>
-              )}
+                {true ? (
+                  /* 총무라면 회비요청버튼 */
+                  <Button className="!w-full" onClick={toggleShowDuesRequest}>
+                    회비 요청하기
+                  </Button>
+                ) : (
+                  /* 총무 아니라면 입금버튼 */
+                  <NavigationLink
+                    to={{
+                      backgroundColor: "bg-gray-50",
+                      page: <MoimDepositPage />,
+                    }}
+                  >
+                    <Button className="!w-full">회비 입금하기</Button>
+                  </NavigationLink>
+                )}
+              </HStack>
             </VStack>
           </>
         ) : (
@@ -205,9 +311,12 @@ function MoimDuesMainPage({}: MoimDuesMainPageProps) {
             </Button>
           </NavigationLink>
         </VStack>
-      </Modal>
+        <Loading show={duesGetRuleFetcher.isLoading} label="입금 내역 조회 중입니다." />
+      </Modal>;
+      ;
     </>
-  );
+  )
+    ;
 }
 
 export default MoimDuesMainPage;
@@ -216,7 +325,8 @@ export default MoimDuesMainPage;
 function NoResultView() {
   return (
     <VStack className="items-center h-full justify-center">
-      <div className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
+      <div
+        className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
         !
       </div>
       <span className="text-lg">조회 결과가 없어요.</span>

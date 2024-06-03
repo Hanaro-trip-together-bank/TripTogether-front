@@ -13,6 +13,21 @@ export const TripsPostURL = () => `${BASE_URL}/trips`;
 // GET - 여행 상세 정보 읽기: () -> TripResDto
 export const TripsGetURL = (tripIdx: number) => `${BASE_URL}/trips/${tripIdx}`;
 
+//--------------- 회비 ---------------//
+
+export const DuesGetRuleURL = (teamIdx: number) =>
+  `${BASE_URL}/dues/rule/${teamIdx}`;
+
+// /dues?paid=false&date=2024-05&accIdx=1&teamIdx=1
+export const DuesGetStatusUrl = (
+  year: number,
+  month: number,
+  status: boolean,
+  accIdx: number,
+  teamIdx: number
+) =>
+  `${BASE_URL}/dues?paid=${status}&date=${year}-${month.toString().padStart(2, "0")}&accIdx=${accIdx}&teamIdx=${teamIdx}`;
+
 //--------------- 모임원 ---------------//
 
 // POST - 모임원 전체 출력: TeamMembersReqDto -> TeamMembersResDto
@@ -50,3 +65,18 @@ export const DuesRequestPostURL = (team_idx: number) =>
 
 // POST - 내 모임 서비스 조회
 export const MyMoimGetURL = () => `${BASE_URL}/account`;
+
+//--------------- 모임서비스 가입 ---------------//
+
+// POST - 전체 계좌 조회 (계좌 선택 기능): AccountsReqDto -> AccountsResDto
+export const AccountListPostURL = () => `${BASE_URL}/accounts`;
+
+// POST - 모임서비스 가입: AddTeamReqDto -> 200 OK
+export const AddTeamPostURL = () => `${BASE_URL}/account/add`;
+
+//--------------- 모임관리 ---------------//
+
+// POST - 모임관리 페이지: ManageTeamReqDto -> ManageTeamResDto
+export const ManageTeamPostURL = () => `${BASE_URL}/account/set`;
+// PUT - 알림설정 (on/off): ToggleAlarmReqDto -> 200 ok
+export const ToggleAlarmPutURL = () => `${BASE_URL}/account/alarm`;
