@@ -38,7 +38,13 @@ export type DueMemStatusResDto = {
   };
 };
 
+export type DueMemDepositHisResDto = {
+  code: number;
+  message: string;
+  data: DepositHistory[];
+};
+
 export type DepositHistory = {
-  month: number;
-  amount: number;
+  duesAmount: number;
+  duesOfMonth: number;
 };

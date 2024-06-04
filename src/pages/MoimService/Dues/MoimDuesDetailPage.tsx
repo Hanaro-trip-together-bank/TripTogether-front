@@ -4,14 +4,20 @@ import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import Arrow from "../../../components/common/Arrow";
 import useToggle from "../../../hooks/useToggle";
 import Modal from "../../../components/common/Modals/Modal";
-import { DepositHistory, DueMemStatusResDto } from "../../../types/due/Due";
+import {
+  DepositHistory,
+  DueMemDepositHisResDto,
+  DueMemStatusResDto,
+} from "../../../types/due/Due";
 import { useFetch } from "../../../hooks/useFetch.ts";
 import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDto";
 import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
 import {
+  DuesGetMemDepositHisURL,
   DuesGetTotalAmtURL,
   TeamMembersPostURL,
 } from "../../../utils/urlFactory.ts";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
 
 interface MoimDuesDetailPageProps {
   memberIdx: number;
@@ -26,10 +32,16 @@ function MoimDuesDetailPage({
   teamIdx,
   accIdx,
 }: MoimDuesDetailPageProps) {
-  const [member, setMember] = useState<string>(name);
+  const currentYear = new Date().getFullYear();
   const [showMemberList, toggleShowMemberList] = useToggle();
+  const [year, setYear] = useState<number>(currentYear);
   const [totalAmt, setTotalAmt] = useState<number>(0);
   const [depositList, setDepositList] = useState<DepositHistory[]>([]);
+
+  const years = Array.from(
+    new Array(20),
+    (_, index) => currentYear - 10 + index
+  );
 
   // 모임원 전체 정보 가져오기
   const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
@@ -44,10 +56,28 @@ function MoimDuesDetailPage({
     "GET"
   );
 
+  const GetMemDepositHisFetcher = useFetchTrigger<null, DueMemDepositHisResDto>(
+    DuesGetMemDepositHisURL(accIdx, memberIdx, year),
+    "GET"
+  );
+
   useEffect(() => {
     if (GetMemberTotalAmtFetcher.data?.data?.duesTotalAmount)
       setTotalAmt(GetMemberTotalAmtFetcher.data?.data.duesTotalAmount);
   }, [GetMemberTotalAmtFetcher.data]);
+
+  useEffect(() => {
+    if (GetMemDepositHisFetcher.data?.data)
+      setDepositList(
+        GetMemDepositHisFetcher.data?.data.sort(
+          (a, b) => a.duesOfMonth - b.duesOfMonth
+        )
+      );
+  }, [GetMemDepositHisFetcher.data]);
+
+  useEffect(() => {
+    GetMemDepositHisFetcher.trigger(null);
+  }, [year]);
 
   return (
     <>
@@ -73,22 +103,37 @@ function MoimDuesDetailPage({
           </VStack>
           {/* 년도 */}
           <HStack className="w-full items-center justify-end text-sm">
-            <span>2024년</span>
-            <Arrow direction="down" />
+            <select
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value, 10))}
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}년
+                </option>
+              ))}
+            </select>
           </HStack>
           {/* 개월 리스트 */}
           <VStack className="max-h-full w-full border-y border-gray-200 my-4 overflow-y-scroll">
-            {depositList.map((deposit) => {
-              return (
-                <HStack className="py-4 items-center gap-4" key={deposit.month}>
-                  <span> {deposit.month}월 </span>
-                  <Spacer />
-                  <span className="font-bold">
-                    {deposit.amount.toLocaleString()}원
-                  </span>
-                </HStack>
-              );
-            })}
+            {depositList.length != 0 ? (
+              depositList.map((deposit) => {
+                return (
+                  <HStack
+                    className="py-4 items-center gap-4"
+                    key={deposit.duesOfMonth}
+                  >
+                    <span> {deposit.duesOfMonth}월 </span>
+                    <Spacer />
+                    <span className="font-bold">
+                      {deposit.duesAmount.toLocaleString()}원
+                    </span>
+                  </HStack>
+                );
+              })
+            ) : (
+              <NoResultView />
+            )}
           </VStack>
           <Spacer />
         </VStack>
