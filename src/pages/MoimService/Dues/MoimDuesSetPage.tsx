@@ -10,7 +10,11 @@ import Arrow from "../../../components/common/Arrow";
 import { Swiper, SwiperSlide } from "swiper/react";
 import useToggle from "../../../hooks/useToggle";
 import "swiper/css";
-import { DuesGetRuleURL, DuesSetRuleURL } from "../../../utils/urlFactory.ts";
+import {
+  DuesDeleteRuleURL,
+  DuesGetRuleURL,
+  DuesSetRuleURL,
+} from "../../../utils/urlFactory.ts";
 import {
   DueRuleResDto,
   DueRuleSetReqDto,
@@ -42,6 +46,7 @@ function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
   );
 
   useEffect(() => {
+    console.log(duesGetRuleFetcher.data == null);
     if (duesGetRuleFetcher.data?.data?.duesDate)
       setDay(duesGetRuleFetcher.data.data.duesDate);
 
@@ -55,8 +60,12 @@ function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
     DueRuleSetResDto
   >(DuesSetRuleURL(), "POST");
 
+  const duesDeleteRuleFetcher = useFetchTrigger<null, DueRuleSetResDto>(
+    DuesDeleteRuleURL(teamIdx),
+    "DELETE"
+  );
+
   const onSaveBtn = () => {
-    console.log(teamIdx, day, amount);
     duesSetRuleFetcher.trigger({
       teamIdx: teamIdx,
       duesDate: day,
@@ -65,9 +74,7 @@ function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
   };
 
   useEffect(() => {
-    console.log(path);
     if (duesSetRuleFetcher.data?.code && duesSetRuleFetcher.data.code == 200) {
-      console.log("gdgd");
       onDone();
       back();
     }
@@ -203,6 +210,7 @@ function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
               onClick={() => {
                 toggleShowDelete();
                 toggleShowDeleted();
+                duesDeleteRuleFetcher.trigger(null);
               }}
             >
               예
@@ -215,7 +223,14 @@ function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
         <VStack className="w-72 items-center gap-8">
           <span>회비를 삭제했습니다.</span>
           <HStack className="w-full">
-            <Button className="flex-grow" roundedFull onClick={back}>
+            <Button
+              className="flex-grow"
+              roundedFull
+              onClick={() => {
+                onDone();
+                back();
+              }}
+            >
               확인
             </Button>
           </HStack>

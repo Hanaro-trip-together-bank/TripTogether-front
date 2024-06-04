@@ -20,15 +20,18 @@ import { DetailTeamResDto } from "../../types/team/TeamResponseDto";
 import { MoimDetailPostURL } from "../../utils/urlFactory";
 import formatAccNo from "../../utils/formatAccNo";
 import Loading from "../../components/common/Modals/Loading";
+
 interface MoimDetailPageProps {
   teamIdx: number;
   accIdx: number;
+  teamName: string;
   teamMemberIdx: number;
 }
 
 function MoimDetailPage({
   accIdx,
   teamIdx,
+  teamName,
   teamMemberIdx,
 }: MoimDetailPageProps) {
   const [notice, setNotice] = useState<string>("");
@@ -138,7 +141,13 @@ function MoimDetailPage({
           <VStack>
             <NavigationLink
               to={{
-                page: <MoimDuesMainPage accIdx={accIdx} teamIdx={teamIdx} />,
+                page: (
+                  <MoimDuesMainPage
+                    accIdx={accIdx}
+                    teamIdx={teamIdx}
+                    teamName={teamName}
+                  />
+                ),
               }}
               className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16"
             >
