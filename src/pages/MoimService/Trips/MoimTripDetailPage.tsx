@@ -34,6 +34,7 @@ import formatDate from "../../../utils/formatDate";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { TripPlaceUpdateOrderReqDTO } from "../../../types/tripPlace/TripPlaceRequestDto";
 import { useAuth } from "../../../contexts/useAuth";
+import MoimScheduleAddPage from "./MoimScheduleAddPage";
 
 interface MoimTripDetailPageProps {
   trip: TripResDto;
@@ -46,6 +47,10 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
   const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDto>();
+  const { data, isLoading, setData, refetch } = useFetch<
+    null,
+    TripPlaceResDto[]
+  >(TripPlacesGetURL(trip.tripIdx), "GET");
   const colorBias = useMemo(
     () => Math.floor(Math.random() * colorPacks.length),
     []
@@ -60,15 +65,32 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
       toggleShowEditConfirm();
     }
   };
-  const { data, isLoading, setData, refetch } = useFetch<
-    null,
-    TripPlaceResDto[]
-  >(TripPlacesGetURL(trip.tripIdx), "GET");
+  // 스케줄 상세 모달 열기
   const openScheduleDetail = (schedule: TripPlaceResDto) => {
     if (isEditMode) return;
     setCurrentSchedule(schedule);
     toggleShowScheduleDetail();
   };
+  // 스케줄 삭제하기
+  const deleteSchedule = (day: number, currentOrder: number) => {
+    const schedulesDraft = [...(data ?? [])];
+    setData(
+      schedulesDraft
+        .filter(
+          (schedule) =>
+            !(schedule.tripDate == day && schedule.placeOrder == currentOrder)
+        )
+        .map((schedule) => {
+          if (schedule.placeOrder >= currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              placeOrder: schedule.placeOrder - 1,
+            };
+          else return schedule;
+        })
+    );
+  };
+  // 스케줄 위로 올리기
   const upSchedule = (day: number, currentOrder: number) => {
     // 첫 날 첫번째는 무시
     if (day == 1 && currentOrder == 1) return;
@@ -113,6 +135,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
     );
     return;
   };
+  // 스케줄 밑으로 내리기
   const downSchedule = (day: number, currentOrder: number) => {
     const schedulesDraft = [...(data ?? [])];
     const lastDaysLastOrder: number = schedulesDraft.reduce((maxOrder, cur) => {
@@ -164,6 +187,24 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
     );
     return;
   };
+  // 스케줄 추가하기
+  const addSchedule = (newSchedule: TripPlaceResDto) => {
+    const schedulesDraft = [...(data ?? [])];
+    setData([
+      ...schedulesDraft.map((schedule) => {
+        if (
+          schedule.tripDate == newSchedule.tripDate &&
+          schedule.placeOrder >= newSchedule.placeOrder
+        )
+          return {
+            ...schedule,
+            placeOrder: schedule.placeOrder + 1,
+          };
+        else return schedule;
+      }),
+      newSchedule,
+    ]);
+  };
 
   const tripOrderUpdateData = useFetchTrigger<TripPlaceUpdateOrderReqDTO, null>(
     TripPlaceOrderUpdatePutURL(trip.tripIdx),
@@ -172,7 +213,15 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
   const updateOrder = () => {
     const tripPlaceUpdateOrderReqDto: TripPlaceUpdateOrderReqDTO = {
       memberIdx: member.memberIdx,
-      newPlaces: [],
+      newPlaces: (data ?? [])
+        .filter((schedule) => schedule.tripPlaceIdx == 0)
+        .map((schedule) => ({
+          tripDate: schedule.tripDate,
+          placeOrder: schedule.placeOrder,
+          placeIdx: schedule.place?.placeIdx ?? 0,
+          placeAmount: schedule.placeAmount,
+          placeMemo: schedule.placeMemo,
+        })),
       orders: (data ?? []).map((schedule) => ({
         tripPlaceIdx: schedule.tripPlaceIdx,
         placeOrder: schedule.placeOrder,
@@ -253,6 +302,18 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                         borderColor,
                         textColor
                       )}
+                      onClick={() =>
+                        navigateTo({
+                          page: (
+                            <MoimScheduleAddPage
+                              onDone={addSchedule}
+                              cities={trip.cities}
+                              tripDate={day}
+                              placeOrder={1}
+                            />
+                          ),
+                        })
+                      }
                     >
                       +
                     </button>
@@ -328,7 +389,9 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                               {/* 제목, 두줄 넘어가면 '...' 처리 */}
                               {schedule.place && (
                                 <span className="text-lg leading-tight line-clamp-2">
-                                  {schedule.place.placeNameKo}
+                                  {schedule.place.placeNameKo === ""
+                                    ? schedule.place.placeNameEng
+                                    : schedule.place.placeNameKo}
                                 </span>
                               )}
                               {/* 메모, 두줄 넘어가면 '...' 처리 */}
@@ -352,14 +415,23 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                             <Spacer />
                             {isEditMode ? (
                               <HStack className="text-nowrap">
-                                <span className="text-red-500">삭제</span>
+                                <button
+                                  className="text-red-500"
+                                  onClick={() =>
+                                    deleteSchedule(day, schedule.placeOrder)
+                                  }
+                                >
+                                  삭제
+                                </button>
                               </HStack>
                             ) : (
-                              <HStack>
-                                <SpeechBubble />
-                                <span> {schedule.replyCount}</span>
-                                <Arrow direction="right" />
-                              </HStack>
+                              schedule.replyCount > 0 && (
+                                <HStack>
+                                  <SpeechBubble />
+                                  <span> {schedule.replyCount}</span>
+                                  <Arrow direction="right" />
+                                </HStack>
+                              )
                             )}
                           </HStack>
                         </button>
@@ -380,6 +452,18 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                               borderColor,
                               textColor
                             )}
+                            onClick={() =>
+                              navigateTo({
+                                page: (
+                                  <MoimScheduleAddPage
+                                    onDone={addSchedule}
+                                    cities={trip.cities}
+                                    tripDate={day}
+                                    placeOrder={schedule.placeOrder + 1}
+                                  />
+                                ),
+                              })
+                            }
                           >
                             +
                           </button>
@@ -465,7 +549,9 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
             <VStack className="leading-none font-bold !gap-0">
               <span className="text-lg leading-tight">
                 {currentSchedule?.place
-                  ? currentSchedule.place.placeNameKo
+                  ? currentSchedule.place.placeNameKo === ""
+                    ? currentSchedule.place.placeNameEng
+                    : currentSchedule.place.placeNameKo
                   : currentSchedule?.placeMemo}
               </span>
               {(currentSchedule?.placeAmount ?? 0) > 0 && (
@@ -489,6 +575,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                     <MoimScheduleEditPage
                       schedule={currentSchedule}
                       onDone={refetch}
+                      cities={trip.cities}
                     />
                   ),
                 });
@@ -692,62 +779,62 @@ function ReplyList({
 
 const colorPacks: ColorPack[] = [
   {
-    textColor: "text-teal-300",
+    textColor: "!text-teal-300",
     backgroundColor: "bg-teal-300",
     borderColor: "border-teal-300",
   },
   {
-    textColor: "text-cyan-400",
+    textColor: "!text-cyan-400",
     backgroundColor: "bg-cyan-400",
     borderColor: "border-cyan-400",
   },
   {
-    textColor: "text-blue-400",
+    textColor: "!text-blue-400",
     backgroundColor: "bg-blue-400",
     borderColor: "border-blue-400",
   },
   {
-    textColor: "text-indigo-400",
+    textColor: "!text-indigo-400",
     backgroundColor: "bg-indigo-400",
     borderColor: "border-indigo-400",
   },
   {
-    textColor: "text-violet-400",
+    textColor: "!text-violet-400",
     backgroundColor: "bg-violet-400",
     borderColor: "border-violet-400",
   },
   {
-    textColor: "text-fuchsia-400",
+    textColor: "!text-fuchsia-400",
     backgroundColor: "bg-fuchsia-400",
     borderColor: "border-fuchsia-400",
   },
   {
-    textColor: "text-pink-400",
+    textColor: "!text-pink-400",
     backgroundColor: "bg-pink-400",
     borderColor: "border-pink-400",
   },
   {
-    textColor: "text-rose-400",
+    textColor: "!text-rose-400",
     backgroundColor: "bg-rose-400",
     borderColor: "border-rose-400",
   },
   {
-    textColor: "text-orange-400",
+    textColor: "!text-orange-400",
     backgroundColor: "bg-orange-400",
     borderColor: "border-orange-400",
   },
   {
-    textColor: "text-yellow-400",
+    textColor: "!text-yellow-400",
     backgroundColor: "bg-yellow-400",
     borderColor: "border-yellow-400",
   },
   {
-    textColor: "text-lime-400",
+    textColor: "!text-lime-400",
     backgroundColor: "bg-lime-400",
     borderColor: "border-lime-400",
   },
   {
-    textColor: "text-emerald-400",
+    textColor: "!text-emerald-400",
     backgroundColor: "bg-emerald-400",
     borderColor: "border-emerald-400",
   },
