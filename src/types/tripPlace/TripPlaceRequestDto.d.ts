@@ -23,12 +23,3 @@ export type TripPlaceUpdateOrderReqDTO = {
   tripDate: number;
   orders: TripPlaceOrderInfo[];
 };
-
-export type TripPlaceResDTO = {
-  tripPlaceIdx: number;
-  tripDate: number;
-  placeOrder: number;
-  placeIdx: number;
-  placeAmount: number;
-  placeMemo: string;
-};

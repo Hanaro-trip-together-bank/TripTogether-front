@@ -60,6 +60,13 @@ export const CategoriesGetURL = () => `${BASE_URL}/categories`;
 export const TeamTripsGetURL = (teamIdx: number) =>
   `${BASE_URL}/trips/teams/${teamIdx}`;
 
+//--------------- 여행일정 ---------------//
+// GET - 여행 일정 목록 읽기: () -> TripPlaceResDTO[]
+export const TripPlacesGetURL = (tripIdx: number) =>
+  `${BASE_URL}/trips/place/${tripIdx}`;
+
+//--------------- 장소/명소 ---------------//
+
 //--------------- 회비 ---------------//
 
 export const DuesGetRuleURL = (teamIdx: number) =>

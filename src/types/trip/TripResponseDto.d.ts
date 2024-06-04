@@ -6,7 +6,7 @@ export type TripResDto = {
   tripContent: string;
   tripGoalAmount: number;
   tripDay: number;
-  tripImg: number;
+  tripImg: number | null;
   tripStartDay: string;
   countryIdx: number;
   countryNameKo: string;
