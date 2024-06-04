@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import useKeypadMappedNumber from "../../../hooks/useKeypadMappedNumber";
@@ -10,11 +10,24 @@ import Arrow from "../../../components/common/Arrow";
 import { Swiper, SwiperSlide } from "swiper/react";
 import useToggle from "../../../hooks/useToggle";
 import "swiper/css";
+import { DuesGetRuleURL, DuesSetRuleURL } from "../../../utils/urlFactory.ts";
+import {
+  DueRuleResDto,
+  DueRuleSetReqDto,
+  DueRuleSetResDto,
+} from "../../../types/due/Due";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
+import { useFetch } from "../../../hooks/useFetch.ts";
 
-interface MoimDuesSetPageProps {}
+interface MoimDuesSetPageProps {
+  teamIdx: number;
+  accIdx: number;
+  onDone: () => void;
+}
 
-function MoimDuesSetPage({}: MoimDuesSetPageProps) {
-  const { back } = useNavigation();
+function MoimDuesSetPage({ teamIdx, onDone }: MoimDuesSetPageProps) {
+  const { back, path } = useNavigation();
+  console.log(path);
   const [day, setDay] = useState<number>(1);
   const [newDay, setNewDay] = useState<number>(1);
   const { amount, add, append, remove, clear } = useKeypadMappedNumber();
@@ -22,6 +35,43 @@ function MoimDuesSetPage({}: MoimDuesSetPageProps) {
   const [showDelete, toggleShowDelete] = useToggle(); //삭제할까요?
   const [showDeleted, toggleShowDeleted] = useToggle(); //삭제했어요
   const [showDaySetter, toggleShowDaySetter] = useToggle();
+
+  const duesGetRuleFetcher = useFetch<null, DueRuleResDto>(
+    DuesGetRuleURL(teamIdx),
+    "GET"
+  );
+
+  useEffect(() => {
+    if (duesGetRuleFetcher.data?.data?.duesDate)
+      setDay(duesGetRuleFetcher.data.data.duesDate);
+
+    if (duesGetRuleFetcher.data?.data?.duesAmount) {
+      add(duesGetRuleFetcher.data.data.duesAmount);
+    }
+  }, [duesGetRuleFetcher.data]);
+
+  const duesSetRuleFetcher = useFetchTrigger<
+    DueRuleSetReqDto,
+    DueRuleSetResDto
+  >(DuesSetRuleURL(), "POST");
+
+  const onSaveBtn = () => {
+    console.log(teamIdx, day, amount);
+    duesSetRuleFetcher.trigger({
+      teamIdx: teamIdx,
+      duesDate: day,
+      duesAmount: amount,
+    });
+  };
+
+  useEffect(() => {
+    console.log(path);
+    if (duesSetRuleFetcher.data?.code && duesSetRuleFetcher.data.code == 200) {
+      console.log("gdgd");
+      onDone();
+      back();
+    }
+  }, [duesSetRuleFetcher.data]);
 
   return (
     <>
@@ -59,7 +109,8 @@ function MoimDuesSetPage({}: MoimDuesSetPageProps) {
             </button>
           </VStack>
           <Spacer />
-          <Button className="w-full" onClick={back} disabled={amount == 0}>
+
+          <Button className="w-full" onClick={onSaveBtn} disabled={amount == 0}>
             저장
           </Button>
         </VStack>
