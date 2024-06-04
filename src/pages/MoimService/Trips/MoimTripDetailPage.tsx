@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 import Arrow from "../../../components/common/Arrow";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import Toggle from "../../../components/common/Toggle";
@@ -6,18 +7,26 @@ import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
 import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modals/Modal";
-import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import MoimScheduleEditPage from "./MoimScheduleEditPage";
 import Avatar from "../../../components/common/Avatar";
 import TextArea from "../../../components/common/TextArea";
 import { TripResDto } from "../../../types/trip/TripResponseDto";
 import { useFetch } from "../../../hooks/useFetch";
-import { TripPlaceResDTO } from "../../../types/tripPlace/TripPlaceResponseDto";
-import { TripPlacesGetURL } from "../../../utils/urlFactory";
+import {
+  TripPlacesGetURL,
+  TripReplyGetURL,
+  TripReplyPostURL,
+} from "../../../utils/urlFactory";
 import Loading from "../../../components/common/Modals/Loading";
 import addDaysAndFormat from "../../../utils/addDaysAndFormat";
 import { useState } from "react";
 import { useNavigation } from "../../../contexts/useNavigation";
+import { TripPlaceResDto } from "../../../types/tripPlace/TripPlaceResponseDto";
+import {
+  TripReplyReqDto,
+  TripReplyResDto,
+} from "../../../types/tripReply/TripReply";
+import formatDate from "../../../utils/formatDate";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimTripDetailPageProps {
@@ -82,7 +91,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
   const [isEditMode, toggleIsEditMode] = useToggle();
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
-  const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDTO>();
+  const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDto>();
   const currentScheduleImageAvilable =
     currentSchedule?.place && currentSchedule.place.placeImg;
   const toggleEditWithCheck = () => {
@@ -92,11 +101,11 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
       toggleShowEditConfirm();
     }
   };
-  const { data, isLoading, refetch } = useFetch<null, TripPlaceResDTO[]>(
+  const { data, isLoading, refetch } = useFetch<null, TripPlaceResDto[]>(
     TripPlacesGetURL(trip.tripIdx),
     "GET"
   );
-  const openScheduleDetail = (schedule: TripPlaceResDTO) => {
+  const openScheduleDetail = (schedule: TripPlaceResDto) => {
     if (isEditMode) return;
     setCurrentSchedule(schedule);
     toggleShowScheduleDetail();
@@ -217,8 +226,8 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
                               >
                                 <img
                                   className="w-full h-full"
-                                  src={schedule.place.placeImg}
-                                  alt={schedule.place.placeNameEng}
+                                  src={schedule.place!.placeImg}
+                                  alt={schedule.place!.placeNameEng}
                                 />
                               </VStack>
                             ) : (
@@ -348,84 +357,66 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
         </VStack>
       </Modal>
       {/* 여행 상세 모달 */}
-      <Modal
-        backDrop
-        xButton
-        modalType="sheet"
-        show={showScheduleDetail}
-        onClose={toggleShowScheduleDetail}
-      >
-        {currentScheduleImageAvilable && (
-          <img
-            className="absolute inset-0 w-full rounded-t-3xl -z-10 h-32 object-cover"
-            src={currentSchedule?.place.placeImg}
-            alt={currentSchedule?.place.placeNameEng}
-          />
-        )}
+      {currentSchedule && (
+        <Modal
+          backDrop
+          xButton
+          modalType="sheet"
+          show={showScheduleDetail}
+          onClose={toggleShowScheduleDetail}
+        >
+          {currentScheduleImageAvilable && (
+            <img
+              className="absolute inset-0 w-full rounded-t-3xl -z-10 h-32 object-cover"
+              src={currentSchedule?.place!.placeImg}
+              alt={currentSchedule?.place!.placeNameEng}
+            />
+          )}
 
-        <HStack className={currentScheduleImageAvilable ? "mt-32" : "mt-4"}>
-          <VStack className="leading-none font-bold !gap-0">
-            <span className="text-lg leading-tight">
-              {currentSchedule?.place
-                ? currentSchedule.place.placeNameKo
-                : currentSchedule?.placeMemo}
-            </span>
-            {(currentSchedule?.placeAmount ?? 0) > 0 && (
-              <span className="text-gray-500">
-                {currentSchedule?.placeAmount.toLocaleString()}원
+          <HStack className={currentScheduleImageAvilable ? "mt-32" : "mt-4"}>
+            <VStack className="leading-none font-bold !gap-0">
+              <span className="text-lg leading-tight">
+                {currentSchedule?.place
+                  ? currentSchedule.place.placeNameKo
+                  : currentSchedule?.placeMemo}
               </span>
-            )}
-            {currentSchedule?.place && (
-              <span className="text-gray-500 text-sm">
-                {currentSchedule.placeMemo}
-              </span>
-            )}
-          </VStack>
-          <Spacer />
-          <button
-            className="text-nowrap text-blue-500"
-            onClick={() => {
-              toggleShowScheduleDetail();
-              navigateTo({
-                page: (
-                  <MoimScheduleEditPage
-                    schedule={currentSchedule}
-                    onDone={refetch}
-                  />
-                ),
-              });
-            }}
-          >
-            수정
-          </button>
-        </HStack>
-        <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
-          <span>댓글</span>
-          <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
-            3
-          </span>
-        </HStack>
-        <VStack className="max-h-64 overflow-y-scroll">
-          {/* 댓글 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
-              </span>
-              <span className="">비밀 댓글입니다. </span>
+              {(currentSchedule?.placeAmount ?? 0) > 0 && (
+                <span className="text-gray-500">
+                  {currentSchedule?.placeAmount.toLocaleString()}원
+                </span>
+              )}
+              {currentSchedule?.place && (
+                <span className="text-gray-500 text-sm">
+                  {currentSchedule.placeMemo}
+                </span>
+              )}
             </VStack>
             <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
+            <button
+              className="text-nowrap text-blue-500"
+              onClick={() => {
+                toggleShowScheduleDetail();
+                navigateTo({
+                  page: (
+                    <MoimScheduleEditPage
+                      schedule={currentSchedule}
+                      onDone={refetch}
+                    />
+                  ),
+                });
+              }}
+            >
+              수정
+            </button>
           </HStack>
-        </VStack>
-        <HStack className="gap-2 mt-2">
-          <TextArea className="w-full" border></TextArea>
-          <button className="text-nowrap text-center">등록</button>
-        </HStack>
-      </Modal>
+          {/* 댓글 */}
+
+          <ReplyList
+            count={currentSchedule.replyCount}
+            tripPlaceIdx={currentSchedule.tripPlaceIdx}
+          />
+        </Modal>
+      )}
       <Loading show={isLoading} label="여행 일정 정보를 불러오는 중 ..." />
     </>
   );
@@ -458,5 +449,102 @@ function Goal() {
     >
       <path d="M5.75 1C6.16421 1 6.5 1.33579 6.5 1.75V3.6L8.22067 3.25587C9.8712 2.92576 11.5821 3.08284 13.1449 3.70797L13.3486 3.78943C14.9097 4.41389 16.628 4.53051 18.2592 4.1227C19.0165 3.93339 19.75 4.50613 19.75 5.28669V12.6537C19.75 13.298 19.3115 13.8596 18.6864 14.0159L18.472 14.0695C16.7024 14.5119 14.8385 14.3854 13.1449 13.708C11.5821 13.0828 9.8712 12.9258 8.22067 13.2559L6.5 13.6V21.75C6.5 22.1642 6.16421 22.5 5.75 22.5C5.33579 22.5 5 22.1642 5 21.75V1.75C5 1.33579 5.33579 1 5.75 1Z"></path>
     </svg>
+  );
+}
+
+function ReplyList({
+  count,
+  tripPlaceIdx,
+}: {
+  count: number;
+  tripPlaceIdx: number;
+}) {
+  const { data, isLoading, refetch } = useFetch<null, TripReplyResDto[]>(
+    TripReplyGetURL(tripPlaceIdx),
+    "GET"
+  );
+  const [replyDraft, setReplyDraft] = useState("");
+  // const replyPostData = useFetchTrigger<TripReplyReqDto, null>(
+  //   TripReplyPostURL(tripPlaceIdx),
+  //   "POST"
+  // );
+  // const tripReplyReqDto :TripReplyReqDto = {
+
+  // }
+  return (
+    <>
+      <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
+        <span>댓글</span>
+        <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
+          {count}
+        </span>
+      </HStack>
+      <VStack className="!gap-0">
+        {isLoading
+          ? Array.from({ length: count }, (_, i) => i + 1).map((i) => (
+              <HStack
+                key={i}
+                className="gap-2 mb-2 pb-2 border-b border-gray-200"
+              >
+                <Avatar />
+                <VStack className="!gap-0">
+                  <span className="animate-pulse">
+                    <span className="inline-block text-nowrap rounded-md w-3/12 align-middle bg-current opacity-50 mr-4">
+                      이름
+                    </span>
+                    <span className="inline-block text-nowrap rounded-md w-5/12 align-middle bg-current opacity-50">
+                      05.31 13:46
+                    </span>
+                    <span className="inline-block text-nowrap rounded-md w-7/12 align-middle bg-current opacity-50">
+                      비밀 댓글입니다.
+                    </span>
+                  </span>
+                </VStack>
+                <Spacer />
+                <span className="text-nowrap text-blue-500">수정</span>
+                <span className="text-nowrap text-red-500">삭제</span>
+              </HStack>
+            ))
+          : data &&
+            data.map((reply) => (
+              <HStack
+                key={reply.tripReplyIdx}
+                className="gap-2 mb-2 pb-2 border-b border-gray-200"
+              >
+                <Avatar />
+                <VStack className="!gap-0">
+                  <span className="">
+                    <span className="font-bold">
+                      {reply.teamMemberNickname}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {" " +
+                        formatDate(
+                          new Date(reply.lastModifiedAt ?? reply.createdAt)
+                        )}
+                    </span>
+                  </span>
+                  <span className="">{reply.tripReplyContent}</span>
+                </VStack>
+                <Spacer />
+                {
+                  <>
+                    <span className="text-nowrap text-blue-500">수정</span>
+                    <span className="text-nowrap text-red-500">삭제</span>
+                  </>
+                }
+              </HStack>
+            ))}
+        <HStack className="gap-2 mt-2">
+          <TextArea
+            className="w-full"
+            border
+            value={replyDraft}
+            onChange={(e) => setReplyDraft(e.target.value)}
+          />
+          <button className="text-nowrap text-center">등록</button>
+        </HStack>
+      </VStack>
+    </>
   );
 }

@@ -18,6 +18,7 @@ import { useAuth } from "../../../contexts/useAuth";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { TripPlaceUpdatePutURL } from "../../../utils/urlFactory";
 import Loading from "../../../components/common/Modals/Loading";
+import CommonResDto from "../../../types/CommonResDto";
 
 interface MoimScheduleEditPageProps {
   schedule: TripPlaceResDto;
@@ -34,21 +35,21 @@ function MoimScheduleEditPage({ schedule, onDone }: MoimScheduleEditPageProps) {
   const [memo, setMemo] = useState<string>(schedule.placeMemo); // 메모
   const [isPlace, toggleIsPlace] = useToggle(schedule.place != undefined);
   const [placeIdx, setPlaceIdx] = useState<number>(
-    schedule.place.placeIdx ?? -1
+    schedule.place?.placeIdx ?? 0
   );
   const [showEdit, toggleShowEdit] = useToggle();
   const [showEdited, toggleShowEdited] = useToggle();
 
   const scheduleDraft: TripPlaceUpdateReqDTO = {
-    placeIdx: isPlace ? placeIdx : -1,
+    placeIdx: isPlace ? placeIdx : 0,
     placeAmount: amount,
     placeMemo: memo,
     memberIdx: member.memberIdx,
   };
-  const { isLoading, trigger } = useFetchTrigger<TripPlaceUpdateReqDTO, null>(
-    TripPlaceUpdatePutURL(schedule.tripPlaceIdx),
-    "PUT"
-  );
+  const { isLoading, trigger } = useFetchTrigger<
+    TripPlaceUpdateReqDTO,
+    CommonResDto
+  >(TripPlaceUpdatePutURL(schedule.tripPlaceIdx), "PUT");
 
   return (
     <>
