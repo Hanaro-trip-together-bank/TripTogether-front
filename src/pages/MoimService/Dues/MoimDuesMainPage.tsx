@@ -131,7 +131,7 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
                 </select>
               </HStack>
               <HStack className="items-end !gap-0 font-bold">
-                <span className="text-xl">{total}</span>
+                <span className="text-xl">{total.toLocaleString()}</span>
                 <span>원</span>
               </HStack>
             </VStack>
@@ -155,7 +155,7 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
                         매월 {duesGetRuleFetcher.data.data.duesDate}일
                         <span className="font-bold">
                           {" "}
-                          {duesGetRuleFetcher.data.data.duesAmount}
+                          {duesGetRuleFetcher.data.data.duesAmount.toLocaleString()}
                         </span>
                         원씩 모아요!
                       </>
