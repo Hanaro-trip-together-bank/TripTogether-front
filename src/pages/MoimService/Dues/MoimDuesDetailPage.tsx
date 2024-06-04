@@ -1,17 +1,90 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import Arrow from "../../../components/common/Arrow";
 import useToggle from "../../../hooks/useToggle";
 import Modal from "../../../components/common/Modals/Modal";
+import {
+  DepositHistory,
+  DueMemDepositHisResDto,
+  DueMemStatusResDto,
+} from "../../../types/due/Due";
+import { useFetch } from "../../../hooks/useFetch.ts";
+import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDto";
+import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
+import {
+  DuesGetMemDepositHisURL,
+  DuesGetTotalAmtURL,
+  TeamMembersPostURL,
+} from "../../../utils/urlFactory.ts";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
 
 interface MoimDuesDetailPageProps {
+  memberIdx: number;
   name: string;
+  teamIdx: number;
+  accIdx: number;
 }
 
-function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
-  const [member, setMember] = useState<string>(name);
+function MoimDuesDetailPage({
+  memberIdx,
+  name,
+  teamIdx,
+  accIdx,
+}: MoimDuesDetailPageProps) {
+  const [memIdx, setMemIdx] = useState<number>(memberIdx);
+  const [memName, setMemName] = useState<string>(name);
+  const currentYear = new Date().getFullYear();
   const [showMemberList, toggleShowMemberList] = useToggle();
+  const [year, setYear] = useState<number>(currentYear);
+  const [totalAmt, setTotalAmt] = useState<number>(0);
+  const [depositList, setDepositList] = useState<DepositHistory[]>([]);
+
+  const years = Array.from(
+    new Array(20),
+    (_, index) => currentYear - 10 + index
+  );
+
+  // 모임원 전체 정보 가져오기
+  const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
+  const TeamMembersFetcher = useFetch<TeamMembersReqDto, TeamMembersResDto[]>(
+    TeamMembersPostURL(),
+    "POST",
+    requestData
+  );
+
+  const GetMemberTotalAmtFetcher = useFetchTrigger<null, DueMemStatusResDto>(
+    DuesGetTotalAmtURL(accIdx, memIdx),
+    "GET"
+  );
+
+  const GetMemDepositHisFetcher = useFetchTrigger<null, DueMemDepositHisResDto>(
+    DuesGetMemDepositHisURL(accIdx, memIdx, year),
+    "GET"
+  );
+
+  useEffect(() => {
+    if (GetMemberTotalAmtFetcher.data?.data?.duesTotalAmount)
+      setTotalAmt(GetMemberTotalAmtFetcher.data?.data.duesTotalAmount);
+  }, [GetMemberTotalAmtFetcher.data]);
+
+  useEffect(() => {
+    if (GetMemDepositHisFetcher.data?.data)
+      setDepositList(
+        GetMemDepositHisFetcher.data?.data.sort(
+          (a, b) => a.duesOfMonth - b.duesOfMonth
+        )
+      );
+  }, [GetMemDepositHisFetcher.data]);
+
+  useEffect(() => {
+    GetMemberTotalAmtFetcher.trigger(null);
+  }, [memIdx, memName]);
+
+  useEffect(() => {
+    GetMemDepositHisFetcher.trigger(null);
+  }, [year, memIdx, memName]);
+
   return (
     <>
       <VStack className="min-h-full h-full bg-white pb-8">
@@ -20,7 +93,7 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
           {/* 멤버 선택 */}
           <button onClick={toggleShowMemberList}>
             <HStack className="items-center font-bold mb-4">
-              <span className="text-xl">{name}</span>
+              <span className="text-xl">{memName}</span>
               <Arrow direction="down" />
             </HStack>
           </button>
@@ -29,42 +102,44 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
             <span> 총 입금액 </span>
             <span>
               <span className="font-bold text-xl">
-                {(10000).toLocaleString()}
+                {totalAmt.toLocaleString()}
               </span>
               원
             </span>
           </VStack>
           {/* 년도 */}
           <HStack className="w-full items-center justify-end text-sm">
-            <span>2024년</span>
-            <Arrow direction="down" />
+            <select
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value, 10))}
+            >
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}년
+                </option>
+              ))}
+            </select>
           </HStack>
           {/* 개월 리스트 */}
           <VStack className="max-h-full w-full border-y border-gray-200 my-4 overflow-y-scroll">
-            <HStack className="py-4 items-cente gap-4">
-              <span> 5월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
-            <HStack className="py-4 items-center gap-4">
-              <span> 4월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
-            <HStack className="py-4 items-center gap-4">
-              <span> 3월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
+            {depositList.length != 0 ? (
+              depositList.map((deposit) => {
+                return (
+                  <HStack
+                    className="py-4 items-center gap-4"
+                    key={deposit.duesOfMonth}
+                  >
+                    <span> {deposit.duesOfMonth}월 </span>
+                    <Spacer />
+                    <span className="font-bold">
+                      {deposit.duesAmount.toLocaleString()}원
+                    </span>
+                  </HStack>
+                );
+              })
+            ) : (
+              <NoResultView />
+            )}
           </VStack>
           <Spacer />
         </VStack>
@@ -80,19 +155,27 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-scroll gap-4 py-4">
-            <HStack className="w-full justify-between">
-              <span>안나영</span>
-              <Arrow direction="right" />
-            </HStack>
-            <HStack className="w-full justify-between">
-              <span>이신광</span>
-              <Arrow direction="right" />
-            </HStack>
-            <HStack className="w-full justify-between">
-              <span>최지웅</span>
-              <Arrow direction="right" />
-            </HStack>
+          <VStack className="max-h-72 overflow-y-scroll overflow-x-hidden gap-2 py-4">
+            {TeamMembersFetcher.data ? (
+              TeamMembersFetcher.data.map((teamMember) => {
+                return (
+                  <HStack
+                    className="justify-between"
+                    key={teamMember.teamMemberIdx}
+                    onClick={() => {
+                      setMemIdx(teamMember.memberIdx);
+                      setMemName(teamMember.memberName);
+                      toggleShowMemberList();
+                    }}
+                  >
+                    <span>{teamMember.memberName}</span>
+                    <Arrow direction="right" />
+                  </HStack>
+                );
+              })
+            ) : (
+              <NoResultView />
+            )}
           </VStack>
         </VStack>
       </Modal>
