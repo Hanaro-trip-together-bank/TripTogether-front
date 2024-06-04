@@ -43,7 +43,10 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
         setError("");
         setIsLoading(false);
       } catch (error) {
-        if (error instanceof Error) setError(error.message);
+        if (error instanceof Error) {
+          console.log(error.message);
+          setError(error.message);
+        }
       } finally {
         // setIsLoading(false);
       }
