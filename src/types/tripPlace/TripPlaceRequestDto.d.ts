@@ -12,7 +12,7 @@ export type TripPlaceOrderInfoReqDTO = {
 };
 
 export type TripPlaceUpdateReqDTO = {
-  tripIdx: number;
+  placeIdx: number;
   placeAmount: number;
   placeMemo: string;
   memberIdx: number;

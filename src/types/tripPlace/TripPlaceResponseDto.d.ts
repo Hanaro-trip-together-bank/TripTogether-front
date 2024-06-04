@@ -1,6 +1,6 @@
 import { PlaceResDto } from "../Place";
 
-export type TripPlaceResDTO = {
+export type TripPlaceResDto = {
   tripPlaceIdx: number;
   tripDate: number;
   placeOrder: number;

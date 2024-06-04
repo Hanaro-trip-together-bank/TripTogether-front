@@ -17,6 +17,8 @@ import { TripPlacesGetURL } from "../../../utils/urlFactory";
 import Loading from "../../../components/common/Modals/Loading";
 import addDaysAndFormat from "../../../utils/addDaysAndFormat";
 import { useState } from "react";
+import { useNavigation } from "../../../contexts/useNavigation";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimTripDetailPageProps {
   // trip: TripResDto;
@@ -76,6 +78,7 @@ const trip: TripResDto = {
 };
 
 function MoimTripDetailPage({}: MoimTripDetailPageProps) {
+  const { navigateTo } = useNavigation();
   const [isEditMode, toggleIsEditMode] = useToggle();
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
@@ -89,7 +92,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
       toggleShowEditConfirm();
     }
   };
-  const { data, isLoading } = useFetch<null, TripPlaceResDTO[]>(
+  const { data, isLoading, refetch } = useFetch<null, TripPlaceResDTO[]>(
     TripPlacesGetURL(trip.tripIdx),
     "GET"
   );
@@ -254,11 +257,6 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
                             <Spacer />
                             {isEditMode ? (
                               <HStack className="text-nowrap">
-                                <NavigationLink
-                                  to={{ page: <MoimScheduleEditPage /> }}
-                                >
-                                  수정
-                                </NavigationLink>
                                 <span className="text-red-500">삭제</span>
                               </HStack>
                             ) : (
@@ -383,6 +381,23 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
               </span>
             )}
           </VStack>
+          <Spacer />
+          <button
+            className="text-nowrap text-blue-500"
+            onClick={() => {
+              toggleShowScheduleDetail();
+              navigateTo({
+                page: (
+                  <MoimScheduleEditPage
+                    schedule={currentSchedule}
+                    onDone={refetch}
+                  />
+                ),
+              });
+            }}
+          >
+            수정
+          </button>
         </HStack>
         <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
           <span>댓글</span>
@@ -391,35 +406,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
           </span>
         </HStack>
         <VStack className="max-h-64 overflow-y-scroll">
-          {/* 댓글 1 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
-              </span>
-              <span className="">비밀 댓글입니다. </span>
-            </VStack>
-            <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
-          </HStack>
-          {/* 댓글 2 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
-              </span>
-              <span className="">비밀 댓글입니다. </span>
-            </VStack>
-            <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
-          </HStack>
-          {/* 댓글 3 */}
+          {/* 댓글 */}
           <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
             <Avatar />
             <VStack className="!gap-0">

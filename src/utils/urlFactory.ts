@@ -65,6 +65,10 @@ export const TeamTripsGetURL = (teamIdx: number) =>
 export const TripPlacesGetURL = (tripIdx: number) =>
   `${BASE_URL}/trips/place/${tripIdx}`;
 
+// PUT - 여행 일정 목록 읽기: TripPlaceUpdateReqDTO -> 200 OK
+export const TripPlaceUpdatePutURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/${tripPlaceIdx}`;
+
 //--------------- 장소/명소 ---------------//
 
 //--------------- 회비 ---------------//
