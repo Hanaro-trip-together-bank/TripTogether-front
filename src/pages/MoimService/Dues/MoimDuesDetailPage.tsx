@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import Arrow from "../../../components/common/Arrow";
 import useToggle from "../../../hooks/useToggle";
 import Modal from "../../../components/common/Modals/Modal";
+import { DepositHistory } from "../../../types/due/Due";
+import { useFetch } from "../../../hooks/useFetch.ts";
+import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDto";
+import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
+import { TeamMembersPostURL } from "../../../utils/urlFactory.ts";
 
 interface MoimDuesDetailPageProps {
   name: string;
+  teamIdx: number;
 }
 
-function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
+function MoimDuesDetailPage({ name, teamIdx }: MoimDuesDetailPageProps) {
   const [member, setMember] = useState<string>(name);
   const [showMemberList, toggleShowMemberList] = useToggle();
+  const [totalAmt, setTotalAmt] = useState<number>(0);
+  const [depositList, setDepositList] = useState<DepositHistory[]>([]);
+
+  // 모임원 전체 정보 가져오기
+  const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
+  const TeamMembersFetcher = useFetch<TeamMembersReqDto, TeamMembersResDto[]>(
+    TeamMembersPostURL(),
+    "POST",
+    requestData
+  );
+  console.log(TeamMembersFetcher.error);
+
   return (
     <>
       <VStack className="min-h-full h-full bg-white pb-8">
@@ -29,7 +47,7 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
             <span> 총 입금액 </span>
             <span>
               <span className="font-bold text-xl">
-                {(10000).toLocaleString()}
+                {totalAmt.toLocaleString()}
               </span>
               원
             </span>
@@ -41,30 +59,17 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
           </HStack>
           {/* 개월 리스트 */}
           <VStack className="max-h-full w-full border-y border-gray-200 my-4 overflow-y-scroll">
-            <HStack className="py-4 items-cente gap-4">
-              <span> 5월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
-            <HStack className="py-4 items-center gap-4">
-              <span> 4월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
-            <HStack className="py-4 items-center gap-4">
-              <span> 3월 </span>
-              <span className="text-xs bg-gray-100 rounded-sm py-0.5 px-1 h-fit">
-                충족
-              </span>
-              <Spacer />
-              <span className="font-bold"> {(10000).toLocaleString()}원</span>
-            </HStack>
+            {depositList.map((deposit) => {
+              return (
+                <HStack className="py-4 items-center gap-4" key={deposit.month}>
+                  <span> {deposit.month}월 </span>
+                  <Spacer />
+                  <span className="font-bold">
+                    {deposit.amount.toLocaleString()}원
+                  </span>
+                </HStack>
+              );
+            })}
           </VStack>
           <Spacer />
         </VStack>
@@ -81,18 +86,21 @@ function MoimDuesDetailPage({ name }: MoimDuesDetailPageProps) {
             모임원 선택
           </span>
           <VStack className="max-h-72 overflow-scroll gap-4 py-4">
-            <HStack className="w-full justify-between">
-              <span>안나영</span>
-              <Arrow direction="right" />
-            </HStack>
-            <HStack className="w-full justify-between">
-              <span>이신광</span>
-              <Arrow direction="right" />
-            </HStack>
-            <HStack className="w-full justify-between">
-              <span>최지웅</span>
-              <Arrow direction="right" />
-            </HStack>
+            {TeamMembersFetcher.data ? (
+              TeamMembersFetcher.data.map((teamMember) => {
+                return (
+                  <HStack
+                    className="w-full justify-between"
+                    key={teamMember.teamMemberIdx}
+                  >
+                    <span>{teamMember.memberName}</span>
+                    <Arrow direction="right" />
+                  </HStack>
+                );
+              })
+            ) : (
+              <NoResultView />
+            )}
           </VStack>
         </VStack>
       </Modal>

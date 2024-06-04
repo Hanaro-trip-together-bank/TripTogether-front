@@ -22,6 +22,7 @@ import {
 import { DuesGetRuleURL, DuesGetStatusUrl } from "../../../utils/urlFactory.ts";
 import Loading from "../../../components/common/Modals/Loading.tsx";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
+import MoimDuesDetailPage from "./MoimDuesDetailPage";
 
 interface MoimDuesMainPageProps {
   teamIdx: number;
@@ -131,7 +132,15 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
             <VStack className="p-4 h-full">
               <NavigationLink
                 className="mb-4"
-                to={{ page: <MoimDuesSetPage teamIdx={teamIdx} accIdx={accIdx} onDone={duesGetRuleFetcher.refetch}/> }}
+                to={{
+                  page: (
+                    <MoimDuesSetPage
+                      teamIdx={teamIdx}
+                      accIdx={accIdx}
+                      onDone={duesGetRuleFetcher.refetch}
+                    />
+                  ),
+                }}
               >
                 <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                   <span className="text-gray-500">
@@ -151,11 +160,6 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
                   <Arrow direction="right" />
                 </HStack>
               </NavigationLink>
-              {/*<Select*/}
-              {/*  className="w-full"*/}
-              {/*  options={["회비 낸 사람", "안 낸 사람"]}*/}
-              {/*  onSelect={setPaidOrNot}*/}
-              {/*/>*/}
               <HStack className="flex flex-col h-full">
                 <VStack className="items-center flex-grow relative">
                   <div className="flex justify-between w-full">
@@ -180,7 +184,10 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
                           key={member.memberIdx}
                           to={{
                             page: (
-                              <MoimDeusDetailPage name={member.memberName} />
+                              <MoimDuesDetailPage
+                                name={member.memberName}
+                                teamIdx={teamIdx}
+                              />
                             ),
                           }}
                         >
