@@ -63,26 +63,63 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     setShowInvitationModal(false);
   };
 
-  const { data: link, trigger: inviteLinkTrigger } = useFetchTrigger<
-    InviteTeamReqDto,
-    string
-  >(GenerateInviteLinkPostURL(), "POST");
+  // const { data: link, trigger: inviteLinkTrigger } = useFetchTrigger<
+  //   InviteTeamReqDto,
+  //   string
+  // >(GenerateInviteLinkPostURL(), "POST");
 
-  const generateInviteLink = () => {
-    const inviteTeamDto: InviteTeamReqDto = {
-      // Todo: teamIdx 가져오기
-      memberIdx: member.memberIdx,
-      teamIdx: 1,
-    };
-    inviteLinkTrigger(inviteTeamDto);
-    alert("초대 링크가 복사되었습니다."); // Todo: 복사 기능 추가하기
+  // const generateInviteLink = () => {
+  //   const inviteTeamDto: InviteTeamReqDto = {
+  //     // Todo: teamIdx 가져오기
+  //     memberIdx: member.memberIdx,
+  //     teamIdx: 1,
+  //   };
+  //   inviteLinkTrigger(inviteTeamDto);
+  //   alert("초대 링크가 복사되었습니다."); // Todo: 복사 기능 추가하기
+  // };
+
+  // useEffect(() => {
+  //   if (link) {
+  //     console.log("링크 확인: " + link);
+  //   }
+  // }, [link]);
+
+  // 초대링크 복사
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("초대 링크가 복사되었습니다!");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  useEffect(() => {
-    if (link) {
-      console.log(link);
-    }
-  }, [link]);
+  const fetchGenerateLink = () => {
+    fetch(GenerateInviteLinkPostURL(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // Todo: teamIdx 가져오기
+        memberIdx: member.memberIdx,
+        teamIdx: 1,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error("오류 발생");
+        }
+      })
+      .then((data) => {
+        copyToClipboard(data);
+      })
+      .catch((error) => {
+        console.error("오류 발생: ", error);
+      });
+  };
 
   // 모임원 전체 수락하기
   const { trigger: allAcceptTrigger, isLoading: allAcceptIsLoading } =
@@ -449,7 +486,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       >
         <VStack className="w-full items-center">
           <span>초대하기</span>
-          <HStack className="m-6 gap-4" onClick={generateInviteLink}>
+          <HStack className="m-6 gap-4" onClick={fetchGenerateLink}>
             <img
               className="h-20"
               src={`/images/moim/invite.png`}
