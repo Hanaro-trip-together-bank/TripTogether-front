@@ -211,7 +211,7 @@ function MoimDuesMainPage({
               >
                 <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                   <span className="text-gray-500">
-                    {duesGetRuleFetcher.data ? (
+                    {duesGetRuleFetcher.data?.data != null ? (
                       <>
                         매월 {duesGetRuleFetcher.data.data.duesDate}일
                         <span className="font-bold">
