@@ -7,12 +7,16 @@ const skinColors = {
   green: "bg-green-500",
 };
 
+type skinType = "white" | "yellow" | "black" | "green";
+type emotionType = "default" | "smile" | "upset";
 interface AvatarProps {
   backgroundColor?: string;
-  skinColor?: "white" | "yellow" | "black" | "green";
-  eye?: "default" | "smile" | "upset";
-  mouth?: "default" | "smile" | "upset";
+  skinColor?: skinType;
+  eye?: emotionType;
+  mouth?: emotionType;
   crown?: boolean;
+  random?: boolean;
+  seed?: number;
 }
 
 function Avatar({
@@ -21,7 +25,20 @@ function Avatar({
   eye = "default",
   mouth = "default",
   crown = false,
+  random = false,
+  seed,
 }: AvatarProps) {
+  if (random) {
+    skinColor = ["white", "yellow", "black", "green"][
+      Math.floor(seed ?? Math.random() * 4) % 4
+    ] as skinType;
+    mouth = ["default", "smile", "upset"][
+      Math.floor(seed ?? Math.random() * 3) % 3
+    ] as emotionType;
+    eye = ["default", "smile", "upset"][
+      Math.floor(seed ? seed * seed : Math.random() * 3) % 3
+    ] as emotionType;
+  }
   return (
     <div className="w-8 h-8">
       <VStack
