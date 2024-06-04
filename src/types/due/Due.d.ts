@@ -8,7 +8,7 @@ export type DueRuleResDto = {
   data: {
     duesDate: number;
     duesAmount: number;
-  };
+  } | null;
 };
 
 export type DueRuleSetReqDto = {

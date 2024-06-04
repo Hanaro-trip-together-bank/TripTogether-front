@@ -30,6 +30,9 @@ export const DuesGetStatusUrl = (
 
 export const DuesSetRuleURL = () => `${BASE_URL}/dues/rule`;
 
+export const DuesDeleteRuleURL = (teamIdx: number) =>
+  `${BASE_URL}/dues/rule/${teamIdx}`;
+
 export const DuesGetTotalAmtURL = (accIdx: number, memberIdx: number) =>
   `${BASE_URL}/dues/details/${accIdx}/total-amount?memberIdx=${memberIdx}`;
 
