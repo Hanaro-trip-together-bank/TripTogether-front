@@ -7,10 +7,6 @@ export type TripPlaceAddReqDTO = {
   memberIdx: number;
 };
 
-export type TripPlaceOrderInfoReqDTO = {
-  tripPlaceIdx: number;
-};
-
 export type TripPlaceUpdateReqDTO = {
   placeIdx: number;
   placeAmount: number;
@@ -20,6 +16,16 @@ export type TripPlaceUpdateReqDTO = {
 
 export type TripPlaceUpdateOrderReqDTO = {
   memberIdx: number;
-  tripDate: number;
-  orders: TripPlaceOrderInfo[];
+  newPlaces: {
+    tripDate: number;
+    placeOrder: number;
+    placeIdx: number;
+    placeAmount: number;
+    placeMemo: string;
+  }[];
+  orders: {
+    tripPlaceIdx: number;
+    placeOrder: number;
+    tripDate: number;
+  }[];
 };

@@ -69,6 +69,10 @@ export const TripPlacesGetURL = (tripIdx: number) =>
 export const TripPlaceUpdatePutURL = (tripPlaceIdx: number) =>
   `${BASE_URL}/trips/place/info/${tripPlaceIdx}`;
 
+// PUT - 여행 일정 순서 수정, 추가: TripPlaceUpdateOrderReqDTO -> 200 OK
+export const TripPlaceOrderUpdatePutURL = (tripIdx: number) =>
+  `${BASE_URL}/trips/place/${tripIdx}`;
+
 //--------------- 댓글 ---------------//
 // GET - 댓글 목록 조회: () -> TripReplyResDto[]
 export const TripReplyGetURL = (tripPlaceIdx: number) =>
@@ -78,10 +82,10 @@ export const TripReplyPostURL = (tripPlaceIdx: number) =>
   `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
 // PUT - 댓글 수정: TripReplyUpdateReqDto -> 200 ok
 export const TripReplyPutURL = (tripPlaceIdx: number) =>
-  `${BASE_URL}/trips/place/${tripPlaceIdx}`;
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
 // DELETE - 댓글 삭제: TripReplyDeleteReqDto -> 200 ok
 export const TripReplyDeleteURL = (tripPlaceIdx: number) =>
-  `${BASE_URL}/trips/place/${tripPlaceIdx}`;
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
 
 //--------------- 장소/명소 ---------------//
 

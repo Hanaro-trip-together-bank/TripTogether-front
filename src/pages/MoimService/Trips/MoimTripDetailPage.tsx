@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-empty-pattern */
 import Arrow from "../../../components/common/Arrow";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
@@ -13,87 +14,45 @@ import TextArea from "../../../components/common/TextArea";
 import { TripResDto } from "../../../types/trip/TripResponseDto";
 import { useFetch } from "../../../hooks/useFetch";
 import {
+  TripPlaceOrderUpdatePutURL,
   TripPlacesGetURL,
+  TripReplyDeleteURL,
   TripReplyGetURL,
   TripReplyPostURL,
 } from "../../../utils/urlFactory";
 import Loading from "../../../components/common/Modals/Loading";
 import addDaysAndFormat from "../../../utils/addDaysAndFormat";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigation } from "../../../contexts/useNavigation";
 import { TripPlaceResDto } from "../../../types/tripPlace/TripPlaceResponseDto";
 import {
+  TripReplyDeleteReqDto,
   TripReplyReqDto,
   TripReplyResDto,
 } from "../../../types/tripReply/TripReply";
 import formatDate from "../../../utils/formatDate";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
+import { TripPlaceUpdateOrderReqDTO } from "../../../types/tripPlace/TripPlaceRequestDto";
+import { useAuth } from "../../../contexts/useAuth";
 
 interface MoimTripDetailPageProps {
-  // trip: TripResDto;
+  trip: TripResDto;
 }
 
-const colorPacks: ColorPack[] = [
-  {
-    textColor: "text-indigo-400",
-    backgroundColor: "bg-indigo-400",
-    borderColor: "border-indigo-400",
-  },
-  {
-    textColor: "text-pink-300",
-    backgroundColor: "bg-pink-300",
-    borderColor: "border-pink-300",
-  },
-  {
-    textColor: "text-green-400",
-    backgroundColor: "bg-green-400",
-    borderColor: "border-green-400",
-  },
-];
-
-const trip: TripResDto = {
-  teamIdx: 1,
-  teamName: "하나로헤쳐모아",
-  tripIdx: 1,
-  tripName: "여행1",
-  tripContent: "여행 떠나보자",
-  tripGoalAmount: 10000000.0,
-  tripDay: 10,
-  tripImg: null,
-  tripStartDay: "2024-01-01",
-  countryIdx: 1487275,
-  countryNameKo: "사이판",
-  countryNameEng: "Saipan",
-  cities: [
-    {
-      cityIdx: 85,
-      countryIdx: 1487275,
-      cityNameKo: "사이판",
-      cityNameEng: "Saipan",
-      naverId: "MPSPN60716",
-      cityImg:
-        "https://search.pstatic.net/common?src=https://dbscthumb-phinf.pstatic.net/5885_000_14/20210923171512425_KEEY39R2W.jpg/fb425_3_i1.jpg?type=w540_fst",
-    },
-    {
-      cityIdx: 88,
-      countryIdx: 293961,
-      cityNameKo: "콜롬보",
-      cityNameEng: "Colombo",
-      naverId: "LKCMB293962",
-      cityImg:
-        "https://search.pstatic.net/common?src=https://dbscthumb-phinf.pstatic.net/5885_000_14/20211018170103053_GS5V20HPU.jpg/fb466_3_i1.jpg?type=w540_fst",
-    },
-  ],
-};
-
-function MoimTripDetailPage({}: MoimTripDetailPageProps) {
+function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
+  const { member } = useAuth();
   const { navigateTo } = useNavigation();
   const [isEditMode, toggleIsEditMode] = useToggle();
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
   const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDto>();
+  const colorBias = useMemo(
+    () => Math.floor(Math.random() * colorPacks.length),
+    []
+  );
   const currentScheduleImageAvilable =
     currentSchedule?.place && currentSchedule.place.placeImg;
+
   const toggleEditWithCheck = () => {
     if (!isEditMode) {
       toggleIsEditMode();
@@ -101,15 +60,130 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
       toggleShowEditConfirm();
     }
   };
-  const { data, isLoading, refetch } = useFetch<null, TripPlaceResDto[]>(
-    TripPlacesGetURL(trip.tripIdx),
-    "GET"
-  );
+  const { data, isLoading, setData, refetch } = useFetch<
+    null,
+    TripPlaceResDto[]
+  >(TripPlacesGetURL(trip.tripIdx), "GET");
   const openScheduleDetail = (schedule: TripPlaceResDto) => {
     if (isEditMode) return;
     setCurrentSchedule(schedule);
     toggleShowScheduleDetail();
   };
+  const upSchedule = (day: number, currentOrder: number) => {
+    // 첫 날 첫번째는 무시
+    if (day == 1 && currentOrder == 1) return;
+    const schedulesDraft = [...(data ?? [])];
+    // 그 날의 첫번째라면 이전 날 맨 뒤로 넣기
+    if (currentOrder == 1) {
+      const lastDaysLastOrder: number = schedulesDraft.reduce(
+        (maxOrder, cur) => {
+          if (cur.tripDate == day) return Math.max(cur.placeOrder, maxOrder);
+          else return maxOrder;
+        },
+        0
+      );
+      setData(
+        schedulesDraft.map((schedule) => {
+          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              tripDate: day - 1,
+              placeOrder: lastDaysLastOrder + 1,
+            };
+          else return schedule;
+        })
+      );
+      return;
+    }
+    //아니면 바로 이전 인덱스랑 바꿔치기
+    setData(
+      schedulesDraft.map((schedule) => {
+        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder - 1,
+          };
+        if (schedule.placeOrder == currentOrder - 1 && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder,
+          };
+        else return schedule;
+      })
+    );
+    return;
+  };
+  const downSchedule = (day: number, currentOrder: number) => {
+    const schedulesDraft = [...(data ?? [])];
+    const lastDaysLastOrder: number = schedulesDraft.reduce((maxOrder, cur) => {
+      if (cur.tripDate == trip.tripDay)
+        return Math.max(cur.placeOrder, maxOrder);
+      else return maxOrder;
+    }, 0);
+    // 마지막날 마지막은 무시
+    if (day == trip.tripDay && currentOrder == lastDaysLastOrder) return;
+    const thatDaysLastOrder: number = schedulesDraft.reduce((maxOrder, cur) => {
+      if (cur.tripDate == day) return Math.max(cur.placeOrder, maxOrder);
+      else return maxOrder;
+    }, 0);
+    // 그 날의 마지막이라면 다음 날 맨 앞에 넣기
+    if (currentOrder == thatDaysLastOrder) {
+      setData(
+        schedulesDraft.map((schedule) => {
+          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              tripDate: day + 1,
+              placeOrder: 1,
+            };
+          if (schedule.tripDate == day + 1)
+            return {
+              ...schedule,
+              placeOrder: schedule.placeOrder + 1,
+            };
+          else return schedule;
+        })
+      );
+      return;
+    }
+    //아니면 바로 다음 인덱스랑 바꿔치기
+    setData(
+      schedulesDraft.map((schedule) => {
+        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder + 1,
+          };
+        if (schedule.placeOrder == currentOrder + 1 && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder,
+          };
+        else return schedule;
+      })
+    );
+    return;
+  };
+
+  const tripOrderUpdateData = useFetchTrigger<TripPlaceUpdateOrderReqDTO, null>(
+    TripPlaceOrderUpdatePutURL(trip.tripIdx),
+    "PUT"
+  );
+  const updateOrder = () => {
+    const tripPlaceUpdateOrderReqDto: TripPlaceUpdateOrderReqDTO = {
+      memberIdx: member.memberIdx,
+      newPlaces: [],
+      orders: (data ?? []).map((schedule) => ({
+        tripPlaceIdx: schedule.tripPlaceIdx,
+        placeOrder: schedule.placeOrder,
+        tripDate: schedule.tripDate,
+      })),
+    };
+    tripOrderUpdateData.trigger(tripPlaceUpdateOrderReqDto);
+  };
+  useEffect(() => {
+    if (!tripOrderUpdateData.isLoading) refetch();
+  }, [tripOrderUpdateData.isLoading]);
 
   return (
     <>
@@ -123,9 +197,10 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
           />
         </HStack>
         {/* 여행 계획 컨테이너 */}
-        <VStack className="h-full overflow-y-scroll px-8 py-6">
+        <VStack className="h-full overflow-y-scroll pl-8 pr-4 py-6">
           {Array.from({ length: trip.tripDay }, (_, i) => i + 1).map((day) => {
-            const { textColor, borderColor } = colorPacks[day % 3];
+            const { textColor, borderColor } =
+              colorPacks[(day + colorBias) % colorPacks.length];
             return (
               <VStack
                 key={`day-${day}`}
@@ -185,6 +260,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
                 </VStack>
                 {data
                   ?.filter((schedule) => schedule.tripDate == day)
+                  .sort((a, b) => a.placeOrder - b.placeOrder)
                   .map((schedule) => {
                     const imageAvailable =
                       schedule?.place && schedule.place.placeImg;
@@ -195,21 +271,31 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
                             {/* 평소엔 장소 있다면 이미지, 없다면 작은 점, 수정모드에선 위치조정기 */}
                             <VStack
                               className={cn(
-                                "absolute -inset-x-0.5 -translate-x-1/2 w-8 h-16 rounded-full border-4 items-center justify-center bg-white overflow-hidden transition-all z-10",
+                                "absolute -inset-x-0.5 -translate-x-1/2 w-8 h-16 rounded-full border-4 items-center justify-center bg-white transition-all z-10",
                                 borderColor,
                                 isEditMode
                                   ? "opacity-100"
                                   : "scale-y-50 opacity-0 pointer-events-none"
                               )}
                             >
-                              <button>
+                              <button
+                                className="absolute -translate-y-3 px-4 pt-4 mb-4"
+                                onClick={() =>
+                                  upSchedule(day, schedule.placeOrder)
+                                }
+                              >
                                 <Arrow
                                   strokeWidth={16}
                                   className={textColor}
                                   direction="up"
                                 />
                               </button>
-                              <button>
+                              <button
+                                className="absolute translate-y-3 px-4 pb-4 mt-4"
+                                onClick={() =>
+                                  downSchedule(day, schedule.placeOrder)
+                                }
+                              >
                                 <Arrow
                                   strokeWidth={16}
                                   className={textColor}
@@ -339,6 +425,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
               onClick={() => {
                 toggleIsEditMode();
                 toggleShowEditConfirm();
+                refetch();
               }}
             >
               버리기
@@ -349,6 +436,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
               onClick={() => {
                 toggleIsEditMode();
                 toggleShowEditConfirm();
+                updateOrder();
               }}
             >
               적용
@@ -414,6 +502,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
           <ReplyList
             count={currentSchedule.replyCount}
             tripPlaceIdx={currentSchedule.tripPlaceIdx}
+            onChange={refetch}
           />
         </Modal>
       )}
@@ -455,38 +544,78 @@ function Goal() {
 function ReplyList({
   count,
   tripPlaceIdx,
+  onChange,
 }: {
   count: number;
   tripPlaceIdx: number;
+  onChange: () => void;
 }) {
+  const { member } = useAuth();
   const { data, isLoading, refetch } = useFetch<null, TripReplyResDto[]>(
     TripReplyGetURL(tripPlaceIdx),
     "GET"
   );
+  // 댓글 등록 관련
   const [replyDraft, setReplyDraft] = useState("");
-  // const replyPostData = useFetchTrigger<TripReplyReqDto, null>(
-  //   TripReplyPostURL(tripPlaceIdx),
-  //   "POST"
-  // );
-  // const tripReplyReqDto :TripReplyReqDto = {
+  const replyPostData = useFetchTrigger<TripReplyReqDto, null>(
+    TripReplyPostURL(tripPlaceIdx),
+    "POST"
+  );
+  const postReply = () => {
+    if (replyDraft === "") return;
+    const tripReplyReqDto: TripReplyReqDto = {
+      memberIdx: member.memberIdx,
+      tripReplyContent: replyDraft,
+    };
+    replyPostData.trigger(tripReplyReqDto);
+  };
+  useEffect(() => {
+    if (!replyPostData.isLoading) {
+      refetch();
+      onChange();
+      setReplyDraft("");
+    }
+  }, [replyPostData.isLoading]);
+  // 댓글 삭제 관련
+  const replyDeleteData = useFetchTrigger<TripReplyDeleteReqDto, null>(
+    TripReplyDeleteURL(tripPlaceIdx),
+    "DELETE"
+  );
+  const deleteReply = (tripReplyIdx: number) => {
+    const tripReplyDeleteReqDto: TripReplyDeleteReqDto = {
+      memberIdx: member.memberIdx,
+      tripReplyIdx: tripReplyIdx,
+    };
+    replyDeleteData.trigger(tripReplyDeleteReqDto);
+  };
+  useEffect(() => {
+    if (!replyDeleteData.isLoading) {
+      refetch();
+      onChange();
+    }
+  }, [replyDeleteData.isLoading]);
 
-  // }
   return (
     <>
       <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
         <span>댓글</span>
         <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
-          {count}
+          {data?.length ?? count}
         </span>
       </HStack>
-      <VStack className="!gap-0">
+      <VStack className="!gap-0 max-h-80 overflow-y-scroll">
         {isLoading
           ? Array.from({ length: count }, (_, i) => i + 1).map((i) => (
               <HStack
                 key={i}
                 className="gap-2 mb-2 pb-2 border-b border-gray-200"
               >
-                <Avatar />
+                <Avatar
+                  backgroundColor={
+                    colorPacks[i % colorPacks.length].backgroundColor
+                  }
+                  random
+                />
                 <VStack className="!gap-0">
                   <span className="animate-pulse">
                     <span className="inline-block text-nowrap rounded-md w-3/12 align-middle bg-current opacity-50 mr-4">
@@ -501,8 +630,6 @@ function ReplyList({
                   </span>
                 </VStack>
                 <Spacer />
-                <span className="text-nowrap text-blue-500">수정</span>
-                <span className="text-nowrap text-red-500">삭제</span>
               </HStack>
             ))
           : data &&
@@ -511,7 +638,14 @@ function ReplyList({
                 key={reply.tripReplyIdx}
                 className="gap-2 mb-2 pb-2 border-b border-gray-200"
               >
-                <Avatar />
+                <Avatar
+                  backgroundColor={
+                    colorPacks[reply.memberIdx % colorPacks.length]
+                      .backgroundColor
+                  }
+                  seed={reply.memberIdx}
+                  random
+                />
                 <VStack className="!gap-0">
                   <span className="">
                     <span className="font-bold">
@@ -527,24 +661,94 @@ function ReplyList({
                   <span className="">{reply.tripReplyContent}</span>
                 </VStack>
                 <Spacer />
-                {
+                {reply.memberIdx == member?.memberIdx && (
                   <>
-                    <span className="text-nowrap text-blue-500">수정</span>
-                    <span className="text-nowrap text-red-500">삭제</span>
+                    <button className="text-nowrap text-blue-500">수정</button>
+                    <button
+                      className="text-nowrap text-red-500"
+                      onClick={() => deleteReply(reply.tripReplyIdx)}
+                    >
+                      삭제
+                    </button>
                   </>
-                }
+                )}
               </HStack>
             ))}
-        <HStack className="gap-2 mt-2">
-          <TextArea
-            className="w-full"
-            border
-            value={replyDraft}
-            onChange={(e) => setReplyDraft(e.target.value)}
-          />
-          <button className="text-nowrap text-center">등록</button>
-        </HStack>
       </VStack>
+      <HStack className="gap-2 mt-2">
+        <TextArea
+          className="w-full"
+          border
+          value={replyDraft}
+          onChange={(e) => setReplyDraft(e.target.value)}
+        />
+        <button className="text-nowrap text-center" onClick={postReply}>
+          등록
+        </button>
+      </HStack>
     </>
   );
 }
+
+const colorPacks: ColorPack[] = [
+  {
+    textColor: "text-teal-300",
+    backgroundColor: "bg-teal-300",
+    borderColor: "border-teal-300",
+  },
+  {
+    textColor: "text-cyan-400",
+    backgroundColor: "bg-cyan-400",
+    borderColor: "border-cyan-400",
+  },
+  {
+    textColor: "text-blue-400",
+    backgroundColor: "bg-blue-400",
+    borderColor: "border-blue-400",
+  },
+  {
+    textColor: "text-indigo-400",
+    backgroundColor: "bg-indigo-400",
+    borderColor: "border-indigo-400",
+  },
+  {
+    textColor: "text-violet-400",
+    backgroundColor: "bg-violet-400",
+    borderColor: "border-violet-400",
+  },
+  {
+    textColor: "text-fuchsia-400",
+    backgroundColor: "bg-fuchsia-400",
+    borderColor: "border-fuchsia-400",
+  },
+  {
+    textColor: "text-pink-400",
+    backgroundColor: "bg-pink-400",
+    borderColor: "border-pink-400",
+  },
+  {
+    textColor: "text-rose-400",
+    backgroundColor: "bg-rose-400",
+    borderColor: "border-rose-400",
+  },
+  {
+    textColor: "text-orange-400",
+    backgroundColor: "bg-orange-400",
+    borderColor: "border-orange-400",
+  },
+  {
+    textColor: "text-yellow-400",
+    backgroundColor: "bg-yellow-400",
+    borderColor: "border-yellow-400",
+  },
+  {
+    textColor: "text-lime-400",
+    backgroundColor: "bg-lime-400",
+    borderColor: "border-lime-400",
+  },
+  {
+    textColor: "text-emerald-400",
+    backgroundColor: "bg-emerald-400",
+    borderColor: "border-emerald-400",
+  },
+];
