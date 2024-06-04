@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-empty-pattern */
 import Arrow from "../../../components/common/Arrow";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import Toggle from "../../../components/common/Toggle";
@@ -7,17 +8,56 @@ import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
 import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modals/Modal";
-import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import MoimScheduleEditPage from "./MoimScheduleEditPage";
 import Avatar from "../../../components/common/Avatar";
 import TextArea from "../../../components/common/TextArea";
+import { TripResDto } from "../../../types/trip/TripResponseDto";
+import { useFetch } from "../../../hooks/useFetch";
+import {
+  TripPlaceOrderUpdatePutURL,
+  TripPlacesGetURL,
+  TripReplyDeleteURL,
+  TripReplyGetURL,
+  TripReplyPostURL,
+} from "../../../utils/urlFactory";
+import Loading from "../../../components/common/Modals/Loading";
+import addDaysAndFormat from "../../../utils/addDaysAndFormat";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigation } from "../../../contexts/useNavigation";
+import { TripPlaceResDto } from "../../../types/tripPlace/TripPlaceResponseDto";
+import {
+  TripReplyDeleteReqDto,
+  TripReplyReqDto,
+  TripReplyResDto,
+} from "../../../types/tripReply/TripReply";
+import formatDate from "../../../utils/formatDate";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
+import { TripPlaceUpdateOrderReqDTO } from "../../../types/tripPlace/TripPlaceRequestDto";
+import { useAuth } from "../../../contexts/useAuth";
+import MoimScheduleAddPage from "./MoimScheduleAddPage";
 
-interface MoimTripDetailPageProps {}
+interface MoimTripDetailPageProps {
+  trip: TripResDto;
+}
 
-function MoimTripDetailPage({}: MoimTripDetailPageProps) {
+function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
+  const { member } = useAuth();
+  const { navigateTo } = useNavigation();
   const [isEditMode, toggleIsEditMode] = useToggle();
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
+  const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDto>();
+  const { data, isLoading, setData, refetch } = useFetch<
+    null,
+    TripPlaceResDto[]
+  >(TripPlacesGetURL(trip.tripIdx), "GET");
+  const colorBias = useMemo(
+    () => Math.floor(Math.random() * colorPacks.length),
+    []
+  );
+  const currentScheduleImageAvilable =
+    currentSchedule?.place && currentSchedule.place.placeImg;
+
   const toggleEditWithCheck = () => {
     if (!isEditMode) {
       toggleIsEditMode();
@@ -25,6 +65,174 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
       toggleShowEditConfirm();
     }
   };
+  // 스케줄 상세 모달 열기
+  const openScheduleDetail = (schedule: TripPlaceResDto) => {
+    if (isEditMode) return;
+    setCurrentSchedule(schedule);
+    toggleShowScheduleDetail();
+  };
+  // 스케줄 삭제하기
+  const deleteSchedule = (day: number, currentOrder: number) => {
+    const schedulesDraft = [...(data ?? [])];
+    setData(
+      schedulesDraft
+        .filter(
+          (schedule) =>
+            !(schedule.tripDate == day && schedule.placeOrder == currentOrder)
+        )
+        .map((schedule) => {
+          if (schedule.placeOrder >= currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              placeOrder: schedule.placeOrder - 1,
+            };
+          else return schedule;
+        })
+    );
+  };
+  // 스케줄 위로 올리기
+  const upSchedule = (day: number, currentOrder: number) => {
+    // 첫 날 첫번째는 무시
+    if (day == 1 && currentOrder == 1) return;
+    const schedulesDraft = [...(data ?? [])];
+    // 그 날의 첫번째라면 이전 날 맨 뒤로 넣기
+    if (currentOrder == 1) {
+      const lastDaysLastOrder: number = schedulesDraft.reduce(
+        (maxOrder, cur) => {
+          if (cur.tripDate == day) return Math.max(cur.placeOrder, maxOrder);
+          else return maxOrder;
+        },
+        0
+      );
+      setData(
+        schedulesDraft.map((schedule) => {
+          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              tripDate: day - 1,
+              placeOrder: lastDaysLastOrder + 1,
+            };
+          else return schedule;
+        })
+      );
+      return;
+    }
+    //아니면 바로 이전 인덱스랑 바꿔치기
+    setData(
+      schedulesDraft.map((schedule) => {
+        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder - 1,
+          };
+        if (schedule.placeOrder == currentOrder - 1 && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder,
+          };
+        else return schedule;
+      })
+    );
+    return;
+  };
+  // 스케줄 밑으로 내리기
+  const downSchedule = (day: number, currentOrder: number) => {
+    const schedulesDraft = [...(data ?? [])];
+    const lastDaysLastOrder: number = schedulesDraft.reduce((maxOrder, cur) => {
+      if (cur.tripDate == trip.tripDay)
+        return Math.max(cur.placeOrder, maxOrder);
+      else return maxOrder;
+    }, 0);
+    // 마지막날 마지막은 무시
+    if (day == trip.tripDay && currentOrder == lastDaysLastOrder) return;
+    const thatDaysLastOrder: number = schedulesDraft.reduce((maxOrder, cur) => {
+      if (cur.tripDate == day) return Math.max(cur.placeOrder, maxOrder);
+      else return maxOrder;
+    }, 0);
+    // 그 날의 마지막이라면 다음 날 맨 앞에 넣기
+    if (currentOrder == thatDaysLastOrder) {
+      setData(
+        schedulesDraft.map((schedule) => {
+          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+            return {
+              ...schedule,
+              tripDate: day + 1,
+              placeOrder: 1,
+            };
+          if (schedule.tripDate == day + 1)
+            return {
+              ...schedule,
+              placeOrder: schedule.placeOrder + 1,
+            };
+          else return schedule;
+        })
+      );
+      return;
+    }
+    //아니면 바로 다음 인덱스랑 바꿔치기
+    setData(
+      schedulesDraft.map((schedule) => {
+        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder + 1,
+          };
+        if (schedule.placeOrder == currentOrder + 1 && schedule.tripDate == day)
+          return {
+            ...schedule,
+            placeOrder: currentOrder,
+          };
+        else return schedule;
+      })
+    );
+    return;
+  };
+  // 스케줄 추가하기
+  const addSchedule = (newSchedule: TripPlaceResDto) => {
+    const schedulesDraft = [...(data ?? [])];
+    setData([
+      ...schedulesDraft.map((schedule) => {
+        if (
+          schedule.tripDate == newSchedule.tripDate &&
+          schedule.placeOrder >= newSchedule.placeOrder
+        )
+          return {
+            ...schedule,
+            placeOrder: schedule.placeOrder + 1,
+          };
+        else return schedule;
+      }),
+      newSchedule,
+    ]);
+  };
+
+  const tripOrderUpdateData = useFetchTrigger<TripPlaceUpdateOrderReqDTO, null>(
+    TripPlaceOrderUpdatePutURL(trip.tripIdx),
+    "PUT"
+  );
+  const updateOrder = () => {
+    const tripPlaceUpdateOrderReqDto: TripPlaceUpdateOrderReqDTO = {
+      memberIdx: member.memberIdx,
+      newPlaces: (data ?? [])
+        .filter((schedule) => schedule.tripPlaceIdx == 0)
+        .map((schedule) => ({
+          tripDate: schedule.tripDate,
+          placeOrder: schedule.placeOrder,
+          placeIdx: schedule.place?.placeIdx ?? 0,
+          placeAmount: schedule.placeAmount,
+          placeMemo: schedule.placeMemo,
+        })),
+      orders: (data ?? []).map((schedule) => ({
+        tripPlaceIdx: schedule.tripPlaceIdx,
+        placeOrder: schedule.placeOrder,
+        tripDate: schedule.tripDate,
+      })),
+    };
+    tripOrderUpdateData.trigger(tripPlaceUpdateOrderReqDto);
+  };
+  useEffect(() => {
+    if (!tripOrderUpdateData.isLoading) refetch();
+  }, [tripOrderUpdateData.isLoading]);
 
   return (
     <>
@@ -38,511 +246,236 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
           />
         </HStack>
         {/* 여행 계획 컨테이너 */}
-        <VStack className="h-full overflow-y-scroll px-8 py-6">
-          {/* 1일차 */}
-          <VStack className="border-l-4 w-full h-fit pb-4 border-indigo-400 gap-6">
-            <HStack className="relative items-center px-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-10 h-10 rounded-full border-4 items-center justify-center border-indigo-400 bg-white">
-                <span className="text-indigo-400 text-xl font-extrabold text-center">
-                  1
-                </span>
-              </VStack>
-              <span className="w-full text-center text-xl font-bold underline underline-offset-4">
-                1일차
-              </span>
-              <Spacer />
-              <span className="absolute text-gray-500 right-0">07.16(수)</span>
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
+        <VStack className="h-full overflow-y-scroll pl-8 pr-4 py-6">
+          {Array.from({ length: trip.tripDay }, (_, i) => i + 1).map((day) => {
+            const { textColor, borderColor } =
+              colorPacks[(day + colorBias) % colorPacks.length];
+            return (
+              <VStack
+                key={`day-${day}`}
                 className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
+                  "border-l-4 w-full h-fit pb-16 gap-6",
+                  borderColor
                 )}
               >
-                +
-              </button>
-            </VStack>
-            {/* 장소 있는 일정 */}
-            <button onClick={toggleShowScheduleDetail}>
-              <HStack className="relative items-center pl-6">
-                {/* 평소엔 장소 있다면 이미지, 없다면 작은 점, 수정모드에선 위치조정기 */}
-
-                <VStack
-                  className={cn(
-                    "absolute -inset-x-0.5 -translate-x-1/2 w-8 h-16 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden transition-all z-10",
-                    isEditMode
-                      ? "opacity-100"
-                      : "scale-y-50 opacity-0 pointer-events-none"
-                  )}
-                >
-                  <button>
-                    <Arrow
-                      strokeWidth={16}
-                      className="text-indigo-400"
-                      direction="up"
-                    />
-                  </button>
-                  <button>
-                    <Arrow
-                      strokeWidth={16}
-                      className="text-indigo-400"
-                      direction="down"
-                    />
-                  </button>
-                </VStack>
-
-                <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-8 h-8 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden">
-                  <img
-                    src="https://velog.velcdn.com/images/planic324/profile/e5038e08-c4d1-4135-8a77-c9d38344ea9f/image.JPG"
-                    alt=""
-                  />
-                </VStack>
-
-                <VStack className="leading-none items-start text-start font-bold !gap-0">
-                  {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                  <span className="text-lg leading-tight line-clamp-2">
-                    유니버셜 스튜디오 재팬 (ユニバーサル・スタジオ・ジャパン)
-                  </span>
-                  {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                  <span className="text-gray-500 text-sm line-clamp-2">
-                    오사카의 테마파크
-                  </span>
-                  <span className="text-gray-500 text-sm">30,000¥</span>
-                </VStack>
-                <Spacer />
-                {isEditMode ? (
-                  <HStack className="text-nowrap">
-                    <NavigationLink to={{ page: <MoimScheduleEditPage /> }}>
-                      수정
-                    </NavigationLink>
-                    <span className="text-red-500">삭제</span>
+                <VStack className="gap-6">
+                  <HStack className="relative items-center px-6">
+                    <VStack
+                      className={cn(
+                        "absolute -inset-x-0.5 -translate-x-1/2 w-10 h-10 rounded-full border-4 items-center justify-center bg-white",
+                        borderColor
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "text-xl font-extrabold text-center",
+                          textColor
+                        )}
+                      >
+                        {day}
+                      </span>
+                    </VStack>
+                    <span className="w-full text-center text-xl font-bold underline underline-offset-4">
+                      {day}일차
+                    </span>
+                    <Spacer />
+                    <span className="absolute text-gray-500 right-0">
+                      {trip.tripStartDay
+                        ? addDaysAndFormat(new Date(trip.tripStartDay), day - 1)
+                        : ""}
+                    </span>
                   </HStack>
-                ) : (
-                  <HStack>
-                    <SpeechBubble />
-                    <span> 2</span>
-                    <Arrow direction="right" />
-                  </HStack>
-                )}
-              </HStack>
-            </button>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  숙소로 이동
-                </span>
-                <span className="text-gray-500">30,000¥</span>
-                {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-gray-500 text-sm line-clamp-2">
-                  오사카의 테마파크
-                </span>
+                  {/* 평소엔 구분선, 설정모드에선 +버튼 */}
+                  <VStack
+                    className={cn(
+                      "relative border-b ml-4 transition-all items-center justify-center",
+                      isEditMode ? "h-0" : "h-0",
+                      borderColor
+                    )}
+                  >
+                    <button
+                      className={cn(
+                        "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 mx-auto transition-all",
+                        isEditMode
+                          ? "opacity-100 scale-100"
+                          : "opacity-0 scale-50",
+                        borderColor,
+                        textColor
+                      )}
+                      onClick={() =>
+                        navigateTo({
+                          page: (
+                            <MoimScheduleAddPage
+                              onDone={addSchedule}
+                              cities={trip.cities}
+                              tripDate={day}
+                              placeOrder={1}
+                            />
+                          ),
+                        })
+                      }
+                    >
+                      +
+                    </button>
+                  </VStack>
+                </VStack>
+                {data
+                  ?.filter((schedule) => schedule.tripDate == day)
+                  .sort((a, b) => a.placeOrder - b.placeOrder)
+                  .map((schedule) => {
+                    const imageAvailable =
+                      schedule?.place && schedule.place.placeImg;
+                    return (
+                      <VStack key={schedule.tripPlaceIdx} className="gap-6">
+                        <button onClick={() => openScheduleDetail(schedule)}>
+                          <HStack className="relative items-center pl-8">
+                            {/* 평소엔 장소 있다면 이미지, 없다면 작은 점, 수정모드에선 위치조정기 */}
+                            <VStack
+                              className={cn(
+                                "absolute -inset-x-0.5 -translate-x-1/2 w-8 h-16 rounded-full border-4 items-center justify-center bg-white transition-all z-10",
+                                borderColor,
+                                isEditMode
+                                  ? "opacity-100"
+                                  : "scale-y-50 opacity-0 pointer-events-none"
+                              )}
+                            >
+                              <button
+                                className="absolute -translate-y-3 px-4 pt-4 mb-4"
+                                onClick={() =>
+                                  upSchedule(day, schedule.placeOrder)
+                                }
+                              >
+                                <Arrow
+                                  strokeWidth={16}
+                                  className={textColor}
+                                  direction="up"
+                                />
+                              </button>
+                              <button
+                                className="absolute translate-y-3 px-4 pb-4 mt-4"
+                                onClick={() =>
+                                  downSchedule(day, schedule.placeOrder)
+                                }
+                              >
+                                <Arrow
+                                  strokeWidth={16}
+                                  className={textColor}
+                                  direction="down"
+                                />
+                              </button>
+                            </VStack>
+                            {imageAvailable ? (
+                              <VStack
+                                className={cn(
+                                  "absolute -inset-x-0.5 -translate-x-1/2 w-8 h-8 rounded-full border-4 items-center justify-center bg-white overflow-hidden",
+                                  borderColor
+                                )}
+                              >
+                                <img
+                                  className="w-full h-full"
+                                  src={schedule.place!.placeImg}
+                                  alt={schedule.place!.placeNameEng}
+                                />
+                              </VStack>
+                            ) : (
+                              <VStack
+                                className={cn(
+                                  "absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center bg-white overflow-hidden",
+                                  borderColor
+                                )}
+                              ></VStack>
+                            )}
+                            <VStack className="leading-none items-start text-start font-bold !gap-0">
+                              {/* 제목, 두줄 넘어가면 '...' 처리 */}
+                              {schedule.place && (
+                                <span className="text-lg leading-tight line-clamp-2">
+                                  {schedule.place.placeNameKo === ""
+                                    ? schedule.place.placeNameEng
+                                    : schedule.place.placeNameKo}
+                                </span>
+                              )}
+                              {/* 메모, 두줄 넘어가면 '...' 처리 */}
+                              {schedule.placeMemo && (
+                                <span
+                                  className={
+                                    schedule.place
+                                      ? "text-gray-500 text-sm line-clamp-2"
+                                      : "text-lg leading-tight line-clamp-2"
+                                  }
+                                >
+                                  {schedule.placeMemo}
+                                </span>
+                              )}
+                              {schedule.placeAmount > 0 && (
+                                <span className="text-gray-500 text-sm">
+                                  {schedule.placeAmount.toLocaleString()}원
+                                </span>
+                              )}
+                            </VStack>
+                            <Spacer />
+                            {isEditMode ? (
+                              <HStack className="text-nowrap">
+                                <button
+                                  className="text-red-500"
+                                  onClick={() =>
+                                    deleteSchedule(day, schedule.placeOrder)
+                                  }
+                                >
+                                  삭제
+                                </button>
+                              </HStack>
+                            ) : (
+                              <HStack>
+                                {schedule.replyCount > 0 && (
+                                  <>
+                                    <SpeechBubble />
+                                    <span> {schedule.replyCount}</span>
+                                  </>
+                                )}
+                                <Arrow direction="right" />
+                              </HStack>
+                            )}
+                          </HStack>
+                        </button>
+                        {/* 평소엔 구분선, 설정모드에선 +버튼 */}
+                        <VStack
+                          className={cn(
+                            "relative border-b ml-4 transition-all items-center justify-center",
+                            isEditMode ? "h-0" : "h-0",
+                            borderColor
+                          )}
+                        >
+                          <button
+                            className={cn(
+                              "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 mx-auto transition-all",
+                              isEditMode
+                                ? "opacity-100 scale-100"
+                                : "opacity-0 scale-50",
+                              borderColor,
+                              textColor
+                            )}
+                            onClick={() =>
+                              navigateTo({
+                                page: (
+                                  <MoimScheduleAddPage
+                                    onDone={addSchedule}
+                                    cities={trip.cities}
+                                    tripDate={day}
+                                    placeOrder={schedule.placeOrder + 1}
+                                  />
+                                ),
+                              })
+                            }
+                          >
+                            +
+                          </button>
+                        </VStack>
+                      </VStack>
+                    );
+                  })}
               </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <SpeechBubble />
-                  <span> 2</span>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  씻고자기
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-          </VStack>
-
-          {/* 2일차 */}
-          <VStack className="border-l-4 w-full h-fit pb-4 border-pink-300 gap-6">
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-10 h-10 rounded-full border-4 items-center justify-center border-pink-300 bg-white">
-                <span className="text-pink-300 text-xl font-extrabold text-center">
-                  2
-                </span>
-              </VStack>
-              <span className="w-full text-center text-xl font-bold underline underline-offset-4 pr-6">
-                2일차
-              </span>
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 있는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-8 h-8 rounded-full border-4 items-center justify-center border-pink-300 bg-white overflow-hidden">
-                <img
-                  src="https://velog.velcdn.com/images/planic324/profile/e5038e08-c4d1-4135-8a77-c9d38344ea9f/image.JPG"
-                  alt=""
-                />
-              </VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  유니버셜 스튜디오 재팬 (ユニバーサル・スタジオ・ジャパン)
-                </span>
-                <span className="text-gray-500">30,000¥</span>
-                {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-gray-500 text-sm line-clamp-2">
-                  오사카의 테마파크
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <SpeechBubble />
-                  <span> 2</span>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-pink-300 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  숙소로 이동
-                </span>
-                <span className="text-gray-500">30,000¥</span>
-                {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-gray-500 text-sm line-clamp-2">
-                  오사카의 테마파크
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <SpeechBubble />
-                  <span> 2</span>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-pink-300 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  씻고자기
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-          </VStack>
-
-          {/* 3일차 */}
-          <VStack className="border-l-4 w-full h-fit pb-4 border-indigo-400 gap-6">
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-10 h-10 rounded-full border-4 items-center justify-center border-indigo-400 bg-white">
-                <span className="text-indigo-400 text-xl font-extrabold text-center">
-                  3
-                </span>
-              </VStack>
-              <span className="w-full text-center text-xl font-bold underline underline-offset-4 pr-6">
-                3일차
-              </span>
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 있는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-8 h-8 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden">
-                <img
-                  src="https://velog.velcdn.com/images/planic324/profile/e5038e08-c4d1-4135-8a77-c9d38344ea9f/image.JPG"
-                  alt=""
-                />
-              </VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  유니버셜 스튜디오 재팬 (ユニバーサル・スタジオ・ジャパン)
-                </span>
-                <span className="text-gray-500">30,000¥</span>
-                {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-gray-500 text-sm line-clamp-2">
-                  오사카의 테마파크
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <SpeechBubble />
-                  <span> 2</span>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  숙소로 이동
-                </span>
-                <span className="text-gray-500">30,000¥</span>
-                {/* 메모, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-gray-500 text-sm line-clamp-2">
-                  오사카의 테마파크
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <SpeechBubble />
-                  <span> 2</span>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-            {/* 장소 없는 일정 */}
-            <HStack className="relative items-center pl-6">
-              <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-4 h-4 rounded-full border-4 items-center justify-center border-indigo-400 bg-white overflow-hidden"></VStack>
-              <VStack className="leading-none font-bold !gap-0">
-                {/* 제목, 두줄 넘어가면 '...' 처리 */}
-                <span className="text-lg leading-tight line-clamp-2">
-                  씻고자기
-                </span>
-              </VStack>
-              <Spacer />
-              {isEditMode ? (
-                <span className="text-nowrap">
-                  수정 <span className="text-red-500">삭제</span>
-                </span>
-              ) : (
-                <HStack>
-                  <Arrow direction="right" />
-                </HStack>
-              )}
-            </HStack>
-            {/* 평소엔 구분선, 설정모드에선 +버튼 */}
-            <VStack
-              className={cn(
-                "relative border-b ml-4 border-gray-200 transition-all items-center justify-center",
-                isEditMode ? "h-0" : "h-0"
-              )}
-            >
-              <button
-                className={cn(
-                  "absolute bg-white rounded-full w-6 h-6 leading-none text-center font-bold border-2 border-gray-400 text-gray-400 mx-auto transition-all",
-                  isEditMode ? "opacity-100 scale-100" : "opacity-0 scale-50"
-                )}
-              >
-                +
-              </button>
-            </VStack>
-          </VStack>
+            );
+          })}
 
           {/* 끝 */}
           <VStack className="border-l-4 w-full mt-4 pb-4 border-red-400 gap-6">
@@ -578,6 +511,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
               onClick={() => {
                 toggleIsEditMode();
                 toggleShowEditConfirm();
+                refetch();
               }}
             >
               버리기
@@ -588,6 +522,7 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
               onClick={() => {
                 toggleIsEditMode();
                 toggleShowEditConfirm();
+                updateOrder();
               }}
             >
               적용
@@ -596,84 +531,71 @@ function MoimTripDetailPage({}: MoimTripDetailPageProps) {
         </VStack>
       </Modal>
       {/* 여행 상세 모달 */}
-      <Modal
-        backDrop
-        xButton
-        modalType="sheet"
-        show={showScheduleDetail}
-        onClose={toggleShowScheduleDetail}
-      >
-        <img
-          className="absolute inset-0 w-full rounded-t-3xl -z-10 h-32 object-cover"
-          src="https://velog.velcdn.com/images/planic324/profile/e5038e08-c4d1-4135-8a77-c9d38344ea9f/image.JPG"
-          alt=""
-        />
-        <HStack className="mt-32">
-          <VStack className="leading-none font-bold !gap-0">
-            {/* 제목, 두줄 넘어가면 '...' 처리 */}
-            <span className="text-lg leading-tight">
-              유니버셜 스튜디오 재팬 (ユニバーサル・スタジオ・ジャパン)
-            </span>
-            <span className="text-gray-500">30,000¥</span>
-            {/* 메모, 두줄 넘어가면 '...' 처리 */}
-            <span className="text-gray-500 text-sm">오사카의 테마파크</span>
-          </VStack>
-        </HStack>
-        <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
-          <span>댓글</span>
-          <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
-            3
-          </span>
-        </HStack>
-        <VStack className="max-h-64 overflow-y-scroll">
-          {/* 댓글 1 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
+      {currentSchedule && (
+        <Modal
+          backDrop
+          xButton
+          modalType="sheet"
+          show={showScheduleDetail}
+          onClose={toggleShowScheduleDetail}
+        >
+          {currentScheduleImageAvilable && (
+            <img
+              className="absolute inset-0 w-full rounded-t-3xl -z-10 h-32 object-cover"
+              src={currentSchedule?.place!.placeImg}
+              alt={currentSchedule?.place!.placeNameEng}
+            />
+          )}
+
+          <HStack className={currentScheduleImageAvilable ? "mt-32" : "mt-4"}>
+            <VStack className="leading-none font-bold !gap-0">
+              <span className="text-lg leading-tight">
+                {currentSchedule?.place
+                  ? currentSchedule.place.placeNameKo === ""
+                    ? currentSchedule.place.placeNameEng
+                    : currentSchedule.place.placeNameKo
+                  : currentSchedule?.placeMemo}
               </span>
-              <span className="">비밀 댓글입니다. </span>
+              {(currentSchedule?.placeAmount ?? 0) > 0 && (
+                <span className="text-gray-500">
+                  {currentSchedule?.placeAmount.toLocaleString()}원
+                </span>
+              )}
+              {currentSchedule?.place && (
+                <span className="text-gray-500 text-sm">
+                  {currentSchedule.placeMemo}
+                </span>
+              )}
             </VStack>
             <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
+            <button
+              className="text-nowrap text-blue-500"
+              onClick={() => {
+                toggleShowScheduleDetail();
+                navigateTo({
+                  page: (
+                    <MoimScheduleEditPage
+                      schedule={currentSchedule}
+                      onDone={refetch}
+                      cities={trip.cities}
+                    />
+                  ),
+                });
+              }}
+            >
+              수정
+            </button>
           </HStack>
-          {/* 댓글 2 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
-              </span>
-              <span className="">비밀 댓글입니다. </span>
-            </VStack>
-            <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
-          </HStack>
-          {/* 댓글 3 */}
-          <HStack className="gap-2 mb-2 pb-2 border-b border-gray-200">
-            <Avatar />
-            <VStack className="!gap-0">
-              <span>
-                <span className="font-bold">최지웅</span>
-                <span className="text-sm text-gray-500"> 05.31 13:46</span>
-              </span>
-              <span className="">비밀 댓글입니다. </span>
-            </VStack>
-            <Spacer />
-            <span className="text-nowrap text-blue-500">수정</span>
-            <span className="text-nowrap text-red-500">삭제</span>
-          </HStack>
-        </VStack>
-        <HStack className="gap-2 mt-2">
-          <TextArea className="w-full" border></TextArea>
-          <button className="text-nowrap text-center">등록</button>
-        </HStack>
-      </Modal>
+          {/* 댓글 */}
+
+          <ReplyList
+            count={currentSchedule.replyCount}
+            tripPlaceIdx={currentSchedule.tripPlaceIdx}
+            onChange={refetch}
+          />
+        </Modal>
+      )}
+      <Loading show={isLoading} label="여행 일정 정보를 불러오는 중 ..." />
     </>
   );
 }
@@ -707,3 +629,215 @@ function Goal() {
     </svg>
   );
 }
+
+function ReplyList({
+  count,
+  tripPlaceIdx,
+  onChange,
+}: {
+  count: number;
+  tripPlaceIdx: number;
+  onChange: () => void;
+}) {
+  const { member } = useAuth();
+  const { data, isLoading, refetch } = useFetch<null, TripReplyResDto[]>(
+    TripReplyGetURL(tripPlaceIdx),
+    "GET"
+  );
+  // 댓글 등록 관련
+  const [replyDraft, setReplyDraft] = useState("");
+  const replyPostData = useFetchTrigger<TripReplyReqDto, null>(
+    TripReplyPostURL(tripPlaceIdx),
+    "POST"
+  );
+  const postReply = () => {
+    if (replyDraft === "") return;
+    const tripReplyReqDto: TripReplyReqDto = {
+      memberIdx: member.memberIdx,
+      tripReplyContent: replyDraft,
+    };
+    replyPostData.trigger(tripReplyReqDto);
+  };
+  useEffect(() => {
+    if (!replyPostData.isLoading) {
+      refetch();
+      onChange();
+      setReplyDraft("");
+    }
+  }, [replyPostData.isLoading]);
+  // 댓글 삭제 관련
+  const replyDeleteData = useFetchTrigger<TripReplyDeleteReqDto, null>(
+    TripReplyDeleteURL(tripPlaceIdx),
+    "DELETE"
+  );
+  const deleteReply = (tripReplyIdx: number) => {
+    const tripReplyDeleteReqDto: TripReplyDeleteReqDto = {
+      memberIdx: member.memberIdx,
+      tripReplyIdx: tripReplyIdx,
+    };
+    replyDeleteData.trigger(tripReplyDeleteReqDto);
+  };
+  useEffect(() => {
+    if (!replyDeleteData.isLoading) {
+      refetch();
+      onChange();
+    }
+  }, [replyDeleteData.isLoading]);
+
+  return (
+    <>
+      <HStack className="justify-end items-center mb-2 pb-2 border-b border-gray-200">
+        <span>댓글</span>
+        <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
+          {data?.length ?? count}
+        </span>
+      </HStack>
+      <VStack className="!gap-0 max-h-80 overflow-y-scroll">
+        {isLoading
+          ? Array.from({ length: count }, (_, i) => i + 1).map((i) => (
+              <HStack
+                key={i}
+                className="gap-2 mb-2 pb-2 border-b border-gray-200"
+              >
+                <Avatar
+                  backgroundColor={
+                    colorPacks[i % colorPacks.length].backgroundColor
+                  }
+                  random
+                />
+                <VStack className="!gap-0">
+                  <span className="animate-pulse">
+                    <span className="inline-block text-nowrap rounded-md w-3/12 align-middle bg-current opacity-50 mr-4">
+                      이름
+                    </span>
+                    <span className="inline-block text-nowrap rounded-md w-5/12 align-middle bg-current opacity-50">
+                      05.31 13:46
+                    </span>
+                    <span className="inline-block text-nowrap rounded-md w-7/12 align-middle bg-current opacity-50">
+                      비밀 댓글입니다.
+                    </span>
+                  </span>
+                </VStack>
+                <Spacer />
+              </HStack>
+            ))
+          : data &&
+            data.map((reply) => (
+              <HStack
+                key={reply.tripReplyIdx}
+                className="gap-2 mb-2 pb-2 border-b border-gray-200"
+              >
+                <Avatar
+                  backgroundColor={
+                    colorPacks[reply.memberIdx % colorPacks.length]
+                      .backgroundColor
+                  }
+                  seed={reply.memberIdx}
+                  random
+                />
+                <VStack className="!gap-0">
+                  <span className="">
+                    <span className="font-bold">
+                      {reply.teamMemberNickname}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {" " +
+                        formatDate(
+                          new Date(reply.lastModifiedAt ?? reply.createdAt)
+                        )}
+                    </span>
+                  </span>
+                  <span className="">{reply.tripReplyContent}</span>
+                </VStack>
+                <Spacer />
+                {reply.memberIdx == member?.memberIdx && (
+                  <>
+                    <button className="text-nowrap text-blue-500">수정</button>
+                    <button
+                      className="text-nowrap text-red-500"
+                      onClick={() => deleteReply(reply.tripReplyIdx)}
+                    >
+                      삭제
+                    </button>
+                  </>
+                )}
+              </HStack>
+            ))}
+      </VStack>
+      <HStack className="gap-2 mt-2">
+        <TextArea
+          className="w-full"
+          border
+          value={replyDraft}
+          onChange={(e) => setReplyDraft(e.target.value)}
+        />
+        <button className="text-nowrap text-center" onClick={postReply}>
+          등록
+        </button>
+      </HStack>
+    </>
+  );
+}
+
+const colorPacks: ColorPack[] = [
+  {
+    textColor: "!text-teal-300",
+    backgroundColor: "bg-teal-300",
+    borderColor: "border-teal-300",
+  },
+  {
+    textColor: "!text-cyan-400",
+    backgroundColor: "bg-cyan-400",
+    borderColor: "border-cyan-400",
+  },
+  {
+    textColor: "!text-blue-400",
+    backgroundColor: "bg-blue-400",
+    borderColor: "border-blue-400",
+  },
+  {
+    textColor: "!text-indigo-400",
+    backgroundColor: "bg-indigo-400",
+    borderColor: "border-indigo-400",
+  },
+  {
+    textColor: "!text-violet-400",
+    backgroundColor: "bg-violet-400",
+    borderColor: "border-violet-400",
+  },
+  {
+    textColor: "!text-fuchsia-400",
+    backgroundColor: "bg-fuchsia-400",
+    borderColor: "border-fuchsia-400",
+  },
+  {
+    textColor: "!text-pink-400",
+    backgroundColor: "bg-pink-400",
+    borderColor: "border-pink-400",
+  },
+  {
+    textColor: "!text-rose-400",
+    backgroundColor: "bg-rose-400",
+    borderColor: "border-rose-400",
+  },
+  {
+    textColor: "!text-orange-400",
+    backgroundColor: "bg-orange-400",
+    borderColor: "border-orange-400",
+  },
+  {
+    textColor: "!text-yellow-400",
+    backgroundColor: "bg-yellow-400",
+    borderColor: "border-yellow-400",
+  },
+  {
+    textColor: "!text-lime-400",
+    backgroundColor: "bg-lime-400",
+    borderColor: "border-lime-400",
+  },
+  {
+    textColor: "!text-emerald-400",
+    backgroundColor: "bg-emerald-400",
+    borderColor: "border-emerald-400",
+  },
+];

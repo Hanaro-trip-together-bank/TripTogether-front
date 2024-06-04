@@ -9,12 +9,31 @@ import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
 import MoimTripDetailPage from "./MoimTripDetailPage";
 import TripImage from "../../../components/trip/TripImg";
+import { useFetch } from "../../../hooks/useFetch";
+import { TeamTripsGetURL } from "../../../utils/urlFactory";
+import { TripResDto } from "../../../types/trip/TripResponseDto";
+import Loading from "../../../components/common/Modals/Loading";
+import getPeriod from "../../../utils/getPeriod";
+import getDaysRemaining from "../../../utils/getDaysRemaining";
 
-interface MoimTripsMainPageProps {}
+interface MoimTripsMainPageProps {
+  teamIdx: number;
+  currentBalance: number;
+}
 
-function MoimTripsMainPage({}: MoimTripsMainPageProps) {
+function MoimTripsMainPage({
+  teamIdx,
+  currentBalance,
+}: MoimTripsMainPageProps) {
   const [showNewTripModal, toggleShowNewTripModal] = useToggle();
   const [animationStarted, setAnimationStarted] = useState(false);
+  const { data, isLoading } = useFetch<null, TripResDto[]>(
+    TeamTripsGetURL(teamIdx),
+    "GET"
+  );
+  const portion = (goalAmount: number) =>
+    goalAmount == 0 ? 0 : currentBalance / goalAmount;
+
   useEffect(() => {
     setAnimationStarted(true);
   }, []);
@@ -26,89 +45,81 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
         <HStack className="p-4 bg-gray-100 items-center">
           <span>여행 계획</span>
           <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
-            3
+            {data?.length ?? 0}
           </span>
         </HStack>
         {/* 여행 카드들 */}
         <VStack className="overflow-y-scroll p-6">
-          {/* 카드 1 */}
-          <VStack className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4">
-            <HStack className="w-full justify-between mb-4">
-              <VStack className="items-start">
-                <span className="font-bold text-xl">여행1</span>
-                <span className="text-gray-500">파리 탐방</span>
-                <span className="text-gray-500">
-                  25.07.01 ~ 25.07.07
-                  <span className="text-yellow-500"> D-33 </span>
-                </span>
-              </VStack>
-              <VStack>
-                {/* <span className="text-xl">☆</span> */}
-                <span className="text-xl text-yellow-300">★</span>
-                <span className="text-gray-500 underline text-sm">관리</span>
-              </VStack>
-            </HStack>
-            <HStack className="relative justify-center h-52 text-primary">
-              <TripImage type={1} />
-              <VStack
-                className={cn(
-                  "items-center justify-end absolute w-full bg-white/75 transition-all duration-500 delay-100 ease-out",
-                  animationStarted ? "h-1/2" : "h-full"
-                )}
-              >
-                <span className="text-primary  font-bold">
-                  25,000 / 50,000 € (50%)
-                </span>
-              </VStack>
-            </HStack>
-            <NavigationLink
-              className="w-full"
-              to={{
-                page: <MoimTripDetailPage />,
-              }}
+          {data?.map((trip) => (
+            <VStack
+              key={trip.tripIdx}
+              className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
             >
-              <Button className="w-full">더보기</Button>
-            </NavigationLink>
-          </VStack>
+              <HStack className="w-full justify-between mb-4 overflow-hidden overflow-ellipsis">
+                <VStack className="items-start w-64">
+                  <span className="font-bold text-xl">{trip.tripName}</span>
+                  <span className="text-gray-500">
+                    {trip.countryNameKo} 탐방
+                  </span>
+                  <span className="text-gray-500 !text-wrap">
+                    {trip.tripContent}
+                  </span>
+                  <span className="text-gray-500">
+                    {trip.tripStartDay
+                      ? getPeriod(trip.tripStartDay, trip.tripDay)
+                      : `총 ${trip.tripDay}일`}
+                  </span>
 
-          {/* 카드 2 */}
-          <VStack className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4">
-            <HStack className="w-full justify-between mb-4">
-              <VStack className="items-start">
-                <span className="font-bold text-xl">여행2</span>
-                <span className="text-gray-500">이탈리아 탐방</span>
-                <span className="text-gray-500">
-                  25.07.01 ~ 25.07.07
-                  <span className="text-yellow-500"> D-33 </span>
-                </span>
-              </VStack>
-              <VStack>
-                {/* <span className="text-xl">☆</span> */}
-                <span className="text-xl text-yellow-300">★</span>
-                <span className="text-gray-500 underline text-sm">관리</span>
-              </VStack>
-            </HStack>
-            <HStack className="relative justify-center h-52 text-primary">
-              <TripImage type={2} />
-              <VStack
-                className={cn(
-                  "items-center justify-end absolute w-full bg-white/75 transition-all duration-500 delay-100 ease-out",
-                  animationStarted ? "h-1/2" : "h-full"
-                )}
+                  {trip.tripStartDay && (
+                    <span className="text-yellow-500 mb-6">
+                      {getDaysRemaining(trip.tripStartDay)}
+                    </span>
+                  )}
+                </VStack>
+                <VStack>
+                  <span className="text-xl">☆</span>
+                  {/* <span className="text-xl text-yellow-300">★</span> */}
+                  <span className="text-gray-500 underline text-sm text-nowrap">
+                    관리
+                  </span>
+                </VStack>
+              </HStack>
+              <HStack className="relative justify-center h-52 text-primary">
+                <TripImage type={trip.tripImg ?? 0} />
+                <VStack
+                  className={cn(
+                    "items-center justify-end absolute w-full bg-white/75 transition-all duration-500 delay-100 ease-out",
+                    animationStarted ? "" : "h-full"
+                  )}
+                  style={{
+                    height: `${
+                      portion(trip.tripGoalAmount) < 1
+                        ? (1 - portion(trip.tripGoalAmount)) * 100
+                        : 0
+                    }%`,
+                  }}
+                >
+                  <VStack className="!gap-0 text-primary font-bold">
+                    <span className="text-start">
+                      {currentBalance.toLocaleString()}
+                    </span>
+                    <span className="w-full text-end">
+                      / {trip.tripGoalAmount.toLocaleString()} ₩ (
+                      {portion(trip.tripGoalAmount) * 100}%)
+                    </span>
+                  </VStack>
+                </VStack>
+              </HStack>
+              <NavigationLink
+                className="w-full"
+                to={{
+                  page: <MoimTripDetailPage trip={trip} />,
+                }}
               >
-                <span className="text-primary  font-bold">
-                  25,000 / 50,000 € (50%)
-                </span>
-              </VStack>
-            </HStack>
-            <NavigationLink
-              className="w-ful"
-              to={{ page: <MoimTripDetailPage /> }}
-            >
-              <Button className="w-full">더보기</Button>
-            </NavigationLink>
-          </VStack>
-
+                <Button className="w-full">더보기</Button>
+              </NavigationLink>
+            </VStack>
+          ))}
           <Button
             className="w-full !bg-gray-100 !text-black"
             onClick={toggleShowNewTripModal}
@@ -117,6 +128,7 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
           </Button>
         </VStack>
       </VStack>
+
       {/* 새 여행 계획 생성 모달 */}
       <Modal show={showNewTripModal} onClose={toggleShowNewTripModal} backDrop>
         <VStack>
@@ -140,6 +152,7 @@ function MoimTripsMainPage({}: MoimTripsMainPageProps) {
           </HStack>
         </VStack>
       </Modal>
+      <Loading show={isLoading} label="여행 목록을 조회하는 중 ..." />
     </>
   );
 }

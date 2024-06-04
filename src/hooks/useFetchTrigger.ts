@@ -24,7 +24,9 @@ export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
     setIsLoading(true);
     const headers = { "Content-Type": "application/json" };
     const body =
-      method === "POST" || method === "PUT" ? JSON.stringify(requestData) : undefined;
+      method === "POST" || method === "PUT" || method === "DELETE"
+        ? JSON.stringify(requestData)
+        : undefined;
     const { signal } = controller;
     (async () => {
       try {
@@ -41,7 +43,10 @@ export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
         setData(json as ResponseDtoType);
         setError(undefined);
       } catch (error) {
-        if (error instanceof Error) setError(error.message ?? "");
+        if (error instanceof Error) {
+          console.log(error.message);
+          setError(error.message ?? "");
+        }
       } finally {
         setIsLoading(false);
       }

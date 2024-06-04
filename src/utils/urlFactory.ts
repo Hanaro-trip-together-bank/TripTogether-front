@@ -40,9 +40,6 @@ export const CitiesGetURL = () => `${BASE_URL}/cities`;
 export const CitiesGetByCountriesURL = (id: number) =>
   `${BASE_URL}/cities/countries/${id}`;
 
-//GET - 장소(명소) 목록 읽기
-export const PlacesGetURL = () => `${BASE_URL}/places`;
-
 //GET - 카테고리별 장소(명소) 목록 읽기
 export const PlacesGetByCategoriesURL = (categoryIdx: number) =>
   `${BASE_URL}/places/categories/${categoryIdx}`;
@@ -53,8 +50,44 @@ export const PlacesGetByCategoriesAndCitiesURL = (
   cityIdx: number
 ) => `${BASE_URL}/places?category_id=${categoryIdx}&city_id=${cityIdx}`;
 
-//GET - 장소(명소) 카테고리 목록 읽기
+// GET - 모임 여행 목록 읽기: () -> TripResDto[]
+export const TeamTripsGetURL = (teamIdx: number) =>
+  `${BASE_URL}/trips/teams/${teamIdx}`;
+
+//--------------- 여행일정 ---------------//
+// GET - 여행 일정 목록 읽기: () -> TripPlaceResDTO[]
+export const TripPlacesGetURL = (tripIdx: number) =>
+  `${BASE_URL}/trips/place/${tripIdx}`;
+
+// PUT - 여행 일정 수정: TripPlaceUpdateReqDTO -> 200 OK
+export const TripPlaceUpdatePutURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/info/${tripPlaceIdx}`;
+
+// PUT - 여행 일정 순서 수정, 추가: TripPlaceUpdateOrderReqDTO -> 200 OK
+export const TripPlaceOrderUpdatePutURL = (tripIdx: number) =>
+  `${BASE_URL}/trips/place/${tripIdx}`;
+
+//--------------- 댓글 ---------------//
+// GET - 댓글 목록 조회: () -> TripReplyResDto[]
+export const TripReplyGetURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
+// POST - 댓글 추가: TripReplyReqDto -> 200 ok
+export const TripReplyPostURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
+// PUT - 댓글 수정: TripReplyUpdateReqDto -> 200 ok
+export const TripReplyPutURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
+// DELETE - 댓글 삭제: TripReplyDeleteReqDto -> 200 ok
+export const TripReplyDeleteURL = (tripPlaceIdx: number) =>
+  `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
+
+//--------------- 장소/명소 ---------------//
+// GET - 카테고리 목록 조회: () -> CategoryResDto[]
 export const CategoriesGetURL = () => `${BASE_URL}/categories`;
+
+// GET - 명소 목록 조회: () -> PlaceResDto[]
+export const PlacesGetURL = (cityIdx: number = -1, categoryIdx: number = -1) =>
+  `${BASE_URL}/places?${categoryIdx >= 0 ? `category_id=${categoryIdx}` : ""}${cityIdx >= 0 ? `&city_id=${cityIdx}` : ""}`;
 
 //--------------- 회비 ---------------//
 

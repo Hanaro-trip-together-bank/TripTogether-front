@@ -13,55 +13,50 @@ import useKeypadMappedNumber from "../../../hooks/useKeypadMappedNumber";
 import Toggle from "../../../components/common/Toggle";
 import { useNavigation } from "../../../contexts/useNavigation";
 import { TripPlaceResDto } from "../../../types/tripPlace/TripPlaceResponseDto";
-import { TripPlaceUpdateReqDTO } from "../../../types/tripPlace/TripPlaceRequestDto";
-import { useAuth } from "../../../contexts/useAuth";
-import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
-import { TripPlaceUpdatePutURL } from "../../../utils/urlFactory";
-import Loading from "../../../components/common/Modals/Loading";
-import CommonResDto from "../../../types/CommonResDto";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import SelectPlacePage from "../../SelectPlacePage";
 import { PlaceResDto } from "../../../types/Place";
 import { CityResDto } from "../../../types/City";
 
-interface MoimScheduleEditPageProps {
-  schedule: TripPlaceResDto;
-  onDone: () => void;
+interface MoimScheduleAddPageProps {
+  onDone: (schedule: TripPlaceResDto) => void;
   cities: CityResDto[];
+  tripDate: number;
+  placeOrder: number;
 }
 
-function MoimScheduleEditPage({
+function MoimScheduleAddPage({
   cities,
-  schedule,
   onDone,
-}: MoimScheduleEditPageProps) {
-  const { member } = useAuth();
+  tripDate,
+  placeOrder,
+}: MoimScheduleAddPageProps) {
   const { back } = useNavigation();
   const [isAmountFocused, toggleIsAmountFocused] = useToggle(); // 금액 포커스하면서 숫자패드 열기
-  const { amount, append, remove, add, clear } = useKeypadMappedNumber(
-    schedule.placeAmount
-  ); // 금액 관련
-  const [memo, setMemo] = useState<string>(schedule.placeMemo); // 메모
-  const [isPlace, toggleIsPlace] = useToggle(schedule.place != undefined);
-  const [place, setPlace] = useState<PlaceResDto | null>(schedule.place);
-  const [showEdit, toggleShowEdit] = useToggle();
-  const [showEdited, toggleShowEdited] = useToggle();
+  const { amount, append, remove, add, clear } = useKeypadMappedNumber(0); // 금액 관련
+  const [memo, setMemo] = useState<string>(""); // 메모
+  const [isPlace, toggleIsPlace] = useToggle();
+  const [place, setPlace] = useState<PlaceResDto | null>(null);
+  const [showConfirm, toggleShowConfirm] = useToggle();
+  const [showConfirmed, toggleShowConfirmed] = useToggle();
 
-  const scheduleDraft: TripPlaceUpdateReqDTO = {
-    placeIdx: isPlace ? place?.placeIdx ?? 0 : 0,
+  const scheduleDraft: TripPlaceResDto = {
+    place: place,
     placeAmount: amount,
     placeMemo: memo,
-    memberIdx: member.memberIdx,
+    tripPlaceIdx: 0,
+    tripDate: tripDate,
+    placeOrder: placeOrder,
+    replyCount: 0,
   };
-  const { isLoading, trigger } = useFetchTrigger<
-    TripPlaceUpdateReqDTO,
-    CommonResDto
-  >(TripPlaceUpdatePutURL(schedule.tripPlaceIdx), "PUT");
-
+  const addSchedule = () => {
+    onDone(scheduleDraft);
+    back();
+  };
   return (
     <>
       <VStack className="min-h-full h-full pb-8 overflow-hidden">
-        <NavigationBar title={"계획 수정"} className="bg-white z-10" />
+        <NavigationBar title={"계획 추가"} className="bg-white z-10" />
         <VStack
           className={cn(
             "w-full h-full p-6 gap-4 transition-transform z-0",
@@ -146,7 +141,7 @@ function MoimScheduleEditPage({
             <Button gray className="!w-full" roundedFull onClick={back}>
               취소
             </Button>
-            <Button className="!w-full" roundedFull onClick={toggleShowEdit}>
+            <Button className="!w-full" roundedFull onClick={toggleShowConfirm}>
               저장
             </Button>
           </HStack>
@@ -170,49 +165,40 @@ function MoimScheduleEditPage({
           onDone={toggleIsAmountFocused}
         />
       </Modal>
-      {/* 수정 확인 시트 */}
-      <Modal xButton backDrop show={showEdit} onClose={toggleShowEdit}>
+      {/* 추가 확인 시트 */}
+      <Modal xButton backDrop show={showConfirm} onClose={toggleShowConfirm}>
         <VStack className="w-72 items-center text-center gap-8">
-          <span>수정 사항을 저장할까요?</span>
+          <span>이 내용으로 추가할까요?</span>
           <HStack className="w-full">
-            <Button gray roundedFull onClick={toggleShowEdit}>
+            <Button gray roundedFull onClick={toggleShowConfirm}>
               취소
             </Button>
             <Button
               className="flex-grow"
               roundedFull
               onClick={() => {
-                toggleShowEdit();
-                trigger(scheduleDraft);
-                toggleShowEdited();
+                toggleShowConfirm();
+                toggleShowConfirmed();
               }}
             >
-              저장
+              추가
             </Button>
           </HStack>
         </VStack>
       </Modal>
       {/* 수정 완료 시트 */}
-      <Modal show={showEdited} onClose={() => {}}>
+      <Modal show={showConfirmed} onClose={() => {}}>
         <VStack className="w-72 items-center gap-8">
-          <span>여행 계획을 수정했습니다.</span>
+          <span>여행 계획을 추가했습니다.</span>
           <HStack className="w-full">
-            <Button
-              className="flex-grow"
-              roundedFull
-              onClick={() => {
-                back();
-                onDone();
-              }}
-            >
+            <Button className="flex-grow" roundedFull onClick={addSchedule}>
               확인
             </Button>
           </HStack>
         </VStack>
       </Modal>
-      <Loading show={isLoading} label="수정사항을 저장하는 중 ..." />
     </>
   );
 }
 
-export default MoimScheduleEditPage;
+export default MoimScheduleAddPage;

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import useToggle from "./useToggle";
+import { useCommunicationBlock } from "../contexts/useCommunicationBlock";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // const { data, error, isLoading } =  useFetch<RequestDto, ResponseDto>(uri, method, requestData)
@@ -14,13 +15,14 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
   method: FetchMethod,
   requestData: RequestDtoType | null = null
 ) {
+  const { blocked } = useCommunicationBlock();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [data, setData] = useState<ResponseDtoType>();
   const [trigger, toggleTrigger] = useToggle();
 
   useEffect(() => {
-    if (!uri) return;
+    if (blocked || !uri) return;
     const headers = { "Content-Type": "application/json" };
     const body =
       method === "POST" || method === "PUT"
@@ -41,7 +43,10 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
         setError("");
         setIsLoading(false);
       } catch (error) {
-        if (error instanceof Error) setError(error.message);
+        if (error instanceof Error) {
+          console.log(error.message);
+          setError(error.message);
+        }
       } finally {
         // setIsLoading(false);
       }
@@ -49,5 +54,5 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
     return () => controller.abort(); //강제중지
   }, [trigger]);
 
-  return { data, error, isLoading, refetch: toggleTrigger };
+  return { data, error, isLoading, setData, refetch: toggleTrigger };
 }

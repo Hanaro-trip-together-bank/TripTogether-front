@@ -24,7 +24,7 @@
 ::-webkit-scrollbar-button:end:increment {
   display: block;
   height: 0px;
-  background: #efefef;
+  width: 0px;
 }
 
 ::-webkit-scrollbar-thumb {

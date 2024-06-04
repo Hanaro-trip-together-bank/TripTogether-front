@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import cn from "../../../utils/cn";
 import { useNavigation } from "../../../contexts/useNavigation";
 import StatusBar from "../TopBars/StatusBar";
+import { CommunicationBlockProvider } from "../../../contexts/useCommunicationBlock";
 
 function NavigationStack() {
   const { path, prevRoute } = useNavigation();
@@ -70,24 +71,26 @@ function NavigationStack() {
           </div>
         </div>
       ))}
-      {prevRoute && (
-        <div
-          key={`navigationStack#${path.length}`}
-          className={cn(
-            "absolute w-full h-full transition-all ease-in",
-            isPopAnimationStarted ? "translate-x-iPhone" : ""
-          )}
-        >
+      <CommunicationBlockProvider>
+        {prevRoute && (
           <div
+            key={`navigationStack#${path.length}`}
             className={cn(
-              "mt-12 pb-12 w-full h-full",
-              prevRoute.backgroundColor ?? "bg-white"
+              "absolute w-full h-full transition-all ease-in",
+              isPopAnimationStarted ? "translate-x-iPhone" : ""
             )}
           >
-            {prevRoute.page}
+            <div
+              className={cn(
+                "mt-12 pb-12 w-full h-full",
+                prevRoute.backgroundColor ?? "bg-white"
+              )}
+            >
+              {prevRoute.page}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </CommunicationBlockProvider>
     </div>
   );
 }
