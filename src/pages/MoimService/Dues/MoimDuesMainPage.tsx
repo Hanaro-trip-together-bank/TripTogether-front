@@ -41,7 +41,6 @@ function MoimDuesMainPage({
   teamIdx,
   teamName,
 }: MoimDuesMainPageProps) {
-
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
@@ -87,7 +86,7 @@ function MoimDuesMainPage({
       return updatedMembers;
     });
   };
-  
+
   useEffect(() => {
     if (showDuesRequest) {
       setSelectedMembers([]);
