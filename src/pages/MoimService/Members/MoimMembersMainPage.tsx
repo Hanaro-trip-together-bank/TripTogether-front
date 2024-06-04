@@ -94,6 +94,8 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     }
   };
 
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   const fetchGenerateLink = () => {
     fetch(GenerateInviteLinkPostURL(), {
       method: "POST",
@@ -114,7 +116,9 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
         }
       })
       .then((data) => {
-        copyToClipboard(data);
+        // http://localhost:8080을 BASE_URL로 치환
+        const updatedData = data.replace("http://localhost:8080", BASE_URL);
+        copyToClipboard(updatedData);
       })
       .catch((error) => {
         console.error("오류 발생: ", error);
