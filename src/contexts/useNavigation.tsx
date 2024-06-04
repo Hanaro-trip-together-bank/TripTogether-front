@@ -10,6 +10,10 @@ import { CityCartProvider, CountryCartProvider } from "./City-Cart-Context";
 import CreateTripPage from "../pages/CreateTripPage";
 import { TripProvider } from "./Trip-Context";
 import SelectCitiesPage from "../pages/SelectCitiesPage";
+import ExchangeRateMainPage from "../pages/MoimService/ExchangeRate/ExchangeRateMainPage";
+import ExchangeRateSetPage from "../pages/MoimService/ExchangeRate/ExchangeRateSetPage";
+import ExchangeRateSearchPage from "../pages/MoimService/ExchangeRate/ExchangeRateSearchPage";
+import ExchangeRateDonePage from "../pages/MoimService/ExchangeRate/ExchangeRateDonePage";
 
 type NavigationContextProp = {
   path: Route[];
