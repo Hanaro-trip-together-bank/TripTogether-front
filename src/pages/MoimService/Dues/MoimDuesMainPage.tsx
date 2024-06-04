@@ -22,6 +22,7 @@ import { DuesGetRuleURL, DuesGetStatusUrl } from "../../../utils/urlFactory.ts";
 import Loading from "../../../components/common/Modals/Loading.tsx";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger.ts";
 import MoimDuesDetailPage from "./MoimDuesDetailPage";
+import Select from "../../../components/common/Select.tsx";
 
 interface MoimDuesMainPageProps {
   teamIdx: number;
@@ -74,7 +75,13 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
     setTotal(0);
     if (duesGetTrueStatusFetcher.data?.data?.duesTotalAmount)
       setTotal(duesGetTrueStatusFetcher.data.data.duesTotalAmount);
-  }, [year, month, duesGetTrueStatusFetcher.data]);
+  }, [duesGetTrueStatusFetcher.data]);
+
+  useEffect(() => {
+    setTotal(0);
+    if (duesGetFalseStatusFetcher.data?.data?.duesTotalAmount)
+      setTotal(duesGetFalseStatusFetcher.data.data.duesTotalAmount);
+  }, [duesGetFalseStatusFetcher.data]);
 
   useEffect(() => {
     if (duesGetTrueStatusFetcher.data?.data.memberResponseDtos)
@@ -161,20 +168,11 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
               </NavigationLink>
               <HStack className="flex flex-col h-full">
                 <VStack className="items-center flex-grow relative">
-                  <div className="flex justify-between w-full">
-                    <button
-                      className="w-1/2 py-2 bg-blue-500 text-white"
-                      onClick={() => setPaidOrNot(0)}
-                    >
-                      회비 낸 사람
-                    </button>
-                    <button
-                      className="w-1/2 py-2 bg-gray-500 text-white"
-                      onClick={() => setPaidOrNot(1)}
-                    >
-                      안 낸 사람
-                    </button>
-                  </div>
+                  <Select
+                    className={"w-full"}
+                    options={["회비 낸 사람", "안 낸 사람"]}
+                    onSelect={setPaidOrNot}
+                  />
                   {dueMembers.length !== 0 ? (
                     <VStack className="flex flex-col items-center w-full h-full overflow-y-scroll">
                       {dueMembers.map((member) => (

@@ -32,6 +32,8 @@ function MoimDuesDetailPage({
   teamIdx,
   accIdx,
 }: MoimDuesDetailPageProps) {
+  const [memIdx, setMemIdx] = useState<number>(memberIdx);
+  const [memName, setMemName] = useState<string>(name);
   const currentYear = new Date().getFullYear();
   const [showMemberList, toggleShowMemberList] = useToggle();
   const [year, setYear] = useState<number>(currentYear);
@@ -51,13 +53,13 @@ function MoimDuesDetailPage({
     requestData
   );
 
-  const GetMemberTotalAmtFetcher = useFetch<null, DueMemStatusResDto>(
-    DuesGetTotalAmtURL(accIdx, memberIdx),
+  const GetMemberTotalAmtFetcher = useFetchTrigger<null, DueMemStatusResDto>(
+    DuesGetTotalAmtURL(accIdx, memIdx),
     "GET"
   );
 
   const GetMemDepositHisFetcher = useFetchTrigger<null, DueMemDepositHisResDto>(
-    DuesGetMemDepositHisURL(accIdx, memberIdx, year),
+    DuesGetMemDepositHisURL(accIdx, memIdx, year),
     "GET"
   );
 
@@ -76,8 +78,12 @@ function MoimDuesDetailPage({
   }, [GetMemDepositHisFetcher.data]);
 
   useEffect(() => {
+    GetMemberTotalAmtFetcher.trigger(null);
+  }, [memIdx, memName]);
+
+  useEffect(() => {
     GetMemDepositHisFetcher.trigger(null);
-  }, [year]);
+  }, [year, memIdx, memName]);
 
   return (
     <>
@@ -87,7 +93,7 @@ function MoimDuesDetailPage({
           {/* 멤버 선택 */}
           <button onClick={toggleShowMemberList}>
             <HStack className="items-center font-bold mb-4">
-              <span className="text-xl">{name}</span>
+              <span className="text-xl">{memName}</span>
               <Arrow direction="down" />
             </HStack>
           </button>
@@ -149,13 +155,18 @@ function MoimDuesDetailPage({
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-scroll gap-4 py-4">
+          <VStack className="max-h-72 overflow-y-scroll overflow-x-hidden gap-2 py-4">
             {TeamMembersFetcher.data ? (
               TeamMembersFetcher.data.map((teamMember) => {
                 return (
                   <HStack
-                    className="w-full justify-between"
+                    className="justify-between"
                     key={teamMember.teamMemberIdx}
+                    onClick={() => {
+                      setMemIdx(teamMember.memberIdx);
+                      setMemName(teamMember.memberName);
+                      toggleShowMemberList();
+                    }}
                   >
                     <span>{teamMember.memberName}</span>
                     <Arrow direction="right" />
