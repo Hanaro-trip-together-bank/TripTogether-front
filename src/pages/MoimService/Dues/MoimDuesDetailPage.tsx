@@ -4,18 +4,28 @@ import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import Arrow from "../../../components/common/Arrow";
 import useToggle from "../../../hooks/useToggle";
 import Modal from "../../../components/common/Modals/Modal";
-import { DepositHistory } from "../../../types/due/Due";
+import { DepositHistory, DueMemStatusResDto } from "../../../types/due/Due";
 import { useFetch } from "../../../hooks/useFetch.ts";
 import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDto";
 import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
-import { TeamMembersPostURL } from "../../../utils/urlFactory.ts";
+import {
+  DuesGetTotalAmtURL,
+  TeamMembersPostURL,
+} from "../../../utils/urlFactory.ts";
 
 interface MoimDuesDetailPageProps {
+  memberIdx: number;
   name: string;
   teamIdx: number;
+  accIdx: number;
 }
 
-function MoimDuesDetailPage({ name, teamIdx }: MoimDuesDetailPageProps) {
+function MoimDuesDetailPage({
+  memberIdx,
+  name,
+  teamIdx,
+  accIdx,
+}: MoimDuesDetailPageProps) {
   const [member, setMember] = useState<string>(name);
   const [showMemberList, toggleShowMemberList] = useToggle();
   const [totalAmt, setTotalAmt] = useState<number>(0);
@@ -28,7 +38,16 @@ function MoimDuesDetailPage({ name, teamIdx }: MoimDuesDetailPageProps) {
     "POST",
     requestData
   );
-  console.log(TeamMembersFetcher.error);
+
+  const GetMemberTotalAmtFetcher = useFetch<null, DueMemStatusResDto>(
+    DuesGetTotalAmtURL(accIdx, memberIdx),
+    "GET"
+  );
+
+  useEffect(() => {
+    if (GetMemberTotalAmtFetcher.data?.data?.duesTotalAmount)
+      setTotalAmt(GetMemberTotalAmtFetcher.data?.data.duesTotalAmount);
+  }, [GetMemberTotalAmtFetcher.data]);
 
   return (
     <>

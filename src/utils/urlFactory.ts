@@ -30,6 +30,9 @@ export const DuesGetStatusUrl = (
 
 export const DuesSetRuleURL = () => `${BASE_URL}/dues/rule`;
 
+export const DuesGetTotalAmtURL = (accIdx: number, memberIdx: number) =>
+  `${BASE_URL}/dues/details/${accIdx}/total-amount?memberIdx=${memberIdx}`;
+
 //--------------- 모임원 ---------------//
 
 // POST - 모임원 전체 출력: TeamMembersReqDto -> TeamMembersResDto

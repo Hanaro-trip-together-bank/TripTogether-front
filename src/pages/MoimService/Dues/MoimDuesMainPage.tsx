@@ -11,7 +11,6 @@ import useToggle from "../../../hooks/useToggle";
 import Modal from "../../../components/common/Modals/Modal";
 import Check from "../../../components/common/Check";
 import MoimDuesRequestPage from "./MoimDuesRequestPage";
-import MoimDeusDetailPage from "./MoimDuesDetailPage";
 import { useFetch } from "../../../hooks/useFetch.ts";
 import {
   DueMember,
@@ -186,7 +185,9 @@ function MoimDuesMainPage({ teamIdx, accIdx }: MoimDuesMainPageProps) {
                             page: (
                               <MoimDuesDetailPage
                                 name={member.memberName}
+                                memberIdx={member.memberIdx}
                                 teamIdx={teamIdx}
+                                accIdx={accIdx}
                               />
                             ),
                           }}

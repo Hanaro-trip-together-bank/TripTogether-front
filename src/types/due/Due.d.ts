@@ -8,7 +8,7 @@ export type DueRuleResDto = {
   data: {
     duesDate: number;
     duesAmount: number;
-  }
+  };
 };
 
 export type DueRuleSetReqDto = {
@@ -23,7 +23,6 @@ export type DueRuleSetResDto = {
   data: null;
 };
 
-
 export type DueMember = {
   memberIdx: number;
   memberName: string;
@@ -35,6 +34,11 @@ export type DueMemStatusResDto = {
   message: string;
   data: {
     duesTotalAmount: number | null;
-    memberResponseDtos: DueMember[];
-  }
+    memberResponseDtos: DueMember[] | null;
+  };
+};
+
+export type DepositHistory = {
+  month: number;
+  amount: number;
 };
