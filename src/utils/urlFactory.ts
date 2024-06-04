@@ -17,44 +17,44 @@ export const TripsGetURL = (tripIdx: number) => `${BASE_URL}/trips/${tripIdx}`;
 export const TipsDeleteURL = (id: number) => `${BASE_URL}/trips/${id}`;
 
 // PUT - 여행 수정
-export const TripsPutUrl = (id: number) => `${BASE_URL}/trips/${id}`;
+export const TripsPutURL = (id: number) => `${BASE_URL}/trips/${id}`;
 
 // GET - 모임 여행 목록 읽기
 export const TripsLISTGetURL = (teamIdx: number) =>
   `${BASE_URL}/trips/teams/${teamIdx}`;
 
 //GET - 대륙 목록 읽기
-export const ContinentsGetUrl = () => `${BASE_URL}/continents`;
+export const ContinentsGetUrlURL = () => `${BASE_URL}/continents`;
 
 //GET - 국가 목록 읽기
-export const CountriesGetUrl = () => `${BASE_URL}/countries`;
+export const CountriesGetURL = () => `${BASE_URL}/countries`;
 
 //GET - 대륙별 국가 목록 읽기
-export const CountriesGetByContinentUrl = (continentIdx: number) =>
+export const CountriesGetByContinentURL = (continentIdx: number) =>
   `${BASE_URL}/countries/continents/${continentIdx}`;
 
 //GET - 도시 목록 읽기
-export const CitiesGetUrl = () => `${BASE_URL}/cities`;
+export const CitiesGetURL = () => `${BASE_URL}/cities`;
 
 //GET - 국가별 도시 목록 읽기
-export const CitiesGetByCountriesUrl = (id: number) =>
+export const CitiesGetByCountriesURL = (id: number) =>
   `${BASE_URL}/cities/countries/${id}`;
 
 //GET - 장소(명소) 목록 읽기
-export const PlacesGetUrl = () => `${BASE_URL}/places`;
+export const PlacesGetURL = () => `${BASE_URL}/places`;
 
 //GET - 카테고리별 장소(명소) 목록 읽기
-export const PlacesGetByCategoriesUrl = (categoryIdx: number) =>
+export const PlacesGetByCategoriesURL = (categoryIdx: number) =>
   `${BASE_URL}/places/categories/${categoryIdx}`;
 
 //GET - 카테고리별 도시별 장소(명소) 목록 읽기
-export const PlacesGetByCategoriesAndCitiesUrl = (
+export const PlacesGetByCategoriesAndCitiesURL = (
   categoryIdx: number,
   cityIdx: number
 ) => `${BASE_URL}/places?category_id=${categoryIdx}&city_id=${cityIdx}`;
 
 //GET - 장소(명소) 카테고리 목록 읽기
-export const CategoriesGetUrl = () => `${BASE_URL}/categories`;
+export const CategoriesGetURL = () => `${BASE_URL}/categories`;
 
 //--------------- 회비 ---------------//
 
@@ -115,6 +115,9 @@ export const ExportTeamPutURL = () => `${BASE_URL}/team/export-team`;
 //POST - 회비 요청
 export const DuesRequestPostURL = (team_idx: number) =>
   `${BASE_URL}/dues/${team_idx}`;
+
+// PUT - 선호 여행 등록/수정/삭제
+export const PreferencePutURL = () => `/team/preference`;
 
 //------------------- 내 모임 --------------------------
 
