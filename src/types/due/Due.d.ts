@@ -11,6 +11,19 @@ export type DueRuleResDto = {
   }
 };
 
+export type DueRuleSetReqDto = {
+  teamIdx: number;
+  duesDate: number;
+  duesAmount: number;
+};
+
+export type DueRuleSetResDto = {
+  code: number;
+  message: string;
+  data: null;
+};
+
+
 export type DueMember = {
   memberIdx: number;
   memberName: string;
