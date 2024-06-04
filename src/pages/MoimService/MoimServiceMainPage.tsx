@@ -58,6 +58,7 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
                     <MoimDetailPage
                       teamIdx={moim.teamIdx}
                       accIdx={moim.accIdx}
+                      teamName={moim.teamName}
                     />
                   ),
                 }}
