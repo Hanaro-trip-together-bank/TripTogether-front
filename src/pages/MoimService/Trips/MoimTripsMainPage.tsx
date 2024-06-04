@@ -71,7 +71,7 @@ function MoimTripsMainPage({
                   </span>
 
                   {trip.tripStartDay && (
-                    <span className="text-yellow-500">
+                    <span className="text-yellow-500 mb-6">
                       {getDaysRemaining(trip.tripStartDay)}
                     </span>
                   )}
@@ -113,7 +113,7 @@ function MoimTripsMainPage({
               <NavigationLink
                 className="w-full"
                 to={{
-                  page: <MoimTripDetailPage />,
+                  page: <MoimTripDetailPage trip={trip} />,
                 }}
               >
                 <Button className="w-full">더보기</Button>

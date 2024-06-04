@@ -1,5 +1,3 @@
-import { CategoryResDto } from "../types/Category";
-
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 //--------------- 메인 ---------------//
@@ -42,9 +40,6 @@ export const CitiesGetURL = () => `${BASE_URL}/cities`;
 export const CitiesGetByCountriesURL = (id: number) =>
   `${BASE_URL}/cities/countries/${id}`;
 
-//GET - 장소(명소) 목록 읽기
-export const PlacesGetURL = () => `${BASE_URL}/places`;
-
 //GET - 카테고리별 장소(명소) 목록 읽기
 export const PlacesGetByCategoriesURL = (categoryIdx: number) =>
   `${BASE_URL}/places/categories/${categoryIdx}`;
@@ -54,9 +49,6 @@ export const PlacesGetByCategoriesAndCitiesURL = (
   categoryIdx: number,
   cityIdx: number
 ) => `${BASE_URL}/places?category_id=${categoryIdx}&city_id=${cityIdx}`;
-
-//GET - 장소(명소) 카테고리 목록 읽기
-export const CategoriesGetURL = () => `${BASE_URL}/categories`;
 
 // GET - 모임 여행 목록 읽기: () -> TripResDto[]
 export const TeamTripsGetURL = (teamIdx: number) =>

@@ -425,13 +425,15 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                                 </button>
                               </HStack>
                             ) : (
-                              schedule.replyCount > 0 && (
-                                <HStack>
-                                  <SpeechBubble />
-                                  <span> {schedule.replyCount}</span>
-                                  <Arrow direction="right" />
-                                </HStack>
-                              )
+                              <HStack>
+                                {schedule.replyCount > 0 && (
+                                  <>
+                                    <SpeechBubble />
+                                    <span> {schedule.replyCount}</span>
+                                  </>
+                                )}
+                                <Arrow direction="right" />
+                              </HStack>
                             )}
                           </HStack>
                         </button>
