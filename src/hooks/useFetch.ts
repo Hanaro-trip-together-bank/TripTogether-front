@@ -54,5 +54,5 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
     return () => controller.abort(); //강제중지
   }, [trigger]);
 
-  return { data, error, isLoading, refetch: toggleTrigger };
+  return { data, error, isLoading, setData, refetch: toggleTrigger };
 }

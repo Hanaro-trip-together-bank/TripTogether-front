@@ -24,7 +24,7 @@ export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
     setIsLoading(true);
     const headers = { "Content-Type": "application/json" };
     const body =
-      method === "POST" || method === "PUT"
+      method === "POST" || method === "PUT" || method === "DELETE"
         ? JSON.stringify(requestData)
         : undefined;
     const { signal } = controller;
