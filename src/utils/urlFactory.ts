@@ -81,6 +81,9 @@ export const DuesRequestPostURL = (team_idx: number) =>
 // POST - 내 모임 서비스 조회
 export const MyMoimGetURL = () => `${BASE_URL}/account`;
 
+// POST - 모임서비스 상세 조회: DetailTeamReqDto -> DetailTeamResDto
+export const MoimDetailPostURL = () => `${BASE_URL}/account/detail`;
+
 //--------------- 모임서비스 가입 ---------------//
 
 // POST - 전체 계좌 조회 (계좌 선택 기능): AccountsReqDto -> AccountsResDto

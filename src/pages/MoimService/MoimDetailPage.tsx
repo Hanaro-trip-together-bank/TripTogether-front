@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../../components/common/Stack";
@@ -14,15 +14,43 @@ import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
 import MoimDuesMainPage from "./Dues/MoimDuesMainPage";
 import MoimManagementPage from "./Management/MoimManagementPage";
+import { DetailTeamReqDto } from "../../types/team/TeamRequestDto";
+import { useFetch } from "../../hooks/useFetch";
+import { DetailTeamResDto } from "../../types/team/TeamResponseDto";
+import { MoimDetailPostURL } from "../../utils/urlFactory";
+import formatAccNo from "../../utils/formatAccNo";
+import Loading from "../../components/common/Modals/Loading";
+
 interface MoimDetailPageProps {
   teamIdx: number;
   accIdx: number;
   teamName: string;
+  teamMemberIdx: number;
 }
 
-function MoimDetailPage({ accIdx, teamIdx, teamName }: MoimDetailPageProps) {
+function MoimDetailPage({
+  accIdx,
+  teamIdx,
+  teamName,
+  teamMemberIdx,
+}: MoimDetailPageProps) {
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
+
+  // 모임서비스 상세 데이터 불러오기
+  const requestData: DetailTeamReqDto = {
+    teamIdx: teamIdx,
+    teamMemberIdx: teamMemberIdx,
+  };
+
+  const { data: moimDetailData, isLoading: moimDetailDataIsLoading } = useFetch<
+    DetailTeamReqDto,
+    DetailTeamResDto
+  >(MoimDetailPostURL(), "POST", requestData);
+
+  useEffect(() => {
+    if (!moimDetailData) return;
+  }, [moimDetailData]);
 
   return (
     <>
@@ -34,7 +62,9 @@ function MoimDetailPage({ accIdx, teamIdx, teamName }: MoimDetailPageProps) {
             className="w-full !bg-gray-200 !text-black text-left !rounded-2xl py-3"
             onClick={() => setShowNoticeEdit(true)}
           >
-            {notice == "" ? "공지를 등록해 주세요." : notice}
+            {moimDetailData?.teamNotice == null
+              ? "공지를 등록해 주세요."
+              : moimDetailData?.teamNotice}
           </Button>
         </div>
         {/* 모임 요약 카드 + 즐겨찾기한 여행 */}
@@ -43,7 +73,9 @@ function MoimDetailPage({ accIdx, teamIdx, teamName }: MoimDetailPageProps) {
             <VStack className="!gap-0 bg-white shadowed rounded-2xl h-64 m-2 mb-8 p-4">
               <HStack className="items-center">
                 <Avatar crown />
-                <span className="text-lg font-bold">하나로</span>
+                <span className="text-lg font-bold">
+                  {moimDetailData?.teamName}
+                </span>
                 <span className="text-lg text-primary font-bold"> 1</span>
                 <Arrow direction="right" />
                 <Spacer />
@@ -52,8 +84,19 @@ function MoimDetailPage({ accIdx, teamIdx, teamName }: MoimDetailPageProps) {
                 <span className="text-sm text-gray-500 underline">환전</span>
               </HStack>
 
-              <span className="text-sm text-gray-500">123-123456-12345</span>
-              <span className="text-xl font-bold">0원</span>
+              <span className="text-sm text-gray-500">
+                {moimDetailData ? (
+                  <span className="text-sm text-gray-500">
+                    {formatAccNo(moimDetailData.accNumber)}
+                  </span>
+                ) : (
+                  "000-000000-00000"
+                )}
+              </span>
+              <span className="text-xl font-bold">
+                {moimDetailData?.accBalance.toLocaleString()}원
+              </span>
+              {/* Todo: 외화 잔액 설정 */}
               <span className="text-xl font-bold text-indigo-500">99.99$</span>
               <span className="text-xl font-bold text-orange-500">4,000¥</span>
               <Spacer />
@@ -208,6 +251,10 @@ function MoimDetailPage({ accIdx, teamIdx, teamName }: MoimDetailPageProps) {
           </Button>
         </VStack>
       </Modal>
+      <Loading
+        show={moimDetailDataIsLoading}
+        label="모임 서비스를 불러오는 중..."
+      />
     </>
   );
 }
