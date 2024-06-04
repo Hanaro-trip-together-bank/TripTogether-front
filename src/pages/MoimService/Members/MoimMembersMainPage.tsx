@@ -33,14 +33,15 @@ import {
 } from "../../../types/team/TeamRequestDto";
 import Modal from "../../../components/common/Modals/Modal";
 
-interface MoimMembersMainPageProps {}
+interface MoimMembersMainPageProps {
+  teamIdx: number;
+}
 
-function MoimMembersMainPage({}: MoimMembersMainPageProps) {
+function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
   const { home } = useNavigation();
   const { member, login } = useAuth();
 
-  // Todo: teamIdx 가져오기
-  const requestData: TeamMembersReqDto = { teamIdx: 1 };
+  const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
   const [currentTeamMemberIdx, setCurrentTeamMemberIdx] = useState<number>();
 
   // 모임원 전체 정보 가져오기
@@ -103,9 +104,8 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // Todo: teamIdx 가져오기
         memberIdx: member.memberIdx,
-        teamIdx: 1,
+        teamIdx: teamIdx,
       }),
     })
       .then((response) => {
@@ -134,8 +134,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
 
   const acceptAll = () => {
     const acceptAllDto: AcceptTeamMembersReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       memberIdx: member.memberIdx,
     };
     allAcceptTrigger(acceptAllDto);
@@ -162,8 +161,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const reject = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const rejectReqDto: AcceptTeamMemberReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
@@ -191,8 +189,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const accept = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const acceptDto: AcceptTeamMemberReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
@@ -219,8 +216,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
 
   const exportAll = () => {
     const exportAllDto: RejectTeamMembersReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       memberIdx: member.memberIdx,
     };
     exportAllTrigger(exportAllDto);
@@ -247,8 +243,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const exportMember = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const exportDto: AcceptTeamMemberReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
@@ -274,8 +269,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
 
   const exportTeam = () => {
     const exportTeamDto: ExportTeamReqDto = {
-      // Todo: teamIdx 가져오기
-      teamIdx: 1,
+      teamIdx: teamIdx,
       memberIdx: member.memberIdx,
     };
     exportTeamTrigger(exportTeamDto);
@@ -296,6 +290,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const exportedTeamModalData = useModal("모임을 나갔습니다.");
 
   useEffect(() => {
+    console.log("teamIdx: " + teamIdx);
     if (!teamMemersData) return;
   }, [teamMemersData]);
 
