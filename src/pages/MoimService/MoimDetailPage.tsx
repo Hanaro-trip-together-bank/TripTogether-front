@@ -130,7 +130,7 @@ function MoimDetailPage({ accIdx, teamIdx }: MoimDetailPageProps) {
             <NavigationLink
               to={{
                 backgroundColor: "bg-gray-50",
-                page: <MoimMembersMainPage />,
+                page: <MoimMembersMainPage teamIdx={teamIdx} />,
               }}
             >
               <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
