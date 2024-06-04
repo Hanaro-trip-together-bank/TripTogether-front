@@ -44,10 +44,15 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const [currentTeamMemberIdx, setCurrentTeamMemberIdx] = useState<number>();
 
   // 모임원 전체 정보 가져오기
-  const { data: teamMemersData, isLoading: isTeamMembersLoading } = useFetch<
-    TeamMembersReqDto,
-    TeamMembersResDto[]
-  >(TeamMembersPostURL(), "POST", requestData);
+  const {
+    data: teamMemersData,
+    isLoading: isTeamMembersLoading,
+    refetch,
+  } = useFetch<TeamMembersReqDto, TeamMembersResDto[]>(
+    TeamMembersPostURL(),
+    "POST",
+    requestData
+  );
 
   // 초대하기
   const [showInvitationModal, setShowInvitationModal] = useState(false);
@@ -80,21 +85,19 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   }, [link]);
 
   // 모임원 전체 수락하기
-  const { trigger: allAcceptTrigger } = useFetchTrigger<
-    AcceptTeamMembersReqDto,
-    null
-  >(AcceptTeamMembersPutURL(), "PUT");
+  const { trigger: allAcceptTrigger, isLoading: allAcceptIsLoading } =
+    useFetchTrigger<AcceptTeamMembersReqDto, null>(
+      AcceptTeamMembersPutURL(),
+      "PUT"
+    );
 
-  const acceptAll = async () => {
+  const acceptAll = () => {
     const acceptAllDto: AcceptTeamMembersReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await allAcceptTrigger(acceptAllDto);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    allAcceptTrigger(acceptAllDto);
   };
 
   const acceptAllModalData = useModal(
@@ -109,12 +112,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const acceptedAllModalData = useModal("모임 가입 신청을 전체 수락했습니다.");
 
   // 모임원 거절하기
-  const { trigger: rejectTrigger } = useFetchTrigger<
-    AcceptTeamMemberReqDto,
-    null
-  >(RejectTeamMemberPutURL(), "PUT");
+  const { trigger: rejectTrigger, isLoading: rejectIsLoading } =
+    useFetchTrigger<AcceptTeamMemberReqDto, null>(
+      RejectTeamMemberPutURL(),
+      "PUT"
+    );
 
-  const reject = async (teamMemberIdx: number | undefined) => {
+  const reject = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const rejectReqDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -122,10 +126,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await rejectTrigger(rejectReqDto);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    rejectTrigger(rejectReqDto);
   };
 
   const rejectModalData = useModal(
@@ -140,12 +141,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const rejectedModalData = useModal("모임 가입 신청을 거절했습니다.");
 
   // 모임원 수락하기
-  const { trigger: acceptTrigger } = useFetchTrigger<
-    AcceptTeamMemberReqDto,
-    null
-  >(AcceptTeamMemberPutURL(), "PUT");
+  const { trigger: acceptTrigger, isLoading: acceptIsLoading } =
+    useFetchTrigger<AcceptTeamMemberReqDto, null>(
+      AcceptTeamMemberPutURL(),
+      "PUT"
+    );
 
-  const accept = async (teamMemberIdx: number | undefined) => {
+  const accept = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const acceptDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -153,10 +155,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await acceptTrigger(acceptDto);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    acceptTrigger(acceptDto);
   };
 
   const acceptModalData = useModal(
@@ -171,21 +170,19 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const acceptedModalData = useModal("모임 가입 신청을 수락했습니다.");
 
   // 모임원 전체 내보내기
-  const { trigger: exportAllTrigger } = useFetchTrigger<
-    RejectTeamMembersReqDto,
-    null
-  >(ExportTeamMembersPutURL(), "PUT");
+  const { trigger: exportAllTrigger, isLoading: exportAllIsLoading } =
+    useFetchTrigger<RejectTeamMembersReqDto, null>(
+      ExportTeamMembersPutURL(),
+      "PUT"
+    );
 
-  const exportAll = async () => {
+  const exportAll = () => {
     const exportAllDto: RejectTeamMembersReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await exportAllTrigger(exportAllDto);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    exportAllTrigger(exportAllDto);
   };
 
   const exportAllModalData = useModal(
@@ -200,12 +197,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   const exportedAllModalData = useModal("모임원 전체를 내보냈습니다.");
 
   // 모임원 내보내기
-  const { trigger: exportTrigger } = useFetchTrigger<
-    AcceptTeamMemberReqDto,
-    null
-  >(ExportTeamMemberPutURL(), "PUT");
+  const { trigger: exportTrigger, isLoading: exportIsLoading } =
+    useFetchTrigger<AcceptTeamMemberReqDto, null>(
+      ExportTeamMemberPutURL(),
+      "PUT"
+    );
 
-  const exportMember = async (teamMemberIdx: number | undefined) => {
+  const exportMember = (teamMemberIdx: number | undefined) => {
     if (!teamMemberIdx) return;
     const exportDto: AcceptTeamMemberReqDto = {
       // Todo: teamIdx 가져오기
@@ -213,10 +211,7 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
       teamMemberIdx: teamMemberIdx,
       memberIdx: member.memberIdx,
     };
-    await exportTrigger(exportDto);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1500);
+    exportTrigger(exportDto);
   };
 
   const exportMemberModalData = useModal(
@@ -236,13 +231,13 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
     null
   >(ExportTeamPutURL(), "PUT");
 
-  const exportTeam = async () => {
+  const exportTeam = () => {
     const exportTeamDto: ExportTeamReqDto = {
       // Todo: teamIdx 가져오기
       teamIdx: 1,
       memberIdx: member.memberIdx,
     };
-    await exportTeamTrigger(exportTeamDto);
+    exportTeamTrigger(exportTeamDto);
     setTimeout(() => {
       home();
     }, 1500);
@@ -262,6 +257,25 @@ function MoimMembersMainPage({}: MoimMembersMainPageProps) {
   useEffect(() => {
     if (!teamMemersData) return;
   }, [teamMemersData]);
+
+  // 새로고침
+  useEffect(() => {
+    if (
+      !allAcceptIsLoading &&
+      !rejectIsLoading &&
+      !acceptIsLoading &&
+      !exportAllIsLoading &&
+      !exportIsLoading
+    ) {
+      refetch();
+    }
+  }, [
+    allAcceptIsLoading,
+    rejectIsLoading,
+    acceptIsLoading,
+    exportAllIsLoading,
+    exportIsLoading,
+  ]);
 
   return (
     <>

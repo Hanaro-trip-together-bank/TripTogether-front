@@ -35,9 +35,6 @@ export default function CreateTripPage() {
   const [showKeypad, toggleShowKeypad] = useToggle();
   const { amount, add, append, remove, clear } = useKeypadMappedNumber();
 
-  console.log(trip);
-  console.log(JSON.stringify(trip));
-
   const plusDay = () => {
     setTripDay((prev) => prev + 1);
   };

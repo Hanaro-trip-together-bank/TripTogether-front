@@ -7,16 +7,52 @@ import Button from "../../../components/common/Button";
 import useToggle from "../../../hooks/useToggle";
 import "swiper/css";
 import { useNavigation } from "../../../contexts/useNavigation";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
+import { DuesRequestPostURL } from "../../../utils/urlFactory";
+import { DuesRequestDto, memberInfoDto } from "../../../types/Dues";
 
 interface MoimDuesRequestPageProps {
-  requestees: string[];
+  teamIdx: number;
+  teamName: string;
+  requestees: DueReqMemberInfo[];
 }
 
-function MoimDuesRequestPage({ requestees }: MoimDuesRequestPageProps) {
+type DueReqMemberInfo = {
+  memberIdx: number;
+  memberName: string;
+};
+
+function MoimDuesRequestPage({
+  teamIdx,
+  teamName,
+  requestees,
+}: MoimDuesRequestPageProps) {
   const { back } = useNavigation();
   const { amount, add, append, remove, clear } = useKeypadMappedNumber();
   const [showKeypad, toggleShowKeypad] = useToggle();
   const [requested, toggleRequested] = useToggle();
+
+  const { trigger } = useFetchTrigger<DuesRequestDto, void>(
+    DuesRequestPostURL(teamIdx),
+    "POST"
+  );
+
+  const memberIdxs: memberInfoDto[] = requestees.map(({ memberIdx }) => ({
+    memberIdx,
+  }));
+
+  const requestData: DuesRequestDto = {
+    duesAmount: amount,
+    memberInfos: memberIdxs,
+    teamIdx: teamIdx,
+  };
+
+  const handleRequest = () => {
+    trigger(requestData);
+    toggleRequested();
+    console.log(teamName);
+    console.log(requestees.map(({ memberName }) => memberName).join(", "));
+  };
 
   // 1: 요청할까요?
   if (!requested)
@@ -43,7 +79,7 @@ function MoimDuesRequestPage({ requestees }: MoimDuesRequestPageProps) {
             <Spacer />
             <Button
               className="w-full"
-              onClick={toggleRequested}
+              onClick={handleRequest}
               disabled={amount == 0}
             >
               확인
@@ -90,10 +126,12 @@ function MoimDuesRequestPage({ requestees }: MoimDuesRequestPageProps) {
               요청했어요
             </span>
             <VStack className="w-full my-4 py-4 border-y border-gray-200">
-              <DuesRequestConfirmRow label={"모임이름"} value={"하나로"} />
+              <DuesRequestConfirmRow label={"모임이름"} value={teamName} />
               <DuesRequestConfirmRow
                 label={"모임대상"}
-                value={requestees.join(", ")}
+                value={requestees
+                  .map(({ memberName }) => memberName)
+                  .join(", ")}
               />
               <DuesRequestConfirmRow
                 label={"요청금액"}
