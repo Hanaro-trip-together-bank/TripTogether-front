@@ -1,3 +1,5 @@
+import { CategoryResDto } from "../types/Category";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 //--------------- 메인 ---------------//
@@ -88,6 +90,12 @@ export const TripReplyDeleteURL = (tripPlaceIdx: number) =>
   `${BASE_URL}/trips/place/${tripPlaceIdx}/reply`;
 
 //--------------- 장소/명소 ---------------//
+// GET - 카테고리 목록 조회: () -> CategoryResDto[]
+export const CategoriesGetURL = () => `${BASE_URL}/categories`;
+
+// GET - 명소 목록 조회: () -> PlaceResDto[]
+export const PlacesGetURL = (cityIdx: number = -1, categoryIdx: number = -1) =>
+  `${BASE_URL}/places?${categoryIdx >= 0 ? `category_id=${categoryIdx}` : ""}${cityIdx >= 0 ? `&city_id=${cityIdx}` : ""}`;
 
 //--------------- 회비 ---------------//
 
