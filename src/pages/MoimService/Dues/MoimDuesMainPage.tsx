@@ -30,8 +30,8 @@ import { TeamMembersReqDto } from "../../../types/teamMember/TeamMemberRequestDt
 import { TeamMembersResDto } from "../../../types/teamMember/TeamMemberResponseDto";
 
 interface MoimDuesMainPageProps {
-  accIdx: number;
   teamIdx: number;
+  accIdx: number;
   teamName: string;
 }
 
@@ -40,6 +40,7 @@ function MoimDuesMainPage({
   teamIdx,
   teamName,
 }: MoimDuesMainPageProps) {
+
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
@@ -85,12 +86,15 @@ function MoimDuesMainPage({
       return updatedMembers;
     });
   };
+  
   useEffect(() => {
     if (showDuesRequest) {
       setSelectedMembers([]);
       setCanRequest(true);
     }
   }, [showDuesRequest]);
+
+  const [total, setTotal] = useState<number>(0);
 
   // 현재 날짜를 기준으로 초기값 설정
   const currentYear = new Date().getFullYear();
@@ -126,6 +130,12 @@ function MoimDuesMainPage({
     if (paidOrNot == 0) duesGetTrueStatusFetcher.trigger(null);
     else duesGetFalseStatusFetcher.trigger(null);
   }, [paidOrNot, year, month]);
+
+  useEffect(() => {
+    setTotal(0);
+    if (duesGetTrueStatusFetcher.data?.data?.duesTotalAmount)
+      setTotal(duesGetTrueStatusFetcher.data.data.duesTotalAmount);
+  }, [year, month, duesGetTrueStatusFetcher.data]);
 
   useEffect(() => {
     if (duesGetTrueStatusFetcher.data?.data.memberResponseDtos)
@@ -175,14 +185,14 @@ function MoimDuesMainPage({
                 </select>
               </HStack>
               <HStack className="items-end !gap-0 font-bold">
-                <span className="text-xl">21,000</span>
+                <span className="text-xl">{total}</span>
                 <span>원</span>
               </HStack>
             </VStack>
             <VStack className="p-4 h-full">
               <NavigationLink
                 className="mb-4"
-                to={{ page: <MoimDuesSetPage /> }}
+                to={{ page: <MoimDuesSetPage teamIdx={teamIdx} accIdx={accIdx} onDone={duesGetRuleFetcher.refetch}/> }}
               >
                 <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
                   <span className="text-gray-500">
@@ -193,7 +203,7 @@ function MoimDuesMainPage({
                           {" "}
                           {duesGetRuleFetcher.data.data.duesAmount}
                         </span>
-                        씩 모아요!
+                        원씩 모아요!
                       </>
                     ) : (
                       "등록된 회비가 없어요"
@@ -245,7 +255,7 @@ function MoimDuesMainPage({
                         <span>※</span>
                         <span>
                           회비내역의 입금인은 총무가 편집할 수 있으므로, 실제
-                          거래내역의 입금인과 다를 수 있습니다.
+                          계좌 거래내역의 입금인과 다를 수 있습니다.
                         </span>
                       </HStack>
                     </VStack>
