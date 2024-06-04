@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-function useKeypadMappedNumber() {
-  const [amount, setAmount] = useState(0);
+function useKeypadMappedNumber(num = 0) {
+  const [amount, setAmount] = useState(num);
 
   const append = (number: number) => {
     setAmount(amount * 10 + number);
@@ -15,8 +15,11 @@ function useKeypadMappedNumber() {
   const clear = () => {
     setAmount(0);
   };
+  const set = (num: number) => {
+    setAmount(num);
+  };
 
-  return { amount, append, add, remove, clear };
+  return { amount, append, add, remove, clear, set };
 }
 
 export default useKeypadMappedNumber;

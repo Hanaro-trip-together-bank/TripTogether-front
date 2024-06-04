@@ -69,6 +69,10 @@ export const ExportTeamMemberPutURL = () => `${BASE_URL}/team/export-member`;
 // PUT - 모임서비스 나가기 (전체 내보내기 후 모임 삭제): ExportTeamReqDto -> 200 OK
 export const ExportTeamPutURL = () => `${BASE_URL}/team/export-team`;
 
+//POST - 회비 요청
+export const DuesRequestPostURL = (team_idx: number) =>
+  `${BASE_URL}/dues/${team_idx}`;
+
 //------------------- 내 모임 --------------------------
 
 // POST - 내 모임 서비스 조회

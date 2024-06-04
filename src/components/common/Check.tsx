@@ -1,20 +1,31 @@
+import { useState } from "react";
 import cn from "../../utils/cn";
 
 interface CheckProps {
   checked?: boolean;
-  onClick?: () => void;
+  onClick?: (isChecked: boolean) => void;
 }
 
 function Check({ checked = false, onClick }: CheckProps) {
+  const [isChecked, setIsChecked] = useState<boolean>(checked);
+
+  const handleClick = () => {
+    const newChecked = !isChecked;
+    setIsChecked(newChecked);
+    if (onClick) {
+      onClick(newChecked);
+    }
+  };
+
   return (
     <button
       className={cn(
         "border rounded-full p-1",
-        checked
+        isChecked
           ? "border-transparent bg-primary text-white"
           : "border-gray-500 text-gray-500"
       )}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {/* 동그라미 속 체크 */}
       <svg

@@ -152,6 +152,28 @@ function Keypad({
         </VStack>
       );
     }
+    case 3:
+      return (
+        <VStack className="mt-8">
+          <HStack className="flex-wrap !gap-0">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((value) => (
+              <BigButton
+                className="w-4/12"
+                key={value}
+                label={`${value}`}
+                onClick={() => onAppend(value)}
+              />
+            ))}
+            <BackButton className="w-4/12" label="지움" onClick={onRemove} />
+            <BigButton
+              className="w-4/12"
+              label="0"
+              onClick={() => onAppend(0)}
+            />
+            <BigButton className="w-4/12" label="완료" onClick={onDone} />
+          </HStack>
+        </VStack>
+      );
     default:
       return <>잘못된 키보드 타입입니다. </>;
   }
