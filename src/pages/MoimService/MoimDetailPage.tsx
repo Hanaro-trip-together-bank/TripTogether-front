@@ -136,7 +136,7 @@ function MoimDetailPage({
                   className="w-1/2"
                   to={{
                     backgroundColor: "bg-gray-50",
-                    page: <MoimDepositPage />,
+                    page: <MoimDepositPage teamIdx={teamIdx} />,
                   }}
                 >
                   <Button className="!w-full">입금</Button>

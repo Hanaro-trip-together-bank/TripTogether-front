@@ -12,11 +12,26 @@ import useToggle from "../../../hooks/useToggle";
 import { useNavigation } from "../../../contexts/useNavigation";
 import useKeypadMappedNumber from "../../../hooks/useKeypadMappedNumber";
 import usePassword from "../../../hooks/usePassword";
+import { useAuth } from "../../../contexts/useAuth";
+import { useFetch } from "../../../hooks/useFetch";
+import { AccountsResDto } from "../../../types/account/AccountResponseDto";
+import {
+  AccountListPostURL,
+  ManageTeamPostURL,
+} from "../../../utils/urlFactory";
+import { AccountsReqDto } from "../../../types/account/AccountRequestDto";
+import formatAccNo from "../../../utils/formatAccNo";
+import { ManageTeamResDto } from "../../../types/team/TeamResponseDto";
+import { ManageTeamReqDto } from "../../../types/team/TeamRequestDto";
 
-interface MoimDepositPageProps {}
+interface MoimDepositPageProps {
+  teamIdx: number;
+}
 
-function MoimDepositPage({}: MoimDepositPageProps) {
+function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
   const { back } = useNavigation();
+  const { member } = useAuth();
+
   const [isAmountFocused, toggleIsAmountFocused] = useToggle(); // 금액 포커스하면서 숫자패드 열기
   const [showNotice, toggleShowNotice] = useToggle(); // 이용안내 보이기
   const [showCancelModal, toggleShowCancelModal] = useToggle(); // 입금취소 확인 모달 보이기
@@ -26,6 +41,57 @@ function MoimDepositPage({}: MoimDepositPageProps) {
   const { password, remove: removePw, append: appendPw } = usePassword(); // 간편비밀번호 관련
   const [isDepositDone, toggleIsDepositDone] = useToggle(); // 입금 완료 여부
   const [memo, setMemo] = useState<string>(""); // 입금통장표시
+
+  // 입금 계좌(현재 모임서비스 계좌) 불러오기
+  const depositReqData: ManageTeamReqDto = {
+    teamIdx: teamIdx,
+    memberIdx: member.memberIdx,
+  };
+
+  const { data: depositData, isLoading: isDepositLoading } = useFetch<
+    ManageTeamReqDto,
+    ManageTeamResDto
+  >(ManageTeamPostURL(), "POST", depositReqData);
+
+  // 사용자의 전체 계좌 목록 불러오기
+  const [isAccountListOpen, toggleAccountList] = useToggle();
+  const [selectedAccountIdx, setSelectedAccountIdx] = useState(0);
+  const [withdrawAccount, setWithdrawAccount] = useState({
+    name: "계좌를 선택해주세요.",
+    number: "",
+    balance: 0,
+  }); // 출금계좌 정보
+
+  const accountsRequestDto: AccountsReqDto = { memberIdx: member.memberIdx };
+
+  const accountListData = useFetch<AccountsReqDto, AccountsResDto[]>(
+    AccountListPostURL(),
+    "POST",
+    accountsRequestDto
+  );
+
+  // 계좌 선택
+  const handleAccountSelect = (index: number) => {
+    // 선택된 계좌 정보 가져오기
+    const selectedAccount = accountListData.data && accountListData.data[index];
+
+    if (selectedAccount) {
+      setSelectedAccountIdx(selectedAccount.accIdx);
+
+      // 선택한 출금 계좌로 set
+      setWithdrawAccount({
+        name: selectedAccount.accName,
+        number: formatAccNo(selectedAccount.accNumber),
+        balance: selectedAccount.accBalance,
+      });
+    }
+    toggleAccountList();
+  };
+
+  useEffect(() => {
+    if (!depositData) return;
+  }, [depositData]);
+
   useEffect(() => {
     if (password.length == 6) {
       toggleShowPasswordModal();
@@ -46,9 +112,11 @@ function MoimDepositPage({}: MoimDepositPageProps) {
               <HStack className="bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
                 <HanaSvg />
                 <VStack className="!gap-0">
-                  <span>하나로</span>
+                  <span>{depositData?.teamName}</span>
                   <span className="text-gray-500 text-sm">
-                    123-123456-12345
+                    {depositData?.accNumber
+                      ? formatAccNo(depositData.accNumber)
+                      : ""}
                   </span>
                 </VStack>
               </HStack>
@@ -57,19 +125,46 @@ function MoimDepositPage({}: MoimDepositPageProps) {
             <VStack>
               <span>출금계좌</span>
               <HStack className="h-full bg-white border border-gray-300 p-2 rounded-md items-center gap-2">
-                <VStack className="flex-grow">
+                <VStack
+                  className="flex-grow"
+                  onClick={toggleAccountList}
+                  role="button"
+                  tabIndex={0}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") toggleAccountList();
+                  }}
+                >
                   <HStack className="items-center">
                     <HanaSvg />
                     <VStack className="!gap-0">
-                      <span>하나은행 통장</span>
+                      <span>{withdrawAccount.name}</span>
                       <span className="text-gray-500 text-sm">
-                        321-654321-54321
+                        {withdrawAccount.number}
                       </span>
                     </VStack>
                   </HStack>
                   <span className="text-end text-gray-500 text-sm">
-                    출금가능금액 1,000,000,000,000.0 원
+                    출금가능금액 {withdrawAccount.balance.toLocaleString()} 원
                   </span>
+                  {isAccountListOpen && (
+                    <VStack className="bg-gray-100 border rounded-md p-2 mt-2">
+                      {accountListData.data &&
+                        accountListData.data.map((account, index) => (
+                          <div
+                            key={account.accIdx}
+                            className="p-2 cursor-pointer hover:bg-gray-200 rounded"
+                            onClick={() => handleAccountSelect(index)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") handleAccountSelect(index);
+                            }}
+                          >
+                            {`${account.accName} - ${formatAccNo(account.accNumber)}`}
+                          </div>
+                        ))}
+                    </VStack>
+                  )}
                 </VStack>
                 <Arrow direction="down" />
               </HStack>
