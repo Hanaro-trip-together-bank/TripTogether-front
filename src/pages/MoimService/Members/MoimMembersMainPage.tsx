@@ -32,6 +32,7 @@ import {
   InviteTeamReqDto,
 } from "../../../types/team/TeamRequestDto";
 import Modal from "../../../components/common/Modals/Modal";
+import { colorPacks } from "../../../utils/colorPack.ts";
 
 interface MoimMembersMainPageProps {
   teamIdx: number;
@@ -343,7 +344,15 @@ function MoimMembersMainPage({
                     key={member.teamMemberIdx}
                     className="items-center gap-4"
                   >
-                    <Avatar crown />
+                    <Avatar
+                      crown={true}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
+                      eye="smile"
+                    />
                     <span>{member.memberName}</span>
                     <Spacer />
                     {teamMemberStatus === "총무" ? (
@@ -378,9 +387,15 @@ function MoimMembersMainPage({
                     className="items-center gap-4"
                   >
                     <Avatar
-                      backgroundColor="bg-cyan-200"
+                      crown={teamMemberStatus == "총무"}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
                       skinColor="white"
                       eye="smile"
+                      random
                     />
                     <span>{member.memberName}</span>
                     <Spacer />
@@ -433,10 +448,16 @@ function MoimMembersMainPage({
                     className="items-center gap-4"
                   >
                     <Avatar
-                      crown
-                      backgroundColor="bg-purple-400"
+                      crown={teamMemberStatus == "총무"}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
+                      skinColor="white"
                       mouth="upset"
                       eye="upset"
+                      random
                     />
                     <span>{member.memberName}</span>
                     <Spacer />
