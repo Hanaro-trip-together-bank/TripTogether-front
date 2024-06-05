@@ -4,7 +4,6 @@ import Modal from "../../../components/common/Modals/Modal";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import { VStack, HStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
-import MoimServiceSignUpPage from "../SignUp/MoimServiceSignUpPage";
 import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
 import MoimTripDetailPage from "./MoimTripDetailPage";
@@ -15,15 +14,18 @@ import { TripResDto } from "../../../types/trip/TripResponseDto";
 import Loading from "../../../components/common/Modals/Loading";
 import getPeriod from "../../../utils/getPeriod";
 import getDaysRemaining from "../../../utils/getDaysRemaining";
+import CreateTripPage from "../../CreateTripPage";
 
 interface MoimTripsMainPageProps {
   teamIdx: number;
   currentBalance: number;
+  preferTripIdx: number;
 }
 
 function MoimTripsMainPage({
   teamIdx,
   currentBalance,
+  preferTripIdx,
 }: MoimTripsMainPageProps) {
   const [showNewTripModal, toggleShowNewTripModal] = useToggle();
   const [animationStarted, setAnimationStarted] = useState(false);
@@ -37,6 +39,11 @@ function MoimTripsMainPage({
   useEffect(() => {
     setAnimationStarted(true);
   }, []);
+
+  const sortedData = data?.sort((a, b) =>
+    a.tripIdx === preferTripIdx ? -1 : b.tripIdx === preferTripIdx ? 1 : 0
+  );
+
   return (
     <>
       <VStack className="h-full">
@@ -50,7 +57,7 @@ function MoimTripsMainPage({
         </HStack>
         {/* 여행 카드들 */}
         <VStack className="overflow-y-scroll p-6">
-          {data?.map((trip) => (
+          {sortedData?.map((trip) => (
             <VStack
               key={trip.tripIdx}
               className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
@@ -77,8 +84,12 @@ function MoimTripsMainPage({
                   )}
                 </VStack>
                 <VStack>
-                  <span className="text-xl">☆</span>
-                  {/* <span className="text-xl text-yellow-300">★</span> */}
+                  {preferTripIdx == trip.tripIdx ? (
+                    <span className="text-xl text-yellow-300">★</span>
+                  ) : (
+                    <span className="text-xl">☆</span>
+                  )}
+
                   <span className="text-gray-500 underline text-sm text-nowrap">
                     관리
                   </span>
@@ -142,7 +153,7 @@ function MoimTripsMainPage({
             <NavigationLink
               className="flex-grow"
               to={{
-                page: <MoimServiceSignUpPage onDone={() => {}} />,
+                page: <CreateTripPage />,
               }}
             >
               <Button className="w-full" onClick={toggleShowNewTripModal}>
@@ -156,4 +167,5 @@ function MoimTripsMainPage({
     </>
   );
 }
+
 export default MoimTripsMainPage;
