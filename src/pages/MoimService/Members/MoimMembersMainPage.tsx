@@ -32,12 +32,17 @@ import {
   InviteTeamReqDto,
 } from "../../../types/team/TeamRequestDto";
 import Modal from "../../../components/common/Modals/Modal";
+import { colorPacks } from "../../../utils/colorPack.ts";
 
 interface MoimMembersMainPageProps {
   teamIdx: number;
+  teamMemberStatus: string;
 }
 
-function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
+function MoimMembersMainPage({
+  teamIdx,
+  teamMemberStatus,
+}: MoimMembersMainPageProps) {
   const { home } = useNavigation();
   const { member, login } = useAuth();
 
@@ -319,12 +324,14 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
         <NavigationBar title={"모임원 관리"} />
         <HStack className="justify-between items-center mx-6 py-4 border-b border-gray-200">
           <span>{teamMemersData?.length}명 참여 중</span>
-          <Button
-            className="!bg-gray-200 !text-black"
-            onClick={openInvitationModal}
-          >
-            초대하기
-          </Button>
+          {teamMemberStatus === "총무" ? (
+            <Button
+              className="!bg-gray-200 !text-black"
+              onClick={openInvitationModal}
+            >
+              초대하기
+            </Button>
+          ) : null}
         </HStack>
         <VStack className="min-w-full overflow-y-scroll px-6 gap-8">
           {/* 총무 */}
@@ -337,12 +344,22 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
                     key={member.teamMemberIdx}
                     className="items-center gap-4"
                   >
-                    <Avatar crown />
+                    <Avatar
+                      crown={true}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
+                      eye="smile"
+                    />
                     <span>{member.memberName}</span>
                     <Spacer />
-                    <span className="text-sm text-gray-500 underline">
-                      총무변경
-                    </span>
+                    {teamMemberStatus === "총무" ? (
+                      <span className="text-sm text-gray-500 underline">
+                        총무변경
+                      </span>
+                    ) : null}
                   </HStack>
                 )
             )}
@@ -351,14 +368,16 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
           <VStack className="w-full gap-4">
             <HStack className="justify-between">
               <span className="text-sm"> 대기 중 </span>
-              <button
-                className="text-sm text-gray-500 underline"
-                onClick={() => {
-                  acceptAllModalData.triggerModal();
-                }}
-              >
-                전체 수락하기
-              </button>
+              {teamMemberStatus === "총무" ? (
+                <button
+                  className="text-sm text-gray-500 underline"
+                  onClick={() => {
+                    acceptAllModalData.triggerModal();
+                  }}
+                >
+                  전체 수락하기
+                </button>
+              ) : null}
             </HStack>
             {teamMemersData?.map(
               (member) =>
@@ -368,31 +387,40 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
                     className="items-center gap-4"
                   >
                     <Avatar
-                      backgroundColor="bg-cyan-200"
+                      crown={teamMemberStatus == "총무"}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
                       skinColor="white"
                       eye="smile"
+                      random
                     />
                     <span>{member.memberName}</span>
                     <Spacer />
-
-                    <button
-                      className="text-sm text-gray-500 underline"
-                      onClick={() => {
-                        setCurrentTeamMemberIdx(member.teamMemberIdx);
-                        rejectModalData.triggerModal();
-                      }}
-                    >
-                      거절
-                    </button>
-                    <button
-                      className="text-sm text-gray-500 underline"
-                      onClick={() => {
-                        setCurrentTeamMemberIdx(member.teamMemberIdx);
-                        acceptModalData.triggerModal();
-                      }}
-                    >
-                      수락
-                    </button>
+                    {teamMemberStatus === "총무" ? (
+                      <button
+                        className="text-sm text-gray-500 underline"
+                        onClick={() => {
+                          setCurrentTeamMemberIdx(member.teamMemberIdx);
+                          rejectModalData.triggerModal();
+                        }}
+                      >
+                        거절
+                      </button>
+                    ) : null}
+                    {teamMemberStatus === "총무" ? (
+                      <button
+                        className="text-sm text-gray-500 underline"
+                        onClick={() => {
+                          setCurrentTeamMemberIdx(member.teamMemberIdx);
+                          acceptModalData.triggerModal();
+                        }}
+                      >
+                        수락
+                      </button>
+                    ) : null}
                   </HStack>
                 )
             )}
@@ -401,14 +429,16 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
           <VStack className="w-full gap-4">
             <HStack className="justify-between">
               <span className="text-sm"> 모임원 </span>
-              <button
-                className="text-sm text-gray-500 underline"
-                onClick={() => {
-                  exportAllModalData.triggerModal();
-                }}
-              >
-                전체 내보내기
-              </button>
+              {teamMemberStatus === "총무" ? (
+                <button
+                  className="text-sm text-gray-500 underline"
+                  onClick={() => {
+                    exportAllModalData.triggerModal();
+                  }}
+                >
+                  전체 내보내기
+                </button>
+              ) : null}
             </HStack>
             {teamMemersData?.map(
               (member) =>
@@ -418,22 +448,30 @@ function MoimMembersMainPage({ teamIdx }: MoimMembersMainPageProps) {
                     className="items-center gap-4"
                   >
                     <Avatar
-                      crown
-                      backgroundColor="bg-purple-400"
+                      crown={teamMemberStatus == "총무"}
+                      backgroundColor={
+                        colorPacks[member.memberIdx % colorPacks.length]
+                          .backgroundColor
+                      }
+                      seed={member.memberIdx}
+                      skinColor="white"
                       mouth="upset"
                       eye="upset"
+                      random
                     />
                     <span>{member.memberName}</span>
                     <Spacer />
-                    <button
-                      className="text-sm text-gray-500 underline"
-                      onClick={() => {
-                        setCurrentTeamMemberIdx(member.teamMemberIdx);
-                        exportMemberModalData.triggerModal();
-                      }}
-                    >
-                      내보내기
-                    </button>
+                    {teamMemberStatus === "총무" ? (
+                      <button
+                        className="text-sm text-gray-500 underline"
+                        onClick={() => {
+                          setCurrentTeamMemberIdx(member.teamMemberIdx);
+                          exportMemberModalData.triggerModal();
+                        }}
+                      >
+                        내보내기
+                      </button>
+                    ) : null}
                   </HStack>
                 )
             )}

@@ -24,12 +24,14 @@ import { MoimDetailPostURL, NoticePutURL } from "../../utils/urlFactory";
 import formatAccNo from "../../utils/formatAccNo";
 import Loading from "../../components/common/Modals/Loading";
 import { useFetchTrigger } from "../../hooks/useFetchTrigger";
+import { colorPacks } from "../../utils/colorPack.ts";
 
 interface MoimDetailPageProps {
   teamIdx: number;
   accIdx: number;
   teamName: string;
   teamMemberIdx: number;
+  teamMemberStatus: string;
 }
 
 function MoimDetailPage({
@@ -37,6 +39,7 @@ function MoimDetailPage({
   teamIdx,
   teamName,
   teamMemberIdx,
+  teamMemberStatus,
 }: MoimDetailPageProps) {
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
@@ -101,7 +104,17 @@ function MoimDetailPage({
           <SwiperSlide className="!h-fit">
             <VStack className="!gap-0 bg-white shadowed rounded-2xl h-64 m-2 mb-8 p-4">
               <HStack className="items-center">
-                <Avatar crown />
+                <Avatar
+                  crown={teamMemberStatus == "총무"}
+                  backgroundColor={
+                    colorPacks[teamMemberIdx % colorPacks.length]
+                      .backgroundColor
+                  }
+                  seed={teamMemberIdx}
+                  skinColor="white"
+                  eye="smile"
+                  random
+                />
                 <span className="text-lg font-bold">
                   {moimDetailData?.teamName}
                 </span>
@@ -214,11 +227,24 @@ function MoimDetailPage({
             <NavigationLink
               to={{
                 backgroundColor: "bg-gray-50",
-                page: <MoimMembersMainPage teamIdx={teamIdx} />,
+                page: (
+                  <MoimMembersMainPage
+                    teamIdx={teamIdx}
+                    teamMemberStatus={teamMemberStatus}
+                  />
+                ),
               }}
             >
               <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
-                <Avatar backgroundColor="bg-indigo-300" skinColor="white" />
+                <Avatar
+                  crown={teamMemberStatus == "총무"}
+                  backgroundColor={
+                    colorPacks[teamMemberIdx % colorPacks.length]
+                      .backgroundColor
+                  }
+                  seed={teamMemberIdx}
+                  eye="smile"
+                />
               </button>
             </NavigationLink>
             <span className="font-semibold text-center">모임원</span>
