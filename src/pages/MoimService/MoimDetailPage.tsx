@@ -165,7 +165,14 @@ function MoimDetailPage({
               <NavigationLink
                 to={{
                   backgroundColor: "bg-gray-50",
-                  page: <MoimTripsMainPage teamIdx={0} currentBalance={0} />,
+                  page: (
+                    <MoimTripsMainPage
+                      teamIdx={teamIdx}
+                      currentBalance={
+                        moimDetailData ? moimDetailData?.accBalance : 0
+                      }
+                    />
+                  ),
                 }}
               >
                 <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">

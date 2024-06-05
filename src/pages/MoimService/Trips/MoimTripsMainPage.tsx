@@ -4,17 +4,20 @@ import Modal from "../../../components/common/Modals/Modal";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
 import { VStack, HStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
-import MoimServiceSignUpPage from "../SignUp/MoimServiceSignUpPage";
 import useToggle from "../../../hooks/useToggle";
 import cn from "../../../utils/cn";
 import MoimTripDetailPage from "./MoimTripDetailPage";
 import TripImage from "../../../components/trip/TripImg";
 import { useFetch } from "../../../hooks/useFetch";
-import { TeamTripsGetURL } from "../../../utils/urlFactory";
-import { TripResDto } from "../../../types/trip/TripResponseDto";
+import { PreferTripPutURL, TeamTripsGetURL } from "../../../utils/urlFactory";
+import { TripListResDto } from "../../../types/trip/TripResponseDto";
 import Loading from "../../../components/common/Modals/Loading";
 import getPeriod from "../../../utils/getPeriod";
 import getDaysRemaining from "../../../utils/getDaysRemaining";
+import CreateTripPage from "../../CreateTripPage";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
+import { PreferTripReqDto } from "../../../types/team/TeamRequestDto";
+import { useAuth } from "../../../contexts/useAuth";
 
 interface MoimTripsMainPageProps {
   teamIdx: number;
@@ -25,18 +28,58 @@ function MoimTripsMainPage({
   teamIdx,
   currentBalance,
 }: MoimTripsMainPageProps) {
+  const { member } = useAuth();
   const [showNewTripModal, toggleShowNewTripModal] = useToggle();
   const [animationStarted, setAnimationStarted] = useState(false);
-  const { data, isLoading } = useFetch<null, TripResDto[]>(
+  const { data, isLoading, refetch } = useFetch<null, TripListResDto>(
     TeamTripsGetURL(teamIdx),
     "GET"
   );
+
+  const { trigger } = useFetchTrigger<PreferTripReqDto, void>(
+    PreferTripPutURL(),
+    "PUT"
+  );
+
   const portion = (goalAmount: number) =>
     goalAmount == 0 ? 0 : currentBalance / goalAmount;
 
   useEffect(() => {
     setAnimationStarted(true);
   }, []);
+
+  const sortedData = data?.trips.sort((a, b) =>
+    a.tripIdx === data.preferTripIdx
+      ? -1
+      : b.tripIdx === data.preferTripIdx
+        ? 1
+        : 0
+  );
+
+  const requestPrefer = (idx: number) => {
+    const dto: PreferTripReqDto = {
+      teamIdx: teamIdx,
+      memberIdx: member.memberIdx,
+      tripIdx: idx,
+    };
+    trigger(dto);
+    setTimeout(() => {
+      refetch();
+    }, 500);
+  };
+
+  const requestDeletePrefer = () => {
+    const dto: PreferTripReqDto = {
+      teamIdx: teamIdx,
+      memberIdx: member.memberIdx,
+      tripIdx: null,
+    };
+    trigger(dto);
+    setTimeout(() => {
+      refetch();
+    }, 500);
+  };
+
   return (
     <>
       <VStack className="h-full">
@@ -45,12 +88,12 @@ function MoimTripsMainPage({
         <HStack className="p-4 bg-gray-100 items-center">
           <span>여행 계획</span>
           <span className="rounded-full bg-gray-400 w-fit h-fit py-0.5 px-2 text-white text-sm leading-none">
-            {data?.length ?? 0}
+            {data?.trips.length ?? 0}
           </span>
         </HStack>
         {/* 여행 카드들 */}
         <VStack className="overflow-y-scroll p-6">
-          {data?.map((trip) => (
+          {sortedData?.map((trip) => (
             <VStack
               key={trip.tripIdx}
               className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
@@ -77,8 +120,23 @@ function MoimTripsMainPage({
                   )}
                 </VStack>
                 <VStack>
-                  <span className="text-xl">☆</span>
-                  {/* <span className="text-xl text-yellow-300">★</span> */}
+                  {data?.preferTripIdx == trip.tripIdx ? (
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+                    <span
+                      className="text-xl text-yellow-300"
+                      onClick={() => requestDeletePrefer()}
+                    >
+                      ★
+                    </span>
+                  ) : (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    <span
+                      className="text-xl"
+                      onClick={() => requestPrefer(trip.tripIdx)}
+                    >
+                      ☆
+                    </span>
+                  )}
                   <span className="text-gray-500 underline text-sm text-nowrap">
                     관리
                   </span>
@@ -142,7 +200,7 @@ function MoimTripsMainPage({
             <NavigationLink
               className="flex-grow"
               to={{
-                page: <MoimServiceSignUpPage onDone={() => {}} />,
+                page: <CreateTripPage />,
               }}
             >
               <Button className="w-full" onClick={toggleShowNewTripModal}>
@@ -156,4 +214,5 @@ function MoimTripsMainPage({
     </>
   );
 }
+
 export default MoimTripsMainPage;

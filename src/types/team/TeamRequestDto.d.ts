@@ -38,3 +38,9 @@ export type DetailTeamReqDto = {
   teamIdx: number;
   teamMemberIdx: number;
 };
+
+export type PreferTripReqDto = {
+  teamIdx: number;
+  tripIdx: number | null;
+  memberIdx: number;
+};

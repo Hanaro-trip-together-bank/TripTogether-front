@@ -4,6 +4,7 @@ export type DetailTeamResDto = {
   accNumber: string;
   accBalance: number;
   teamMemberState: string;
+  preferTripIdx: number;
 };
 
 export type InviteTeamResDto = {

@@ -13,3 +13,8 @@ export type TripResDto = {
   countryNameEng: string;
   cities: CityResDto[];
 };
+
+export type TripListResDto = {
+  preferTripIdx: number;
+  trips: TripResDto[];
+};
