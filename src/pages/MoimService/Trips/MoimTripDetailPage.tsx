@@ -47,6 +47,10 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
   const [currentSchedule, setCurrentSchedule] = useState<TripPlaceResDto>();
+
+  const [raising, setRaising] = useState<[number, number]>([-1, -1]); // day, order
+  const [lowering, setLowering] = useState<[number, number]>([-1, -1]); // day, order
+
   const { data, isLoading, setData, refetch } = useFetch<
     null,
     TripPlaceResDto[]
@@ -95,45 +99,68 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
     // 첫 날 첫번째는 무시
     if (day == 1 && currentOrder == 1) return;
     const schedulesDraft = [...(data ?? [])];
+
     // 그 날의 첫번째라면 이전 날 맨 뒤로 넣기
     if (currentOrder == 1) {
       const lastDaysLastOrder: number = schedulesDraft.reduce(
         (maxOrder, cur) => {
-          if (cur.tripDate == day) return Math.max(cur.placeOrder, maxOrder);
+          if (cur.tripDate == day - 1)
+            return Math.max(cur.placeOrder, maxOrder);
           else return maxOrder;
         },
         0
       );
-      setData(
-        schedulesDraft.map((schedule) => {
-          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
-            return {
-              ...schedule,
-              tripDate: day - 1,
-              placeOrder: lastDaysLastOrder + 1,
-            };
-          else return schedule;
-        })
-      );
-      return;
+      setLowering([day, -1]);
+      setRaising([day, currentOrder]);
+      setTimeout(() => {
+        setData(
+          schedulesDraft.map((schedule) => {
+            if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+              return {
+                ...schedule,
+                tripDate: day - 1,
+                placeOrder: lastDaysLastOrder + 1,
+              };
+            if (schedule.placeOrder != currentOrder && schedule.tripDate == day)
+              return {
+                ...schedule,
+                placeOrder: schedule.placeOrder - 1,
+              };
+            else return schedule;
+          })
+        );
+        setRaising([-1, -1]);
+        setLowering([-1, -1]);
+        return;
+      }, 100);
+    } else {
+      //아니면 바로 이전 인덱스랑 바꿔치기
+      setLowering([day, currentOrder - 1]);
+      setRaising([day, currentOrder]);
+      setTimeout(() => {
+        setData(
+          schedulesDraft.map((schedule) => {
+            if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+              return {
+                ...schedule,
+                placeOrder: currentOrder - 1,
+              };
+            if (
+              schedule.placeOrder == currentOrder - 1 &&
+              schedule.tripDate == day
+            )
+              return {
+                ...schedule,
+                placeOrder: currentOrder,
+              };
+            else return schedule;
+          })
+        );
+        setRaising([-1, -1]);
+        setLowering([-1, -1]);
+        return;
+      }, 100);
     }
-    //아니면 바로 이전 인덱스랑 바꿔치기
-    setData(
-      schedulesDraft.map((schedule) => {
-        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
-          return {
-            ...schedule,
-            placeOrder: currentOrder - 1,
-          };
-        if (schedule.placeOrder == currentOrder - 1 && schedule.tripDate == day)
-          return {
-            ...schedule,
-            placeOrder: currentOrder,
-          };
-        else return schedule;
-      })
-    );
-    return;
   };
   // 스케줄 밑으로 내리기
   const downSchedule = (day: number, currentOrder: number) => {
@@ -151,41 +178,59 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
     }, 0);
     // 그 날의 마지막이라면 다음 날 맨 앞에 넣기
     if (currentOrder == thatDaysLastOrder) {
-      setData(
-        schedulesDraft.map((schedule) => {
-          if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
-            return {
-              ...schedule,
-              tripDate: day + 1,
-              placeOrder: 1,
-            };
-          if (schedule.tripDate == day + 1)
-            return {
-              ...schedule,
-              placeOrder: schedule.placeOrder + 1,
-            };
-          else return schedule;
-        })
-      );
-      return;
+      //애니메이션 실행
+      setLowering([day, currentOrder]);
+      setRaising([day + 1, -1]);
+      setTimeout(() => {
+        setData(
+          schedulesDraft.map((schedule) => {
+            if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+              return {
+                ...schedule,
+                tripDate: day + 1,
+                placeOrder: 1,
+              };
+            if (schedule.tripDate == day + 1)
+              return {
+                ...schedule,
+                placeOrder: schedule.placeOrder + 1,
+              };
+            else return schedule;
+          })
+        );
+        setRaising([-1, -1]);
+        setLowering([-1, -1]);
+        return;
+      }, 100);
+    } else {
+      //아니면 바로 다음 인덱스랑 바꿔치기
+      //애니메이션 실행
+      setLowering([day, currentOrder]);
+      setRaising([day, currentOrder + 1]);
+      setTimeout(() => {
+        setData(
+          schedulesDraft.map((schedule) => {
+            if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
+              return {
+                ...schedule,
+                placeOrder: currentOrder + 1,
+              };
+            if (
+              schedule.placeOrder == currentOrder + 1 &&
+              schedule.tripDate == day
+            )
+              return {
+                ...schedule,
+                placeOrder: currentOrder,
+              };
+            else return schedule;
+          })
+        );
+        setRaising([-1, -1]);
+        setLowering([-1, -1]);
+        return;
+      }, 100);
     }
-    //아니면 바로 다음 인덱스랑 바꿔치기
-    setData(
-      schedulesDraft.map((schedule) => {
-        if (schedule.placeOrder == currentOrder && schedule.tripDate == day)
-          return {
-            ...schedule,
-            placeOrder: currentOrder + 1,
-          };
-        if (schedule.placeOrder == currentOrder + 1 && schedule.tripDate == day)
-          return {
-            ...schedule,
-            placeOrder: currentOrder,
-          };
-        else return schedule;
-      })
-    );
-    return;
   };
   // 스케줄 추가하기
   const addSchedule = (newSchedule: TripPlaceResDto) => {
@@ -258,7 +303,17 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                   borderColor
                 )}
               >
-                <VStack className="gap-6">
+                <VStack
+                  className={cn(
+                    "gap-6",
+                    lowering[0] == day && lowering[1] == -1
+                      ? "translate-y-20 transition-all"
+                      : "",
+                    raising[0] == day && raising[1] == -1
+                      ? "-translate-y-20 transition-all"
+                      : ""
+                  )}
+                >
                   <HStack className="relative items-center px-6">
                     <VStack
                       className={cn(
@@ -326,7 +381,19 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                     const imageAvailable =
                       schedule?.place && schedule.place.placeImg;
                     return (
-                      <VStack key={schedule.tripPlaceIdx} className="gap-6">
+                      <VStack
+                        key={`${day}-${schedule.placeOrder}-${schedule.tripPlaceIdx}`}
+                        className={cn(
+                          "gap-6 transition-all",
+                          lowering[0] == day &&
+                            lowering[1] == schedule.placeOrder
+                            ? "translate-y-20"
+                            : "",
+                          raising[0] == day && raising[1] == schedule.placeOrder
+                            ? "-translate-y-20"
+                            : ""
+                        )}
+                      >
                         <button onClick={() => openScheduleDetail(schedule)}>
                           <HStack className="relative items-center pl-8">
                             {/* 평소엔 장소 있다면 이미지, 없다면 작은 점, 수정모드에선 위치조정기 */}
@@ -389,6 +456,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                               {/* 제목, 두줄 넘어가면 '...' 처리 */}
                               {schedule.place && (
                                 <span className="text-lg leading-tight line-clamp-2">
+                                  {`${schedule.placeOrder}. `}
                                   {schedule.place.placeNameKo === ""
                                     ? schedule.place.placeNameEng
                                     : schedule.place.placeNameKo}
@@ -403,6 +471,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                                       : "text-lg leading-tight line-clamp-2"
                                   }
                                 >
+                                  {`${schedule.placeOrder}. `}
                                   {schedule.placeMemo}
                                 </span>
                               )}
@@ -696,7 +765,7 @@ function ReplyList({
         {isLoading
           ? Array.from({ length: count }, (_, i) => i + 1).map((i) => (
               <HStack
-                key={i}
+                key={`reply-placeholder-${i}`}
                 className="gap-2 mb-2 pb-2 border-b border-gray-200"
               >
                 <Avatar
