@@ -14,12 +14,16 @@ import MoimMembersMainPage from "./Members/MoimMembersMainPage";
 import MoimTripsMainPage from "./Trips/MoimTripsMainPage";
 import MoimDuesMainPage from "./Dues/MoimDuesMainPage";
 import MoimManagementPage from "./Management/MoimManagementPage";
-import { DetailTeamReqDto } from "../../types/team/TeamRequestDto";
+import {
+  DetailTeamReqDto,
+  UpdateTeamNoticeReq,
+} from "../../types/team/TeamRequestDto";
 import { useFetch } from "../../hooks/useFetch";
 import { DetailTeamResDto } from "../../types/team/TeamResponseDto";
-import { MoimDetailPostURL } from "../../utils/urlFactory";
+import { MoimDetailPostURL, NoticePutURL } from "../../utils/urlFactory";
 import formatAccNo from "../../utils/formatAccNo";
 import Loading from "../../components/common/Modals/Loading";
+import { useFetchTrigger } from "../../hooks/useFetchTrigger";
 
 interface MoimDetailPageProps {
   teamIdx: number;
@@ -43,14 +47,39 @@ function MoimDetailPage({
     teamMemberIdx: teamMemberIdx,
   };
 
-  const { data: moimDetailData, isLoading: moimDetailDataIsLoading } = useFetch<
-    DetailTeamReqDto,
-    DetailTeamResDto
-  >(MoimDetailPostURL(), "POST", requestData);
+  const {
+    data: moimDetailData,
+    isLoading: moimDetailDataIsLoading,
+    refetch,
+  } = useFetch<DetailTeamReqDto, DetailTeamResDto>(
+    MoimDetailPostURL(),
+    "POST",
+    requestData
+  );
+
+  const { trigger } = useFetchTrigger<UpdateTeamNoticeReq, void>(
+    NoticePutURL(),
+    "PUT"
+  );
 
   useEffect(() => {
     if (!moimDetailData) return;
+    setNotice(moimDetailData.teamNotice || "");
   }, [moimDetailData]);
+
+  const requestNoticeData: UpdateTeamNoticeReq = {
+    teamIdx: teamIdx,
+    teamNotice: notice,
+  };
+
+  const handleNoticeRequest = () => {
+    trigger(requestNoticeData);
+    setShowNoticeEdit(false);
+    setTimeout;
+    setTimeout(() => {
+      refetch();
+    }, 500);
+  };
 
   return (
     <>
@@ -244,14 +273,14 @@ function MoimDetailPage({
         <VStack>
           <span className="text-center font-bold leading-none">공지 등록</span>
           <input
-            className="m-2"
+            className="m-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-teal-600 transition-colors duration-300"
             placeholder="공지를 등록해 주세요."
             type="text"
             value={notice}
             onChange={(e) => setNotice(e.target.value)}
           />
 
-          <Button className="w-full" onClick={() => setShowNoticeEdit(false)}>
+          <Button className="w-full" onClick={() => handleNoticeRequest()}>
             확인
           </Button>
         </VStack>
