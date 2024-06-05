@@ -2,6 +2,7 @@ export type AccountsResDto = {
   accIdx: number;
   accNumber: string;
   accName: string;
+  accBalance: number;
 };
 
 export type TeamServiceListResDto = {
