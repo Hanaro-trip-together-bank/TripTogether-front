@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       screens: {
-        iPhone: "391px",
+        iPhone: "394px",
       },
     },
   },

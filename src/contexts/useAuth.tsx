@@ -11,7 +11,7 @@ type AuthenticationContextProp = {
 };
 
 const BLANK_FUNC = () => {};
-const BLANK_MEMBER: Member = { memberIdx: 0 };
+const BLANK_MEMBER: Member = { memberIdx: 1 };
 
 const AuthenticationContext = createContext<AuthenticationContextProp>({
   member: BLANK_MEMBER,
