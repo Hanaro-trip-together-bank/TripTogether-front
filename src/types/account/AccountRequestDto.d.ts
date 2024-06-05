@@ -1,5 +1,6 @@
 export type UpdateAccBalanceReq = {
-  accIdx: number;
+  depositAccIdx: number;
+  withdrawAccIdx: number;
   amount: number;
   memo: string;
 };

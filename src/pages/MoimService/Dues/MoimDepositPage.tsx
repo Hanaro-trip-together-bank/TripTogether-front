@@ -17,12 +17,17 @@ import { useFetch } from "../../../hooks/useFetch";
 import { AccountsResDto } from "../../../types/account/AccountResponseDto";
 import {
   AccountListPostURL,
+  DepositAccPutURL,
   ManageTeamPostURL,
 } from "../../../utils/urlFactory";
-import { AccountsReqDto } from "../../../types/account/AccountRequestDto";
+import {
+  AccountsReqDto,
+  UpdateAccBalanceReq,
+} from "../../../types/account/AccountRequestDto";
 import formatAccNo from "../../../utils/formatAccNo";
 import { ManageTeamResDto } from "../../../types/team/TeamResponseDto";
 import { ManageTeamReqDto } from "../../../types/team/TeamRequestDto";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimDepositPageProps {
   teamIdx: number;
@@ -60,6 +65,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
     name: "계좌를 선택해주세요.",
     number: "",
     balance: 0,
+    accIdx: 0,
   }); // 출금계좌 정보
 
   const accountsRequestDto: AccountsReqDto = { memberIdx: member.memberIdx };
@@ -83,9 +89,31 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
         name: selectedAccount.accName,
         number: formatAccNo(selectedAccount.accNumber),
         balance: selectedAccount.accBalance,
+        accIdx: selectedAccount.accIdx,
       });
     }
     toggleAccountList();
+  };
+
+  // 입금 기능
+  const { trigger: depositTrigger } = useFetchTrigger<
+    UpdateAccBalanceReq,
+    null
+  >(DepositAccPutURL(), "PUT");
+
+  const deposit = () => {
+    if (depositData?.accIdx === undefined) {
+      console.error("depositData undefined");
+      return;
+    }
+
+    const depositReqDto = {
+      depositAccIdx: depositData?.accIdx,
+      withdrawAccIdx: selectedAccountIdx,
+      amount: amount,
+      memo: memo,
+    };
+    depositTrigger(depositReqDto);
   };
 
   useEffect(() => {
@@ -277,7 +305,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
         >
           <VStack className="w-full items-center gap-4">
             <span className="text-center">
-              <span className="font-bold">하나로</span>
+              <span className="font-bold">{depositData?.teamName}</span>
               님 계좌로
               <br />
               <span className="font-bold">{amount.toLocaleString()}</span>
@@ -286,17 +314,21 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
             <VStack className="w-full border-y border-gray-200 py-4 mb-4">
               <DepositConfirmItem
                 label={"입금계좌"}
-                value={"하나로"}
-                value2="123-123456-12345"
+                value={depositData?.teamName || ""}
+                value2={
+                  depositData?.accNumber
+                    ? formatAccNo(depositData.accNumber)
+                    : ""
+                }
               />
               <DepositConfirmItem
                 label={"출금계좌"}
-                value={"하나로"}
-                value2="321-654321-54321"
+                value={withdrawAccount.name}
+                value2={withdrawAccount.number}
               />
               <DepositConfirmItem
                 label={"입금통장표시"}
-                value={"최지웅"}
+                value={member.memberName || ""}
                 value2={memo}
               />
             </VStack>
@@ -373,7 +405,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
             </svg>
           </div>
           <span className="w-full text-2xl text-center font-bold">
-            {"하나로"} 계좌로
+            {depositData?.teamName || ""} 계좌로
             <br />
             <span className="text-primary">{amount.toLocaleString()}원</span>이
             입금되었습니다.
@@ -381,22 +413,31 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
           <VStack className="w-full border-y border-gray-200 py-4 mb-4">
             <DepositConfirmItem
               label={"입금계좌"}
-              value={"하나로"}
-              value2="123-123456-12345"
+              value={depositData?.teamName || ""}
+              value2={
+                depositData?.accNumber ? formatAccNo(depositData.accNumber) : ""
+              }
             />
             <DepositConfirmItem
               label={"출금계좌"}
-              value={"하나로"}
-              value2="321-654321-54321"
+              value={withdrawAccount.name}
+              value2={withdrawAccount.number}
             />
             <DepositConfirmItem
               label={"입금통장표시"}
-              value={"최지웅"}
+              value={member.memberName || ""}
               value2={memo}
             />
           </VStack>
           <Spacer />
-          <Button className="w-full" roundedFull onClick={back}>
+          <Button
+            className="w-full"
+            roundedFull
+            onClick={() => {
+              deposit();
+              back();
+            }}
+          >
             확인
           </Button>
         </VStack>
