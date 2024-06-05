@@ -472,7 +472,9 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                                       : "text-lg leading-tight line-clamp-2"
                                   }
                                 >
-                                  {`${schedule.placeOrder}. `}
+                                  {schedule.place == null
+                                    ? `${schedule.placeOrder}. `
+                                    : ""}
                                   {schedule.placeMemo}
                                 </span>
                               )}

@@ -12,7 +12,7 @@ import { useAuth } from "../../contexts/useAuth";
 function MainPage() {
   const { member } = useAuth();
   return (
-    <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] min-h-full pt-4">
+    <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] h-full pt-4 overflow-y-scroll">
       {/* 상단 바로가기메뉴 (이름, 원큐지갑, QR, 알림) */}
       <VStack className="px-6">
         <HStack className="w-full">

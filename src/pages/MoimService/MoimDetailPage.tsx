@@ -91,12 +91,15 @@ function MoimDetailPage({
         {/* 공지사항 */}
         <div className="w-full py-4 px-6">
           <Button
-            className="w-full !bg-gray-200 !text-black text-left !rounded-2xl py-3"
+            className="w-full !bg-gray-200 !text-black text-left !rounded-2xl !px-4 py-3"
             onClick={() => setShowNoticeEdit(true)}
           >
-            {moimDetailData?.teamNotice == null
-              ? "공지를 등록해 주세요."
-              : moimDetailData?.teamNotice}
+            <HStack>
+              <MegaPhone />
+              {moimDetailData?.teamNotice == null
+                ? "공지를 등록해 주세요."
+                : moimDetailData?.teamNotice}
+            </HStack>
           </Button>
         </div>
         {/* 모임 요약 카드 + 즐겨찾기한 여행 */}
@@ -326,3 +329,20 @@ function MoimDetailPage({
   );
 }
 export default MoimDetailPage;
+
+function MegaPhone() {
+  return (
+    <div className="w-6 h-6 text-primary">
+      <svg
+        viewBox="0 0 48.00 48.00"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+      >
+        <path d="M34,6h-.6l-30,8.8A2,2,0,0,0,2,16.8v9a2.2,2.2,0,0,0,1.4,2l30,8.8H34a2,2,0,0,0,2-2V8A2,2,0,0,0,34,6ZM19.1,34.2,8.4,31l1.3,8.4A2.9,2.9,0,0,0,12.6,42h4.5a2.8,2.8,0,0,0,2.1-1,3.4,3.4,0,0,0,.8-2.6Z"></path>
+        <path d="M40,15.3a1.5,1.5,0,0,0,.9-.2l4-2a2,2,0,0,0-1.8-3.6l-4,2a2,2,0,0,0-.9,2.7A2.1,2.1,0,0,0,40,15.3Z"></path>
+        <path d="M44.9,29.6l-4-2a2.1,2.1,0,0,0-2.7.8,2,2,0,0,0,.9,2.7l4,2a1.5,1.5,0,0,0,.9.2,2.1,2.1,0,0,0,1.8-1.1A1.9,1.9,0,0,0,44.9,29.6Z"></path>
+        <path d="M40,23.3h4a2,2,0,0,0,0-4H40a2,2,0,0,0,0,4Z"></path>
+      </svg>
+    </div>
+  );
+}
