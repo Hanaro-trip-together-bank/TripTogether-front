@@ -33,7 +33,7 @@ function MoimDuesRequestPage({
   const [requested, toggleRequested] = useToggle();
 
   const { trigger } = useFetchTrigger<DuesRequestDto, void>(
-    DuesRequestPostURL(teamIdx),
+    DuesRequestPostURL(),
     "POST"
   );
 

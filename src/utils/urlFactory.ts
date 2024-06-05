@@ -70,8 +70,7 @@ export const ExportTeamMemberPutURL = () => `${BASE_URL}/team/export-member`;
 export const ExportTeamPutURL = () => `${BASE_URL}/team/export-team`;
 
 //POST - 회비 요청
-export const DuesRequestPostURL = (team_idx: number) =>
-  `${BASE_URL}/dues/${team_idx}`;
+export const DuesRequestPostURL = () => `${BASE_URL}/dues/request`;
 
 //------------------- 내 모임 --------------------------
 
