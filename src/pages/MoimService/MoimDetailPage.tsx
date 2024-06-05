@@ -273,7 +273,7 @@ function MoimDetailPage({
         <VStack>
           <span className="text-center font-bold leading-none">공지 등록</span>
           <input
-            className="m-2"
+            className="m-2 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-teal-600 transition-colors duration-300"
             placeholder="공지를 등록해 주세요."
             type="text"
             value={notice}
