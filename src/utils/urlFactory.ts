@@ -176,3 +176,6 @@ export const AddTeamPostURL = () => `${BASE_URL}/account/add`;
 export const ManageTeamPostURL = () => `${BASE_URL}/account/set`;
 // PUT - 알림설정 (on/off): ToggleAlarmReqDto -> 200 ok
 export const ToggleAlarmPutURL = () => `${BASE_URL}/account/alarm`;
+
+// PUT - 공지 등록, 수정
+export const NoticePutURL = () => `${BASE_URL}/account/notice`;
