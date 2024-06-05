@@ -81,6 +81,10 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
     // 선택된 계좌 정보 가져오기
     const selectedAccount = accountListData.data && accountListData.data[index];
 
+    if (depositData?.accIdx === selectedAccount?.accIdx) {
+      alert("동일계좌로의 이체불가 합니다.");
+    }
+
     if (selectedAccount) {
       setSelectedAccountIdx(selectedAccount.accIdx);
 
