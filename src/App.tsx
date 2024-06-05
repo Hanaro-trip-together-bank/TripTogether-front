@@ -10,13 +10,15 @@ function App() {
   const { member, setIdx } = useAuth();
   return (
     <>
-      <Toggle selected={showAlarm} onClick={toggleAlarm} />
-      <input
-        className="w-12"
-        type={"number"}
-        value={member.memberIdx}
-        onChange={(e) => setIdx(+e.target.value)}
-      />
+      <div className="absolute">
+        <Toggle selected={showAlarm} onClick={toggleAlarm} />
+        <input
+          className="w-12"
+          type={"number"}
+          value={member.memberIdx}
+          onChange={(e) => setIdx(+e.target.value)}
+        />
+      </div>
       <IPhoneFrame>
         <Alarm show={showAlarm} />
         <NavigationStack />

@@ -14,6 +14,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 ::-webkit-scrollbar {
   width: 10px;
@@ -111,7 +112,15 @@ body {
 .h-iPhone {
   height: 844px;
 }
+.h-screen-plus-12 {
+  height: calc(100vh + 3rem);
+}
 
+@media (min-width: 391px) {
+  .iPhone\:\!h-iPhone {
+    height: 844px !important;
+  }
+}
 .translate-x-iPhone {
   --tw-translate-x: 390px /* 32px */;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y))
