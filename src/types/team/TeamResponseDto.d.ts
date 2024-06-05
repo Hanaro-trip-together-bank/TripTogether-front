@@ -17,4 +17,5 @@ export type ManageTeamResDto = {
   accNumber: string;
   accBalance: number;
   alarmStatus: boolean;
+  accIdx: number;
 };

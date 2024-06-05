@@ -17,12 +17,17 @@ import { useFetch } from "../../../hooks/useFetch";
 import { AccountsResDto } from "../../../types/account/AccountResponseDto";
 import {
   AccountListPostURL,
+  DepositAccPutURL,
   ManageTeamPostURL,
 } from "../../../utils/urlFactory";
-import { AccountsReqDto } from "../../../types/account/AccountRequestDto";
+import {
+  AccountsReqDto,
+  UpdateAccBalanceReq,
+} from "../../../types/account/AccountRequestDto";
 import formatAccNo from "../../../utils/formatAccNo";
 import { ManageTeamResDto } from "../../../types/team/TeamResponseDto";
 import { ManageTeamReqDto } from "../../../types/team/TeamRequestDto";
+import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimDepositPageProps {
   teamIdx: number;
@@ -60,6 +65,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
     name: "계좌를 선택해주세요.",
     number: "",
     balance: 0,
+    accIdx: 0,
   }); // 출금계좌 정보
 
   const accountsRequestDto: AccountsReqDto = { memberIdx: member.memberIdx };
@@ -83,9 +89,31 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
         name: selectedAccount.accName,
         number: formatAccNo(selectedAccount.accNumber),
         balance: selectedAccount.accBalance,
+        accIdx: selectedAccount.accIdx,
       });
     }
     toggleAccountList();
+  };
+
+  // 입금 기능
+  const { trigger: depositTrigger } = useFetchTrigger<
+    UpdateAccBalanceReq,
+    null
+  >(DepositAccPutURL(), "PUT");
+
+  const deposit = () => {
+    if (depositData?.accIdx === undefined) {
+      console.error("depositData undefined");
+      return;
+    }
+
+    const depositReqDto = {
+      depositAccIdx: depositData?.accIdx,
+      withdrawAccIdx: selectedAccountIdx,
+      amount: amount,
+      memo: memo,
+    };
+    depositTrigger(depositReqDto);
   };
 
   useEffect(() => {
@@ -402,7 +430,14 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
             />
           </VStack>
           <Spacer />
-          <Button className="w-full" roundedFull onClick={back}>
+          <Button
+            className="w-full"
+            roundedFull
+            onClick={() => {
+              deposit();
+              back();
+            }}
+          >
             확인
           </Button>
         </VStack>

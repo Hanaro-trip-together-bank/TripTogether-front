@@ -162,6 +162,9 @@ export const MyMoimGetURL = () => `${BASE_URL}/account`;
 // POST - 모임서비스 상세 조회: DetailTeamReqDto -> DetailTeamResDto
 export const MoimDetailPostURL = () => `${BASE_URL}/account/detail`;
 
+// PUT - 계좌 입금: UpdateAccBalanceReq -> 200 OK
+export const DepositAccPutURL = () => `${BASE_URL}/account/deposit`;
+
 //--------------- 모임서비스 가입 ---------------//
 
 // POST - 전체 계좌 조회 (계좌 선택 기능): AccountsReqDto -> AccountsResDto
