@@ -158,9 +158,6 @@ function MoimDetailPage({
                       currentBalance={
                         moimDetailData ? moimDetailData?.accBalance : 0
                       }
-                      preferTripIdx={
-                        moimDetailData ? moimDetailData?.preferTripIdx : 0
-                      }
                     />
                   ),
                 }}
@@ -206,7 +203,6 @@ function MoimDetailPage({
                   <MoimTripsMainPage
                     teamIdx={teamIdx}
                     currentBalance={moimDetailData?.accBalance ?? 0}
-                    preferTripIdx={moimDetailData?.preferTripIdx ?? 0}
                   />
                 ),
               }}

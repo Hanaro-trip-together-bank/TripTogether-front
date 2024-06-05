@@ -179,3 +179,6 @@ export const ToggleAlarmPutURL = () => `${BASE_URL}/account/alarm`;
 
 // PUT - 공지 등록, 수정
 export const NoticePutURL = () => `${BASE_URL}/account/notice`;
+
+// PUT - 선호 여행 등록, 수정
+export const PreferTripPutURL = () => `${BASE_URL}/team/preference`;
