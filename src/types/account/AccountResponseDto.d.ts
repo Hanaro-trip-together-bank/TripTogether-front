@@ -13,4 +13,5 @@ export type TeamServiceListResDto = {
   teamIdx: number;
   teamMemberIdx: number;
   teamMemberState: string;
+  preferTripIdx: number;
 };
