@@ -156,21 +156,23 @@ function MoimTripsMainPage({
                       ★
                     </button>
                   ) : (
-                    <button
-                      className="text-xl"
-                      onClick={() => requestPrefer(trip.tripIdx)}
-                    >
-                      ☆
-                    </button>
+                    <>
+                      <button
+                        className="text-xl"
+                        onClick={() => requestPrefer(trip.tripIdx)}
+                      >
+                        ☆
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedTrip(trip);
+                          triggerDeleteModal();
+                        }}
+                      >
+                        <TrashCan />
+                      </button>
+                    </>
                   )}
-                  <button
-                    onClick={() => {
-                      setSelectedTrip(trip);
-                      triggerDeleteModal();
-                    }}
-                  >
-                    <TrashCan />
-                  </button>
                 </VStack>
               </HStack>
               <HStack className="relative justify-center h-52 text-primary">
