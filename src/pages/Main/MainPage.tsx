@@ -9,14 +9,16 @@ import Arrow from "../../components/common/Arrow";
 import LoginPage from "./LoginPage";
 import MoimServiceMainPage from "../MoimService/MoimServiceMainPage";
 import { useAuth } from "../../contexts/useAuth";
+import { requestPermission } from "../../firebaseConfig";
 function MainPage() {
   const { member } = useAuth();
+  requestPermission();
   return (
-    <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] min-h-full pt-4">
+    <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] h-full pt-4 overflow-y-scroll">
       {/* 상단 바로가기메뉴 (이름, 원큐지갑, QR, 알림) */}
       <VStack className="px-6">
         <HStack className="w-full">
-          <div className="text-2xl font-bold underline-offset-4 mr-1">
+          <div className="mr-1 text-2xl font-bold underline-offset-4">
             {member.memberName ? (
               <span className="underline">{member.memberName}</span>
             ) : (
@@ -55,9 +57,9 @@ function MainPage() {
           modules={[Scrollbar]}
         >
           <SwiperSlide className="!h-fit">
-            <div className="bg-white shadowed rounded-lg m-4 mb-8">
+            <div className="m-4 mb-8 bg-white rounded-lg shadowed">
               {member.memberName ? (
-                <VStack className="w-full items-center p-4">
+                <VStack className="items-center w-full p-4">
                   <span className="text-sm">하나은행 ATM 수수료 0원</span>
                   <span className="text-xl font-bold">모바일 전용통장</span>
                   <img
@@ -65,13 +67,13 @@ function MainPage() {
                     src={`/images/main/account.png`}
                     alt="account"
                   />
-                  <div className="border-b w-full border-gray-200" />
+                  <div className="w-full border-b border-gray-200" />
                   <NavigationLink to={{ page: <MainPage /> }}>
-                    <div className="m-2 text-primary font-bold">가입하기</div>
+                    <div className="m-2 font-bold text-primary">가입하기</div>
                   </NavigationLink>
                 </VStack>
               ) : (
-                <VStack className="w-full items-center p-4">
+                <VStack className="items-center w-full p-4">
                   <span className="text-sm">로그인하고 안전하게</span>
                   <span className="text-xl font-bold">잔액을 조회하세요</span>
                   <img
@@ -79,7 +81,7 @@ function MainPage() {
                     src={`/images/main/account.png`}
                     alt="account"
                   />
-                  <div className="border-b w-full border-gray-200" />
+                  <div className="w-full border-b border-gray-200" />
 
                   <NavigationLink
                     to={{
@@ -87,15 +89,15 @@ function MainPage() {
                       page: <LoginPage />,
                     }}
                   >
-                    <div className="m-2 text-primary font-bold">로그인</div>
+                    <div className="m-2 font-bold text-primary">로그인</div>
                   </NavigationLink>
                 </VStack>
               )}
             </div>
           </SwiperSlide>
           <SwiperSlide className="!h-fit">
-            <div className="bg-white shadowed rounded-lg m-4 mb-8">
-              <VStack className="w-full items-center p-4">
+            <div className="m-4 mb-8 bg-white rounded-lg shadowed">
+              <VStack className="items-center w-full p-4">
                 <span className="text-sm">알아서 관리해 주는</span>
                 <span className="text-xl font-bold">모임통장 서비스</span>
                 <img
@@ -103,7 +105,7 @@ function MainPage() {
                   src={`/images/main/moim.png`}
                   alt="moim"
                 />
-                <div className="border-b w-full border-gray-200" />
+                <div className="w-full border-b border-gray-200" />
                 {member.memberName ? (
                   <NavigationLink
                     to={{
@@ -113,7 +115,7 @@ function MainPage() {
                       ),
                     }}
                   >
-                    <div className="m-2 text-primary font-bold">
+                    <div className="m-2 font-bold text-primary">
                       모임 조회하기
                     </div>
                   </NavigationLink>
@@ -124,7 +126,7 @@ function MainPage() {
                       page: <LoginPage />,
                     }}
                   >
-                    <div className="m-2 text-primary font-bold">로그인</div>
+                    <div className="m-2 font-bold text-primary">로그인</div>
                   </NavigationLink>
                 )}
               </VStack>
@@ -133,11 +135,11 @@ function MainPage() {
         </Swiper>
       </div>
       {/* 메뉴 타일 6개 */}
-      <HStack className="justify-evenly my-4">
+      <HStack className="my-4 justify-evenly">
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-01.png`}
               alt="main-menu-01"
             />
@@ -145,9 +147,9 @@ function MainPage() {
           <span className="font-semibold text-center">전체계좌</span>
         </VStack>
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-02.png`}
               alt="main-menu-02"
             />
@@ -155,9 +157,9 @@ function MainPage() {
           <span className="font-semibold text-center">영하나</span>
         </VStack>
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-03.png`}
               alt="main-menu-03"
             />
@@ -167,9 +169,9 @@ function MainPage() {
       </HStack>
       <HStack className="justify-evenly">
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-04.png`}
               alt="main-menu-04"
             />
@@ -177,9 +179,9 @@ function MainPage() {
           <span className="font-semibold text-center">주식추천</span>
         </VStack>
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-05.png`}
               alt="main-menu-05"
             />
@@ -187,9 +189,9 @@ function MainPage() {
           <span className="font-semibold text-center">펀드</span>
         </VStack>
         <VStack>
-          <button className="bg-gray-100 shadowed rounded-xl w-16 h-16">
+          <button className="w-16 h-16 bg-gray-100 shadowed rounded-xl">
             <img
-              className="h-12 w-12 mx-auto"
+              className="w-12 h-12 mx-auto"
               src={`/images/main/main-menu-06.png`}
               alt="main-menu-06"
             />
@@ -198,25 +200,25 @@ function MainPage() {
         </VStack>
       </HStack>
       {/* 카드 리스트 */}
-      <VStack className="w-full p-4 gap-4">
+      <VStack className="w-full gap-4 p-4">
         {/* 카드 1 */}
-        <VStack className="rounded-2xl w-full bg-indigo-500 px-6 py-4">
-          <HStack className="text-gray-200 justify-between">
+        <VStack className="w-full px-6 py-4 bg-indigo-500 rounded-2xl">
+          <HStack className="justify-between text-gray-200">
             <span>하나은행 자산</span>
             {member.memberName && (
               <span className="text-sm">{currentTime2()}</span>
             )}
           </HStack>
-          <HStack className="gap-0 items-end mb-2">
-            <span className="text-3xl text-white font-bold">
+          <HStack className="items-end gap-0 mb-2">
+            <span className="text-3xl font-bold text-white">
               {member.memberName ? +0 : "???"}
             </span>
-            <span className="text-lg text-white font-bold"> 원 </span>
+            <span className="text-lg font-bold text-white"> 원 </span>
           </HStack>
           {!member.memberName && (
-            <span className="text-white mb-2">로그인하고 확인해 보세요 👀</span>
+            <span className="mb-2 text-white">로그인하고 확인해 보세요 👀</span>
           )}
-          <HStack className="font-bold text-white justify-evenly items-center border-t pt-4 border-indigo-200">
+          <HStack className="items-center pt-4 font-bold text-white border-t border-indigo-200 justify-evenly">
             <button className="">투자관리</button>
             <span className="text-indigo-200">|</span>
             <button className="">대출케어</button>
@@ -225,49 +227,49 @@ function MainPage() {
           </HStack>
         </VStack>
         {/* 카드 2 */}
-        <VStack className="rounded-2xl h-32 w-full bg-sky-500 px-6 py-4" />
+        <VStack className="w-full h-32 px-6 py-4 rounded-2xl bg-sky-500" />
         {/* 카드 3 */}
-        <VStack className="rounded-2xl h-32 w-full bg-emerald-400 px-6 py-4" />
+        <VStack className="w-full h-32 px-6 py-4 rounded-2xl bg-emerald-400" />
         {/* 카드 4 */}
-        <VStack className="rounded-2xl h-32 w-full bg-orange-400 px-6 py-4" />
+        <VStack className="w-full h-32 px-6 py-4 bg-orange-400 rounded-2xl" />
       </VStack>
       {/* 하단 탭바 */}
-      <HStack className="absolute bottom-0 w-full h-24 bg-white/50  backdrop-blur-sm">
-        <VStack className="text-primary font-bold items-center flex-grow border-t-2 border-primary">
+      <HStack className="absolute bottom-0 w-full h-24 bg-white/50 backdrop-blur-sm">
+        <VStack className="items-center flex-grow font-bold border-t-2 text-primary border-primary">
           <img
-            className="h-12 w-12 opacity-80 p-1"
+            className="w-12 h-12 p-1 opacity-80"
             src={`/images/main/main-tab-01.png`}
             alt="main-tab-01"
           />
           <span> 홈 </span>
         </VStack>
-        <VStack className="text-primary-disabled font-bold items-center flex-grow">
+        <VStack className="items-center flex-grow font-bold text-primary-disabled">
           <img
-            className="h-12 w-12 opacity-80 p-1"
+            className="w-12 h-12 p-1 opacity-80"
             src={`/images/main/main-tab-02.png`}
             alt="main-tab-02"
           />
           <span> 상품 </span>
         </VStack>
-        <VStack className="text-primary-disabled font-bold items-center flex-grow">
+        <VStack className="items-center flex-grow font-bold text-primary-disabled">
           <img
-            className="h-12 w-12 opacity-80 p-1"
+            className="w-12 h-12 p-1 opacity-80"
             src={`/images/main/main-tab-03.png`}
             alt="main-tab-03"
           />
           <span> 자산 </span>
         </VStack>
-        <VStack className="text-primary-disabled font-bold items-center flex-grow">
+        <VStack className="items-center flex-grow font-bold text-primary-disabled">
           <img
-            className="h-12 w-12 opacity-80 p-1"
+            className="w-12 h-12 p-1 opacity-80"
             src={`/images/main/main-tab-04.png`}
             alt="main-tab-04"
           />
           <span> 결제 </span>
         </VStack>
-        <VStack className="text-primary-disabled font-bold items-center flex-grow">
+        <VStack className="items-center flex-grow font-bold text-primary-disabled">
           <img
-            className="h-12 w-12 opacity-80 p-1"
+            className="w-12 h-12 p-1 opacity-80"
             src={`/images/main/main-tab-05.png`}
             alt="main-tab-05"
           />

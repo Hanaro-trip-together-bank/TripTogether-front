@@ -20,11 +20,21 @@ import {
 } from "../../types/team/TeamRequestDto";
 import { useFetch } from "../../hooks/useFetch";
 import { DetailTeamResDto } from "../../types/team/TeamResponseDto";
-import { MoimDetailPostURL, NoticePutURL } from "../../utils/urlFactory";
+import {
+  MoimDetailPostURL,
+  NoticePutURL,
+  TripsGetURL,
+} from "../../utils/urlFactory";
 import formatAccNo from "../../utils/formatAccNo";
 import Loading from "../../components/common/Modals/Loading";
 import { useFetchTrigger } from "../../hooks/useFetchTrigger";
 import { colorPacks } from "../../utils/colorPack.ts";
+import MoimTripDetailPage from "./Trips/MoimTripDetailPage.tsx";
+import { TripResDto } from "../../types/trip/TripResponseDto";
+import getPeriod from "../../utils/getPeriod.ts";
+import getDaysRemaining from "../../utils/getDaysRemaining.ts";
+import TripImage from "../../components/trip/TripImg.tsx";
+import cn from "../../utils/cn.ts";
 
 interface MoimDetailPageProps {
   teamIdx: number;
@@ -32,6 +42,7 @@ interface MoimDetailPageProps {
   teamName: string;
   teamMemberIdx: number;
   teamMemberStatus: string;
+  preferTripIdx: number;
 }
 
 function MoimDetailPage({
@@ -40,9 +51,11 @@ function MoimDetailPage({
   teamName,
   teamMemberIdx,
   teamMemberStatus,
+  preferTripIdx,
 }: MoimDetailPageProps) {
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
 
   // 모임서비스 상세 데이터 불러오기
   const requestData: DetailTeamReqDto = {
@@ -60,10 +73,19 @@ function MoimDetailPage({
     requestData
   );
 
+  const { data: preferTrip, isLoading: preferTripIsLoading } = useFetch<
+    null,
+    TripResDto
+  >(TripsGetURL(preferTripIdx), "GET");
+
   const { trigger } = useFetchTrigger<UpdateTeamNoticeReq, void>(
     NoticePutURL(),
     "PUT"
   );
+
+  useEffect(() => {
+    setAnimationStarted(true);
+  }, []);
 
   useEffect(() => {
     if (!moimDetailData) return;
@@ -78,7 +100,6 @@ function MoimDetailPage({
   const handleNoticeRequest = () => {
     trigger(requestNoticeData);
     setShowNoticeEdit(false);
-    setTimeout;
     setTimeout(() => {
       refetch();
     }, 500);
@@ -91,12 +112,15 @@ function MoimDetailPage({
         {/* 공지사항 */}
         <div className="w-full py-4 px-6">
           <Button
-            className="w-full !bg-gray-200 !text-black text-left !rounded-2xl py-3"
+            className="w-full !bg-gray-200 !text-black text-left !rounded-2xl !px-4 py-3"
             onClick={() => setShowNoticeEdit(true)}
           >
-            {moimDetailData?.teamNotice == null
-              ? "공지를 등록해 주세요."
-              : moimDetailData?.teamNotice}
+            <HStack>
+              <MegaPhone />
+              {moimDetailData?.teamNotice == null
+                ? "공지를 등록해 주세요."
+                : moimDetailData?.teamNotice}
+            </HStack>
           </Button>
         </div>
         {/* 모임 요약 카드 + 즐겨찾기한 여행 */}
@@ -158,30 +182,103 @@ function MoimDetailPage({
             </VStack>
           </SwiperSlide>
           <SwiperSlide className="!h-fit">
-            <VStack className="items-center justify-center gap-4 bg-white shadowed rounded-2xl h-64 m-2 mb-8">
-              <span className="text-gray-500">
-                즐겨찾기한 여행일정이 없습니다.
-              </span>
-              <NavigationLink
-                to={{
-                  backgroundColor: "bg-gray-50",
-                  page: (
-                    <MoimTripsMainPage
-                      teamIdx={teamIdx}
-                      currentBalance={
-                        moimDetailData ? moimDetailData?.accBalance : 0
-                      }
-                    />
-                  ),
-                }}
+            {preferTripIsLoading ? (
+              <span>Loading...</span>
+            ) : moimDetailData?.preferTripIdx ? (
+              <VStack
+                key={preferTrip?.tripIdx}
+                className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
               >
-                <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
-                  +
-                </Button>
-              </NavigationLink>
-            </VStack>
+                <HStack className="w-full justify-between overflow-hidden overflow-ellipsis">
+                  <VStack className="items-start w-64">
+                    <span className="font-bold text-xl">
+                      {preferTrip?.tripName}
+                    </span>
+                    <span className="text-gray-500">
+                      {preferTrip?.countryNameKo} 탐방
+                    </span>
+                    <span className="text-gray-500 !text-wrap">
+                      {preferTrip?.tripContent}
+                    </span>
+                    <span className="text-gray-500">
+                      {preferTrip?.tripStartDay
+                        ? getPeriod(
+                            preferTrip?.tripStartDay,
+                            preferTrip?.tripDay
+                          )
+                        : `총 ${preferTrip?.tripDay}일`}
+                    </span>
+                    {preferTrip?.tripStartDay && (
+                      <span className="text-yellow-500 mb-6">
+                        {getDaysRemaining(preferTrip.tripStartDay)}
+                      </span>
+                    )}
+                  </VStack>
+                </HStack>
+
+                <VStack className="w-full mb-2">
+                  <HStack>
+                    <span className="text-primary font-bold">
+                      {moimDetailData?.accBalance.toLocaleString()}₩
+                    </span>
+                    <span className="text-primary font-bold">
+                      / {preferTrip!.tripGoalAmount.toLocaleString()}₩ (
+                      {preferTrip!.tripGoalAmount !== 0
+                        ? `${((moimDetailData?.accBalance / preferTrip!.tripGoalAmount) * 100).toFixed(2)}%`
+                        : "0.00%"}
+                      )
+                    </span>
+                  </HStack>
+                  <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
+                    <div
+                      className="bg-primary h-4 rounded-full"
+                      style={{
+                        width: `${
+                          preferTrip!.tripGoalAmount !== 0
+                            ? (moimDetailData?.accBalance /
+                                preferTrip!.tripGoalAmount) *
+                              100
+                            : 0
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                </VStack>
+
+                <NavigationLink
+                  className="w-full"
+                  to={{ page: <MoimTripDetailPage trip={preferTrip!} /> }}
+                >
+                  <Button className="w-full">더보기</Button>
+                </NavigationLink>
+              </VStack>
+            ) : (
+              <VStack className="items-center justify-center gap-4 bg-white shadowed rounded-2xl h-64 m-2 mb-8">
+                <span className="text-gray-500">
+                  즐겨찾기한 여행일정이 없습니다.
+                </span>
+                <NavigationLink
+                  to={{
+                    backgroundColor: "bg-gray-50",
+                    page: (
+                      <MoimTripsMainPage
+                        teamIdx={teamIdx}
+                        currentBalance={
+                          moimDetailData ? moimDetailData?.accBalance : 0
+                        }
+                      />
+                    ),
+                  }}
+                >
+                  <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
+                    +
+                  </Button>
+                </NavigationLink>
+              </VStack>
+            )}
           </SwiperSlide>
         </Swiper>
+
         <span className="text-gray-500 text-right pr-4">
           모임카드 신청 | 이용내역
         </span>
@@ -326,3 +423,20 @@ function MoimDetailPage({
   );
 }
 export default MoimDetailPage;
+
+function MegaPhone() {
+  return (
+    <div className="w-6 h-6 text-primary">
+      <svg
+        viewBox="0 0 48.00 48.00"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+      >
+        <path d="M34,6h-.6l-30,8.8A2,2,0,0,0,2,16.8v9a2.2,2.2,0,0,0,1.4,2l30,8.8H34a2,2,0,0,0,2-2V8A2,2,0,0,0,34,6ZM19.1,34.2,8.4,31l1.3,8.4A2.9,2.9,0,0,0,12.6,42h4.5a2.8,2.8,0,0,0,2.1-1,3.4,3.4,0,0,0,.8-2.6Z"></path>
+        <path d="M40,15.3a1.5,1.5,0,0,0,.9-.2l4-2a2,2,0,0,0-1.8-3.6l-4,2a2,2,0,0,0-.9,2.7A2.1,2.1,0,0,0,40,15.3Z"></path>
+        <path d="M44.9,29.6l-4-2a2.1,2.1,0,0,0-2.7.8,2,2,0,0,0,.9,2.7l4,2a1.5,1.5,0,0,0,.9.2,2.1,2.1,0,0,0,1.8-1.1A1.9,1.9,0,0,0,44.9,29.6Z"></path>
+        <path d="M40,23.3h4a2,2,0,0,0,0-4H40a2,2,0,0,0,0,4Z"></path>
+      </svg>
+    </div>
+  );
+}

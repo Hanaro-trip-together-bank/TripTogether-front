@@ -35,6 +35,9 @@ function LoginPage({}: LoginPageProps) {
       const loginReqtDto: LoginReqDto = {
         memberIdx: member.memberIdx,
         memberLoginPw: password,
+        fcmToken: localStorage.getItem("fcmToken")
+          ? localStorage.getItem("fcmToken")
+          : "",
       };
       trigger(loginReqtDto);
     }
@@ -51,10 +54,10 @@ function LoginPage({}: LoginPageProps) {
 
   return (
     <>
-      <VStack className="h-full justify-between">
+      <VStack className="justify-between h-full">
         <NavigationBar title={""} disableHome white />
-        <VStack className="w-full items-center">
-          <span className="text-white text-xl mb-8"> 간편비밀번호 입력 </span>
+        <VStack className="items-center w-full">
+          <span className="mb-8 text-xl text-white"> 간편비밀번호 입력 </span>
           <HStack className="gap-4 mb-8">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
@@ -66,12 +69,12 @@ function LoginPage({}: LoginPageProps) {
               />
             ))}
           </HStack>
-          <HStack className="gap-2 text-gray-500 text-sm mb-4">
+          <HStack className="gap-2 mb-4 text-sm text-gray-500">
             <span className="underline">비밀번호 초기화</span>
             <span className="">|</span>
             <span className="underline">다른 로그인방법</span>
           </HStack>
-          <HStack className="items-center text-gray-500 gap-2">
+          <HStack className="items-center gap-2 text-gray-500">
             <Check checked={autoLogin} onClick={toggleAutoLogin} />
             <span>자동 로그인</span>
           </HStack>

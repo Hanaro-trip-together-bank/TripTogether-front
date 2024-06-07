@@ -163,7 +163,7 @@ function MoimTripsMainPage({
                     </span>
                     <span className="w-full text-end">
                       / {trip.tripGoalAmount.toLocaleString()} ₩ (
-                      {portion(trip.tripGoalAmount) * 100}%)
+                      {(portion(trip.tripGoalAmount) * 100).toFixed(1)}%)
                     </span>
                   </VStack>
                 </VStack>

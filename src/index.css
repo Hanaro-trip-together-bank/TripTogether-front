@@ -14,6 +14,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 ::-webkit-scrollbar {
   width: 10px;
@@ -106,20 +107,31 @@ body {
   background-color: #454962;
 }
 .w-iPhone {
-  width: 390px;
+  width: 394px;
 }
 .h-iPhone {
   height: 844px;
 }
+.h-screen-plus-12 {
+  height: calc(100vh + 3rem);
+  @supports (-webkit-touch-callout: none) {
+    height: calc(100vh - 2rem);
+  }
+}
 
+@media (min-width: 394px) {
+  .iPhone\:\!h-iPhone {
+    height: 844px !important;
+  }
+}
 .translate-x-iPhone {
-  --tw-translate-x: 390px /* 32px */;
+  --tw-translate-x: 394px /* 32px */;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y))
     rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
     scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .-translate-x-iPhone {
-  --tw-translate-x: -390px /* 32px */;
+  --tw-translate-x: -394px /* 32px */;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y))
     rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y))
     scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -148,5 +160,12 @@ body {
   50% {
     transform: translateY(0);
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.h-full {
+  height: 100%;
+  @supports (-webkit-touch-callout: none) {
+    height: -webkit-fill-available;
   }
 }
