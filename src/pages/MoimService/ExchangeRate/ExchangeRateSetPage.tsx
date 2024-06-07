@@ -10,6 +10,9 @@ import ExchangeRate from "../../../types/ExchangeReate";
 import Button from "../../../components/common/Button";
 import { useNavigation } from "../../../contexts/useNavigation";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
+import { useFetch } from "../../../hooks/useFetch";
+import { ExchangeRateReqDto } from "../../../types/exchangeRate/ExchangeRate";
+import { ExchangeRateGetURL } from "../../../utils/urlFactory";
 
 type OverLessType = {
   nameKo: string;
@@ -176,11 +179,25 @@ const concatNameAndUnit = (exchangeRate: ExchangeRate) => {
 
 export default function ExchangeRateSetPage() {
   const { back } = useNavigation();
-  const [selected, setSelected] = useState(mockData.exchangeRates[0]);
+  const [selected, setSelected] = useState<ExchangeRate>(
+    () => mockData.exchangeRates[0]
+  );
 
   const onClickSelected = (rate: ExchangeRate) => {
     setSelected(rate);
   };
+
+  const { data, isLoading, error, refetch } = useFetch<
+    null,
+    ExchangeRateReqDto
+  >(ExchangeRateGetURL(), "GET");
+
+  useEffect(() => {
+    // console.log("useEffect");
+    if (data) {
+      setSelected(data.data.exchangeRates[0]);
+    }
+  }, [data]);
 
   const rate = selected.deal_bas_r.replace(",", "").split(".");
   const first = parseInt(rate[0]);
@@ -206,108 +223,111 @@ export default function ExchangeRateSetPage() {
   };
 
   return (
-    <VStack className="px-6 bg-gray-50 gap-4 w-full h-full">
+    <VStack className="bg-gray-50 gap-4 w-full h-full">
       <NavigationBar title="환율 알림신청 🔔" />
-      <div className="text-gray-500">
-        {`희망하는 환율에 등록된 통화가 등록 가격 도달 시 하루 한 번 알림을
+      <VStack className="px-6 bg-gray-50 gap-4 w-full h-full">
+        <div className="text-gray-500">
+          {`희망하는 환율에 등록된 통화가 등록 가격 도달 시 하루 한 번 알림을
         보내드립니다.\n
         (최대 5개까지 설정 가능)`}
-      </div>
+        </div>
 
-      <label htmlFor="selectExchangeRate" className="font-bold">
-        대상통화 선택
-      </label>
-      <NavigationLink
-        className="flex justify-between p-3 rounded-md border border-gray-300 bg-white"
-        to={{
-          page: (
-            <ExchangeRateSearchPage
-              rates={mockData.exchangeRates}
-              onClickSelected={onClickSelected}
-            />
-          ),
-        }}
-      >
-        <p>{concatNameAndUnit(selected)}</p>
-        <p>🔎</p>
-      </NavigationLink>
+        <label htmlFor="selectExchangeRate" className="font-bold">
+          대상통화 선택
+        </label>
+        <NavigationLink
+          className="flex justify-between p-3 rounded-md border border-gray-300 bg-white"
+          to={{
+            backgroundColor: "bg-gray-50",
+            page: (
+              <ExchangeRateSearchPage
+                rates={data ? data.data.exchangeRates : []}
+                onClickSelected={onClickSelected}
+              />
+            ),
+          }}
+        >
+          <p>{concatNameAndUnit(selected)}</p>
+          <p>🔎</p>
+        </NavigationLink>
 
-      <VStack className="p-4 rounded-md border border-gray-300 bg-white items-center">
-        <p className="text-sm">{`${mockData.exchangeRateTime} 기준 환율`}</p>
-        <HStack>
-          <p className="text-2xl">{selected.cur_icon}</p>
-          <p className="text-xl text-primary">
-            {selected.deal_bas_r}원
-            <span className="text-sm text-black">
-              ({concatNameAndUnit(selected)})
-            </span>
-          </p>
+        <VStack className="p-4 rounded-md border border-gray-300 bg-white items-center">
+          <p className="text-sm">{`${data ? data.data.exchangeRateTime : new Date().toLocaleDateString()} 기준 환율`}</p>
+          <HStack>
+            <p className="text-2xl">{selected.cur_icon}</p>
+            <p className="text-xl text-primary">
+              {selected.deal_bas_r}원
+              <span className="text-sm text-black">
+                ({concatNameAndUnit(selected)})
+              </span>
+            </p>
+          </HStack>
+        </VStack>
+
+        <HStack className="w-full h-30 align-bottom items-end">
+          <VStack className="w-8/12 p-2 rounded-md bg-white border border-gray-300">
+            <button
+              className="flex flex-col"
+              onClick={() => {
+                setPadValue(true);
+                toggleShowKeypad();
+              }}
+            >
+              <p className="text-sm justify-start text-gray-500">희망환율</p>
+              <HStack className="justify-end">
+                <span className="text-lg">
+                  {firstValue.amount.toLocaleString()}
+                </span>
+              </HStack>
+            </button>
+          </VStack>
+          <span className="text-lg font-bold">.</span>
+          <VStack className="w-24 p-2 rounded-md bg-white border border-gray-300 justify-items-end">
+            <button
+              className="flex flex-col"
+              onClick={() => {
+                setPadValue(false);
+                toggleShowKeypad();
+              }}
+            >
+              <span className="text-sm text-gray-500">소수점 아래 </span>
+              <span className="text-lg">
+                {secondValue.amount.toLocaleString()}
+              </span>
+            </button>
+          </VStack>
+        </HStack>
+        <HStack className="justify-end gap-3">
+          <button
+            className="rounded-md h-16 w-16 border border-gray-300 shadow-md active:translate-y-1 active:bg-gray-200"
+            onClick={() => onClickOverLess(OVER.value)}
+          >
+            🔺<p className="text-sm text-gray-500">{OVER.nameKo}</p>
+          </button>
+          <button
+            className="rounded-md h-16 w-16 border border-gray-300 shadow-md active:translate-y-1 active:bg-gray-200"
+            onClick={() => onClickOverLess(LESS.value)}
+          >
+            🔻<p className="text-sm text-gray-500">{LESS.nameKo}</p>
+          </button>
+        </HStack>
+
+        <p className="mt-20 w-full text-center text-xl text-primary">
+          {`${firstValue.amount}.${secondValue.amount}원`}
+          <span className="ml-2 underline font-bold">
+            {selectedOverLess.nameKo}
+          </span>
+          {`일때 알려드릴까요?`}
+        </p>
+
+        <Spacer />
+        <HStack className="gap-5 justify-center m-3">
+          <Button roundedFull gray onClick={back}>
+            취소
+          </Button>
+          <Button roundedFull>완료</Button>
         </HStack>
       </VStack>
-
-      <HStack className="w-full h-30 align-bottom items-end">
-        <VStack className="w-8/12 p-2 rounded-md bg-white border border-gray-300">
-          <button
-            className="flex flex-col"
-            onClick={() => {
-              setPadValue(true);
-              toggleShowKeypad();
-            }}
-          >
-            <p className="text-sm justify-start text-gray-500">희망환율</p>
-            <HStack className="justify-end">
-              <span className="text-lg">
-                {firstValue.amount.toLocaleString()}
-              </span>
-            </HStack>
-          </button>
-        </VStack>
-        <span className="text-lg font-bold">.</span>
-        <VStack className="w-24 p-2 rounded-md bg-white border border-gray-300 justify-items-end">
-          <button
-            className="flex flex-col"
-            onClick={() => {
-              setPadValue(false);
-              toggleShowKeypad();
-            }}
-          >
-            <span className="text-sm text-gray-500">소수점 아래 </span>
-            <span className="text-lg">
-              {secondValue.amount.toLocaleString()}
-            </span>
-          </button>
-        </VStack>
-      </HStack>
-      <HStack className="justify-end gap-3">
-        <button
-          className="rounded-md h-16 w-16 border border-gray-300 shadow-md active:translate-y-1 active:bg-gray-200"
-          onClick={() => onClickOverLess(OVER.value)}
-        >
-          🔺<p className="text-sm text-gray-500">{OVER.nameKo}</p>
-        </button>
-        <button
-          className="rounded-md h-16 w-16 border border-gray-300 shadow-md active:translate-y-1 active:bg-gray-200"
-          onClick={() => onClickOverLess(LESS.value)}
-        >
-          🔻<p className="text-sm text-gray-500">{LESS.nameKo}</p>
-        </button>
-      </HStack>
-
-      <p className="mt-20 w-full text-center text-xl text-primary">
-        {`${firstValue.amount}.${secondValue.amount}원`}
-        <span className="ml-2 underline font-bold">
-          {selectedOverLess.nameKo}
-        </span>
-        {`일때 알려드릴까요?`}
-      </p>
-
-      <Spacer />
-      <HStack className="gap-5 justify-center m-3">
-        <Button roundedFull gray onClick={back}>
-          취소
-        </Button>
-        <Button roundedFull>완료</Button>
-      </HStack>
 
       {/* 키패드 시트 */}
       <Modal

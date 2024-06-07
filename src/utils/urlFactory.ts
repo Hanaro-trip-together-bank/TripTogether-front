@@ -88,6 +88,16 @@ export const CategoriesGetURL = () => `${BASE_URL}/categories`;
 // GET - 명소 목록 조회: () -> PlaceResDto[]
 export const PlacesGetURL = (cityIdx: number = -1, categoryIdx: number = -1) =>
   `${BASE_URL}/places?${categoryIdx >= 0 ? `category_id=${categoryIdx}` : ""}${cityIdx >= 0 ? `&city_id=${cityIdx}` : ""}`;
+// GET - 대륙 리스트 읽기: () => Contient[]
+export const ContientGetURL = () => `${BASE_URL}/continents`;
+
+// GET - 대륙별 나라 리스트 읽기: (continentIdx) => Country[]
+export const CountriesGetByContinent = (contientIdx: number) =>
+  `${BASE_URL}/countries/continents/${contientIdx}`;
+
+// GET - 나라별 도시 리스트 읽기: (countryIdx) => City[]
+export const CitiesGetByCountries = (countryIdx: number) =>
+  `${BASE_URL}/cities/countries/${countryIdx}`;
 
 //--------------- 회비 ---------------//
 
@@ -185,3 +195,5 @@ export const NoticePutURL = () => `${BASE_URL}/account/notice`;
 
 // PUT - 선호 여행 등록, 수정
 export const PreferTripPutURL = () => `${BASE_URL}/team/preference`;
+//--------------- 환율 관련 ---------------//
+export const ExchangeRateGetURL = () => `${BASE_URL}/exchange-rate`;
