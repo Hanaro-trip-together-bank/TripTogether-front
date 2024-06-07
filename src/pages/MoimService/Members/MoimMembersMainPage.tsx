@@ -49,7 +49,7 @@ function MoimMembersMainPage({
 }: MoimMembersMainPageProps) {
   const { home } = useNavigation();
   const { member, login } = useAuth();
-  const [showMemberList, toggleShowMemberList] = useToggle();
+  const [showMemberList, toggleShowMemberList] = useToggle(false);
 
   const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
   const [currentTeamMemberIdx, setCurrentTeamMemberIdx] = useState<number>();
@@ -636,6 +636,7 @@ function MoimMembersMainPage({
             disabled={canRequest}
             onClick={() => {
               changeOwner(currentTeamMemberIdx);
+              toggleShowMemberList();
             }}
           >
             확인
