@@ -18,6 +18,7 @@ import CreateTripPage from "../../CreateTripPage";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { PreferTripReqDto } from "../../../types/team/TeamRequestDto";
 import { useAuth } from "../../../contexts/useAuth";
+import CreateTripPage from "../../CreateTripPage";
 
 interface MoimTripsMainPageProps {
   teamIdx: number;

@@ -6,6 +6,11 @@ import { useCityCartManager } from "../contexts/City-Cart-Context";
 import Button from "../components/common/Button";
 import { useNavigation } from "../contexts/useNavigation";
 import NavigationBar from "../components/common/TopBars/NavigationBar";
+import { useFetch } from "../hooks/useFetch";
+import { City, Trip } from "../types/Trip";
+import { CitiesGetByCountries, TripsPostURL } from "../utils/urlFactory";
+import { useTrip } from "../contexts/Trip-Context";
+import { useFetchTrigger } from "../hooks/useFetchTrigger";
 
 const temp = [
   {
@@ -123,31 +128,59 @@ const temp = [
 ];
 const data = temp.map((t, idx) => ({ ...t, cityIdx: idx }));
 
-export default function SelectCitiesPage() {
-  const { back } = useNavigation();
-  const [cities, setCities] = useState(data);
+type SelectCitiesPageProps = {
+  countryIdx: number;
+  info: Trip;
+};
 
-  const { cart } = useCityCartManager();
-  // useEffect(() => {});
+export default function SelectCitiesPage(props: SelectCitiesPageProps) {
+  const { countryIdx, info } = props;
+  const { back } = useNavigation();
+  const [cities, setCities] = useState<City[]>([]);
+  const { cart, cityIds } = useCityCartManager();
+
+  const citiesFetch = useFetch<null, City[]>(
+    CitiesGetByCountries(countryIdx),
+    "GET"
+  );
+  const { error, trigger } = useFetchTrigger<Trip | null, void>(
+    TripsPostURL(),
+    "POST"
+  );
+
+  const onClickCreateTrip = () => {
+    trigger({ ...info, cities: cityIds });
+    if (!error) {
+      back();
+      back();
+      back();
+    }
+  };
+
+  useEffect(() => {
+    if (citiesFetch.data) {
+      setCities(citiesFetch.data);
+    }
+  }, [citiesFetch.data]);
 
   return (
     <VStack className="w-full h-full">
       <NavigationBar title={"도시 선택"} />
 
-      <VStack className="border border-gray-500 overflow-y-scroll !h-5/7">
+      <VStack className="border border-gray-500 overflow-y-scroll h-5/6 !min-h-96">
         {cities.map((c) => (
           <TripView
             key={c.cityIdx}
             id={c.cityIdx}
-            nameKo={c.nameKo}
-            nameEn={c.nameEn}
-            subtitle={c.nameEn}
-            image={c.image}
+            nameKo={c.cityNameKo}
+            nameEn={c.cityNameEng}
+            subtitle={c.cityNameEng}
+            image={c.cityImg}
             roundedFull={true}
           />
         ))}
       </VStack>
-      <HStack className="h-2/6 !p-3 !gap-2 min-w-full overflow-x-scroll text-center justify-start items-center">
+      <HStack className="h-1/6 !p-3 !gap-2 min-w-full overflow-x-scroll text-center justify-start items-center">
         {cart.length == 0 ? (
           <span className="text-xl">도시를 선택해주세요 🛣️</span>
         ) : (
@@ -172,7 +205,9 @@ export default function SelectCitiesPage() {
           <Button roundedFull gray onClick={back}>
             취소
           </Button>
-          <Button roundedFull>완료</Button>
+          <Button roundedFull onClick={onClickCreateTrip}>
+            완료
+          </Button>
         </HStack>
       </div>
     </VStack>
