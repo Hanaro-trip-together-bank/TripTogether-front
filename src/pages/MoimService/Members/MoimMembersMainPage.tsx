@@ -333,7 +333,7 @@ function MoimMembersMainPage({
             </Button>
           ) : null}
         </HStack>
-        <VStack className="min-w-full overflow-y-scroll px-6 gap-8">
+        <VStack className="min-w-full overflow-y-auto px-6 gap-8">
           {/* 총무 */}
           <VStack className="w-full gap-4">
             <span className="text-sm"> 총무 </span>

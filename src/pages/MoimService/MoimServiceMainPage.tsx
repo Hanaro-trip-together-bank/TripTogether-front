@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../../components/common/Stack";
@@ -12,6 +13,7 @@ import { TeamServiceListResDto } from "../../types/account/AccountResponseDto";
 import { MyTeamListReqDto } from "../../types/team/TeamRequestDto";
 import Loading from "../../components/common/Modals/Loading";
 import formatAccNo from "../../utils/formatAccNo";
+import { useNavigation } from "../../contexts/useNavigation";
 
 interface MoimServiceMainPageProps {
   memberIdx: number;
@@ -22,7 +24,7 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
   const [showNewAccountModal, setShowNewAccountModal] = useState(false);
   const info: MyTeamListReqDto = { memberIdx: memberIdx };
 
-  const { data, isLoading } = useFetch<
+  const { data, isLoading, refetch } = useFetch<
     MyTeamListReqDto,
     TeamServiceListResDto[]
   >(MyMoimGetURL(), "POST", info);
@@ -34,6 +36,13 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
       }, 500);
     }
   }, [data]);
+
+  // 뒤로가기로 이 페이지로 돌아왔을 때 리페치
+  const { path } = useNavigation();
+  const currentPathLength = useMemo(() => path.length, []);
+  useEffect(() => {
+    if (path.length == currentPathLength) refetch();
+  }, [path.length]);
 
   return (
     <>

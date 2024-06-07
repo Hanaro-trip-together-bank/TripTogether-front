@@ -2,7 +2,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../../components/common/Stack";
@@ -54,7 +54,8 @@ function MoimDetailPage({
   teamMemberIdx,
   teamMemberStatus,
 }: MoimDetailPageProps) {
-  const { path } = useNavigation();
+  const { path, navigateTo } = useNavigation();
+  const currentPathLength = useMemo(() => path.length, []);
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
 
@@ -78,12 +79,15 @@ function MoimDetailPage({
     TripResDto
   >(TripsGetURL(moimDetailData?.preferTripIdx ?? 0), "GET");
 
+  // 뒤로가기로 이 페이지로 돌아왔을 때 리페치
   useEffect(() => {
-    refetchPreferTrip();
-    refetch();
+    if (path.length == currentPathLength) {
+      refetchPreferTrip();
+      refetch();
+    }
   }, [path.length]);
   useEffect(() => {
-    refetchPreferTrip();
+    if (path.length == currentPathLength) refetchPreferTrip();
   }, [moimDetailData?.preferTripIdx]);
 
   const { trigger } = useFetchTrigger<UpdateTeamNoticeReq, void>(
@@ -135,7 +139,7 @@ function MoimDetailPage({
         {/* 모임 요약 카드 + 즐겨찾기한 여행 */}
         <Swiper className="w-full" slidesPerView={1.1} centeredSlides>
           <SwiperSlide>
-            <VStack className="!gap-0 bg-white shadowed rounded-2xl h-64 m-2 mb-8 p-4">
+            <VStack className="!gap-0 bg-white shadowed rounded-2xl m-2 mb-8 p-4">
               <HStack className="items-center">
                 <Avatar
                   crown={teamMemberStatus == "총무"}
@@ -171,20 +175,22 @@ function MoimDetailPage({
               <span className="text-xl font-bold">
                 {moimDetailData?.accBalance.toLocaleString()}원
               </span>
-              <div className="flex items-center flex-grow w-20 h-20 rounded-xl mx-auto">
+              <div className="flex items-center flex-grow w-32 h-32 rounded-xl mx-auto">
                 <img src={`/images/moim/plane.png`} alt="plane" />
               </div>
               <HStack>
                 <Button className="!w-1/2">출금</Button>
-                <NavigationLink
-                  className="w-1/2"
-                  to={{
-                    backgroundColor: "bg-gray-50",
-                    page: <MoimDepositPage teamIdx={teamIdx} />,
-                  }}
+                <Button
+                  className="!w-1/2"
+                  onClick={() =>
+                    navigateTo({
+                      backgroundColor: "bg-gray-50",
+                      page: <MoimDepositPage teamIdx={teamIdx} />,
+                    })
+                  }
                 >
-                  <Button className="!w-full">입금</Button>
-                </NavigationLink>
+                  입금
+                </Button>
               </HStack>
             </VStack>
           </SwiperSlide>
@@ -281,13 +287,16 @@ function MoimDetailPage({
                     );
                   })}
                 </VStack>
-
-                <NavigationLink
+                <Button
                   className="w-full"
-                  to={{ page: <MoimTripDetailPage trip={preferTrip!} /> }}
+                  onClick={() =>
+                    navigateTo({
+                      page: <MoimTripDetailPage trip={preferTrip!} />,
+                    })
+                  }
                 >
-                  <Button className="w-full">더보기</Button>
-                </NavigationLink>
+                  더보기
+                </Button>
               </VStack>
             ) : (
               <VStack className="items-center justify-center gap-4 bg-white shadowed rounded-2xl h-64 m-2 mb-8">
@@ -307,9 +316,9 @@ function MoimDetailPage({
                     ),
                   }}
                 >
-                  <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
+                  <div className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl flex items-center justify-center">
                     +
-                  </Button>
+                  </div>
                 </NavigationLink>
               </VStack>
             )}

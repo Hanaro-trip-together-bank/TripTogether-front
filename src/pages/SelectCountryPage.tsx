@@ -51,7 +51,7 @@ export default function SelectCountryPage({ info }: SelectCountryPageProps) {
     <VStack className="w-full h-full">
       <NavigationBar title={"어디로 떠나시나요? 🛫"} />
 
-      <HStack className="my-3 mx-2 !min-h-12 !pb-2 overflow-x-scroll">
+      <HStack className="my-3 mx-2 !min-h-12 !pb-2 overflow-x-auto">
         {continents.map((con) => (
           <Option
             className="text-nowrap snap-start !min-h-7"
@@ -64,7 +64,7 @@ export default function SelectCountryPage({ info }: SelectCountryPageProps) {
         ))}
       </HStack>
 
-      <VStack className="border border-gray-400 overflow-y-scroll">
+      <VStack className="h-full overflow-y-auto">
         {countries.map((c) => (
           <NavigationLink
             key={c.countryIdx}

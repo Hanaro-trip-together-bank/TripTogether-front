@@ -121,14 +121,14 @@ function MoimTripsMainPage({
           </span>
         </HStack>
         {/* 여행 카드들 */}
-        <VStack className="overflow-y-scroll p-6">
+        <VStack className="overflow-y-auto p-6">
           {sortedData?.map((trip) => (
             <VStack
               key={trip.tripIdx}
               className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
             >
               <HStack className="w-full justify-between mb-4 overflow-hidden overflow-ellipsis">
-                <VStack className="items-start w-64">
+                <VStack className="items-start w-64 mb-6">
                   <span className="font-bold text-xl">{trip.tripName}</span>
                   <span className="text-gray-500">
                     {trip.countryNameKo} 탐방
@@ -136,17 +136,16 @@ function MoimTripsMainPage({
                   <span className="text-gray-500 !text-wrap">
                     {trip.tripContent}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 text-nowrap">
                     {trip.tripStartDay
                       ? getPeriod(trip.tripStartDay, trip.tripDay)
-                      : `총 ${trip.tripDay}일`}
+                      : `총 ${trip.tripDay}일`}{" "}
+                    {trip.tripStartDay && (
+                      <span className="text-yellow-500 ">
+                        {getDaysRemaining(trip.tripStartDay)}
+                      </span>
+                    )}
                   </span>
-
-                  {trip.tripStartDay && (
-                    <span className="text-yellow-500 mb-6">
-                      {getDaysRemaining(trip.tripStartDay)}
-                    </span>
-                  )}
                 </VStack>
                 <VStack>
                   {data?.preferTripIdx == trip.tripIdx ? (
@@ -232,6 +231,7 @@ function MoimTripsMainPage({
             <NavigationLink
               className="flex-grow"
               to={{
+                backgroundColor: "bg-gray-50",
                 page: <CreateTripPage />,
               }}
             >

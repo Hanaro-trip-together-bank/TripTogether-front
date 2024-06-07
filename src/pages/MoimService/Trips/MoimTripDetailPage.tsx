@@ -299,7 +299,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
           />
         </HStack>
         {/* 여행 계획 컨테이너 */}
-        <VStack className="h-full overflow-y-scroll pl-8 pr-4 py-6">
+        <VStack className="h-full overflow-y-auto pl-8 pr-4 py-6">
           {Array.from({ length: trip.tripDay }, (_, i) => i + 1).map((day) => {
             const { textColor, borderColor } =
               colorPacks[(day + colorBias) % colorPacks.length];
@@ -778,7 +778,7 @@ function ReplyList({
           {data?.length ?? count}
         </span>
       </HStack>
-      <VStack className="!gap-0 max-h-80 overflow-y-scroll">
+      <VStack className="!gap-0 max-h-80 overflow-y-auto">
         {isLoading
           ? Array.from({ length: count }, (_, i) => i + 1).map((i) => (
               <HStack

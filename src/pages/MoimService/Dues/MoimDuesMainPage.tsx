@@ -234,7 +234,7 @@ function MoimDuesMainPage({
                     onSelect={setPaidOrNot}
                   />
                   {dueMembers.length !== 0 ? (
-                    <VStack className="flex flex-col items-center w-full h-full overflow-y-scroll">
+                    <VStack className="flex flex-col items-center w-full h-full overflow-y-auto">
                       {dueMembers.map((member) => (
                         <NavigationLink
                           className="w-full"
@@ -288,7 +288,7 @@ function MoimDuesMainPage({
             </VStack>
           </>
         ) : (
-          <VStack className="p-4 h-full overflow-y-scroll">
+          <VStack className="p-4 h-full overflow-y-auto">
             <HStack className="items-center text-sm">
               <span>2024년 05월</span>
               <Arrow direction="down" />
@@ -340,7 +340,7 @@ function MoimDuesMainPage({
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-scroll">
+          <VStack className="max-h-72 overflow-auto">
             {data?.map((member) => {
               if (member.teamMemberState === "모임원") {
                 return (
