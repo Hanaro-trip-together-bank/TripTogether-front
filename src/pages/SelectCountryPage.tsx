@@ -12,7 +12,7 @@ import SelectCitiesPage from "./SelectCitiesPage";
 import { CityCartProvider } from "../contexts/City-Cart-Context";
 import { useFetch } from "../hooks/useFetch";
 import { ContientGetURL, CountriesGetByContinent } from "../utils/urlFactory";
-import { Continent, Country, Trip } from "../types/Trip";
+import { Continent, Country, Trip } from "../types/trip/Trip";
 import { useFetchTrigger } from "../hooks/useFetchTrigger";
 import { TripProvider } from "../contexts/Trip-Context";
 

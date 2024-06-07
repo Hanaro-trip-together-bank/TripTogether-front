@@ -14,7 +14,6 @@ import { TripListResDto } from "../../../types/trip/TripResponseDto";
 import Loading from "../../../components/common/Modals/Loading";
 import getPeriod from "../../../utils/getPeriod";
 import getDaysRemaining from "../../../utils/getDaysRemaining";
-import CreateTripPage from "../../CreateTripPage";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { PreferTripReqDto } from "../../../types/team/TeamRequestDto";
 import { useAuth } from "../../../contexts/useAuth";

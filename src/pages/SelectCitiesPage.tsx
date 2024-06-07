@@ -7,9 +7,8 @@ import Button from "../components/common/Button";
 import { useNavigation } from "../contexts/useNavigation";
 import NavigationBar from "../components/common/TopBars/NavigationBar";
 import { useFetch } from "../hooks/useFetch";
-import { City, Trip } from "../types/Trip";
+import { City, Trip } from "../types/trip/Trip";
 import { CitiesGetByCountries, TripsPostURL } from "../utils/urlFactory";
-import { useTrip } from "../contexts/Trip-Context";
 import { useFetchTrigger } from "../hooks/useFetchTrigger";
 
 const temp = [

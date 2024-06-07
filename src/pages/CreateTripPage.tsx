@@ -12,7 +12,7 @@ import SelectCountryPage from "./SelectCountryPage";
 import NavigationBar from "../components/common/TopBars/NavigationBar";
 import TripImage from "../components/trip/TripImg";
 import cn from "../utils/cn";
-import { Trip } from "../types/Trip";
+import { Trip } from "../types/trip/Trip";
 
 // {
 //   teamIdx: 1,
