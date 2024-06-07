@@ -29,36 +29,37 @@ export default function ExchangeRateSearchPage(
   const filteredRates = getFilteredRates();
 
   return (
-    <VStack className="p-6 bg-gray-50 gap-4 w-full h-full">
+    <VStack className="bg-gray-50 gap-4 w-full h-full">
       <NavigationBar title="대상통화 선택" />
-      <div
-        id="selectExchangeRate"
-        className="flex justify-between p-3 rounded-md border border-gray-300 bg-white focus:border-primary"
-      >
-        <input
-          value={search}
-          onChange={onChanageSearch}
-          className="w-full"
-          placeholder="국가명으로 검색해주세요"
-        />
-        <span>🔎</span>
-      </div>
-
-      <VStack className="overflow-y-scroll">
-        {filteredRates.map((rate) => (
-          <button
-            key={rate.cur_unit}
-            onClick={() => {
-              onClickSelected(rate);
-              back();
-            }}
-          >
-            <HStack className="text-lg">
-              <span className="text-2xl">{rate.cur_icon} </span>
-              {`${rate.cur_name} ${rate.cur_unit}`}
-            </HStack>
-          </button>
-        ))}
+      <VStack className="px-6 bg-gray-50 h-full">
+        <div
+          id="selectExchangeRate"
+          className="flex justify-between p-3 rounded-md border border-gray-300 bg-white focus:border-primary"
+        >
+          <input
+            value={search}
+            onChange={onChanageSearch}
+            className="w-full"
+            placeholder="국가명으로 검색해주세요"
+          />
+          <span>🔎</span>
+        </div>
+        <VStack className="p-2 overflow-y-scroll">
+          {filteredRates.map((rate) => (
+            <button
+              key={rate.cur_unit}
+              onClick={() => {
+                onClickSelected(rate);
+                back();
+              }}
+            >
+              <HStack className="text-lg">
+                <span className="text-2xl">{rate.cur_icon} </span>
+                {`${rate.cur_name} ${rate.cur_unit}`}
+              </HStack>
+            </button>
+          ))}
+        </VStack>
       </VStack>
     </VStack>
   );

@@ -4,37 +4,48 @@ import {
   useContext,
   useReducer,
 } from "react";
+import { Trip } from "../types/Trip";
 
 type TripBasicInfo = {
+  teamIdx: number;
+  teamName: string;
   tripName: string;
   tripContent: string | undefined;
   tripGoalAmount: number;
   tripDay: number;
+  tripImg: number;
   tripStartDay: string | undefined;
+  createdBy: number;
 };
 
 type TripContextProps = {
   trip: Trip | null;
   addBasicInfo: (basicInfo: TripBasicInfo) => void;
-  addCountries: (countryIds: number[]) => void;
+  addCities: (cities: number[]) => void;
+  addInfo: (trip: Trip) => void;
 };
 
 const TripContext = createContext<TripContextProps>({
   trip: null,
   addBasicInfo: () => {},
-  addCountries: () => {},
+  addCities: () => {},
+  addInfo: () => {},
 });
 
 type ReducerAction =
   | { type: "FIRST"; data: TripBasicInfo }
-  | { type: "SECOND"; data: number[] };
+  | { type: "SECOND"; data: number[] }
+  | { type: "CREATE"; data: Trip };
 
 const reducer = (trip: Trip | null, action: ReducerAction) => {
   switch (action.type) {
     case "FIRST":
-      return { ...action.data, countryIds: [] };
+      return { ...action.data, cities: [] };
     case "SECOND":
-      return trip && { ...trip, countryIds: action.data };
+      return trip && { ...trip, cities: action.data };
+    case "CREATE": {
+      return { ...action.data };
+    }
     default:
       return trip;
   }
@@ -50,15 +61,21 @@ export const TripProvider = ({ children }: PropsWithChildren) => {
     });
   };
 
-  const addCountries = (countryIds: number[]) => {
+  const addCities = (cities: number[]) => {
     dispatch({
       type: "SECOND",
-      data: countryIds,
+      data: cities,
+    });
+  };
+  const addInfo = (trip: Trip) => {
+    dispatch({
+      type: "CREATE",
+      data: { ...trip },
     });
   };
 
   return (
-    <TripContext.Provider value={{ trip, addBasicInfo, addCountries }}>
+    <TripContext.Provider value={{ trip, addBasicInfo, addCities, addInfo }}>
       {children}
     </TripContext.Provider>
   );
