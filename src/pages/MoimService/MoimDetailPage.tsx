@@ -335,6 +335,7 @@ function MoimDetailPage({
                   <MoimMembersMainPage
                     teamIdx={teamIdx}
                     teamMemberStatus={teamMemberStatus}
+                    teamMemberIdx={teamMemberIdx}
                   />
                 ),
               }}
