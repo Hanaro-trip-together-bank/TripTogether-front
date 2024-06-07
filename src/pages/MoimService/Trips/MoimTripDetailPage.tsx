@@ -36,6 +36,7 @@ import { TripPlaceUpdateOrderReqDTO } from "../../../types/tripPlace/TripPlaceRe
 import { useAuth } from "../../../contexts/useAuth";
 import MoimScheduleAddPage from "./MoimScheduleAddPage";
 import { colorPacks } from "../../../utils/colorPack.ts";
+import { printMoney } from "../../../utils/printMoney.ts";
 
 interface MoimTripDetailPageProps {
   trip: TripResDto;
@@ -43,7 +44,7 @@ interface MoimTripDetailPageProps {
 
 function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
   const { member } = useAuth();
-  const { navigateTo } = useNavigation();
+  const { navigateTo, back } = useNavigation();
   const [isEditMode, toggleIsEditMode] = useToggle();
   const [showEditConfirm, toggleShowEditConfirm] = useToggle();
   const [showScheduleDetail, toggleShowScheduleDetail] = useToggle();
@@ -283,7 +284,13 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
   return (
     <>
       <VStack className="h-full">
-        <NavigationBar title={"여행관리"} />
+        <NavigationBar
+          title={"여행관리"}
+          onBack={() => {
+            if (isEditMode) toggleShowEditConfirm();
+            else back();
+          }}
+        />
         <HStack className="justify-end px-6">
           <Toggle
             onClick={toggleEditWithCheck}
@@ -551,10 +558,17 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
 
           {/* 끝 */}
           <VStack className="border-l-4 w-full mt-4 pb-4 border-red-400 gap-6">
-            <HStack className="relative items-center pl-6">
+            <HStack className="relative items-center px-6 h-0">
               <VStack className="absolute -inset-x-0.5 -translate-x-1/2 w-10 h-10 rounded-full border-4 items-center justify-center border-red-400 text-red-400 bg-white p-1">
                 <Goal />
               </VStack>
+              <span className="w-full text-center text-lg text-gray-500 font-bold">
+                총 {trip.tripDay}일,{" "}
+                {printMoney(
+                  data?.reduce((sum, cur) => sum + cur.placeAmount, 0) ?? 0
+                )}
+                원
+              </span>
             </HStack>
           </VStack>
         </VStack>
