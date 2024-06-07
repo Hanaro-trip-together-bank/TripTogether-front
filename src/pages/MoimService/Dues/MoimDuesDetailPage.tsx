@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
@@ -89,7 +90,7 @@ function MoimDuesDetailPage({
     <>
       <VStack className="min-h-full h-full bg-white pb-8">
         <NavigationBar title={"회비내역"} />
-        <VStack className="p-4 h-full overflow-y-scroll">
+        <VStack className="p-4 h-full">
           {/* 멤버 선택 */}
           <button onClick={toggleShowMemberList}>
             <HStack className="items-center font-bold mb-4">
@@ -121,7 +122,7 @@ function MoimDuesDetailPage({
             </select>
           </HStack>
           {/* 개월 리스트 */}
-          <VStack className="max-h-full w-full border-y border-gray-200 my-4 overflow-y-scroll">
+          <VStack className="max-h-full h-full w-full border-y border-gray-200 my-4 overflow-y-auto">
             {depositList.length != 0 ? (
               depositList.map((deposit) => {
                 return (
@@ -155,7 +156,7 @@ function MoimDuesDetailPage({
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-y-scroll overflow-x-hidden gap-2 py-4">
+          <VStack className="max-h-72 overflow-y-auto overflow-x-hidden gap-2 py-4">
             {TeamMembersFetcher.data ? (
               TeamMembersFetcher.data.map((teamMember) => {
                 return (

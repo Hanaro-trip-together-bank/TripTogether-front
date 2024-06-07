@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../../components/common/Stack";
@@ -33,8 +34,9 @@ import MoimTripDetailPage from "./Trips/MoimTripDetailPage.tsx";
 import { TripResDto } from "../../types/trip/TripResponseDto";
 import getPeriod from "../../utils/getPeriod.ts";
 import getDaysRemaining from "../../utils/getDaysRemaining.ts";
-import TripImage from "../../components/trip/TripImg.tsx";
 import cn from "../../utils/cn.ts";
+import uuid from "../../utils/uuid.ts";
+import { useNavigation } from "../../contexts/useNavigation.tsx";
 
 interface MoimDetailPageProps {
   teamIdx: number;
@@ -51,11 +53,11 @@ function MoimDetailPage({
   teamName,
   teamMemberIdx,
   teamMemberStatus,
-  preferTripIdx,
 }: MoimDetailPageProps) {
+  const { path, navigateTo } = useNavigation();
+  const currentPathLength = useMemo(() => path.length, []);
   const [notice, setNotice] = useState<string>("");
   const [showNoticeEdit, setShowNoticeEdit] = useState(false);
-  const [animationStarted, setAnimationStarted] = useState(false);
 
   // 모임서비스 상세 데이터 불러오기
   const requestData: DetailTeamReqDto = {
@@ -72,21 +74,26 @@ function MoimDetailPage({
     "POST",
     requestData
   );
+  const { data: preferTrip, refetch: refetchPreferTrip } = useFetch<
+    null,
+    TripResDto
+  >(TripsGetURL(moimDetailData?.preferTripIdx ?? 0), "GET");
 
-  const preferTripFetch = preferTripIdx
-    ? useFetch<null, TripResDto>(TripsGetURL(preferTripIdx), "GET")
-    : { data: null, isLoading: false };
-
-  const { data: preferTrip, isLoading: preferTripIsLoading } = preferTripFetch;
+  // 뒤로가기로 이 페이지로 돌아왔을 때 리페치
+  useEffect(() => {
+    if (path.length == currentPathLength) {
+      refetchPreferTrip();
+      refetch();
+    }
+  }, [path.length]);
+  useEffect(() => {
+    if (path.length == currentPathLength) refetchPreferTrip();
+  }, [moimDetailData?.preferTripIdx]);
 
   const { trigger } = useFetchTrigger<UpdateTeamNoticeReq, void>(
     NoticePutURL(),
     "PUT"
   );
-
-  useEffect(() => {
-    setAnimationStarted(true);
-  }, []);
 
   useEffect(() => {
     if (!moimDetailData) return;
@@ -105,6 +112,11 @@ function MoimDetailPage({
       refetch();
     }, 500);
   };
+  const amountGraphBase = Math.max(
+    preferTrip?.tripGoalAmount ?? 0,
+    preferTrip?.tripExpectedAmount ?? 0,
+    moimDetailData?.accBalance ?? 0
+  );
 
   return (
     <>
@@ -126,8 +138,8 @@ function MoimDetailPage({
         </div>
         {/* 모임 요약 카드 + 즐겨찾기한 여행 */}
         <Swiper className="w-full" slidesPerView={1.1} centeredSlides>
-          <SwiperSlide className="!h-fit">
-            <VStack className="!gap-0 bg-white shadowed rounded-2xl h-64 m-2 mb-8 p-4">
+          <SwiperSlide>
+            <VStack className="!gap-0 bg-white shadowed rounded-2xl m-2 mb-8 p-4">
               <HStack className="items-center">
                 <Avatar
                   crown={teamMemberStatus == "총무"}
@@ -163,95 +175,128 @@ function MoimDetailPage({
               <span className="text-xl font-bold">
                 {moimDetailData?.accBalance.toLocaleString()}원
               </span>
-              {/* Todo: 외화 잔액 설정 */}
-              <span className="text-xl font-bold text-indigo-500">99.99$</span>
-              <span className="text-xl font-bold text-orange-500">4,000¥</span>
-              <Spacer />
-              {/* TODO: 비행기 아이콘 */}
+              <div className="flex items-center flex-grow w-32 h-32 rounded-xl mx-auto">
+                <img src={`/images/moim/plane.png`} alt="plane" />
+              </div>
               <HStack>
                 <Button className="!w-1/2">출금</Button>
-                <NavigationLink
-                  className="w-1/2"
-                  to={{
-                    backgroundColor: "bg-gray-50",
-                    page: <MoimDepositPage teamIdx={teamIdx} />,
-                  }}
+                <Button
+                  className="!w-1/2"
+                  onClick={() =>
+                    navigateTo({
+                      backgroundColor: "bg-gray-50",
+                      page: <MoimDepositPage teamIdx={teamIdx} />,
+                    })
+                  }
                 >
-                  <Button className="!w-full">입금</Button>
-                </NavigationLink>
+                  입금
+                </Button>
               </HStack>
             </VStack>
           </SwiperSlide>
           <SwiperSlide className="!h-fit">
-            {preferTripIsLoading ? (
-              <span>Loading...</span>
-            ) : moimDetailData?.preferTripIdx ? (
+            {moimDetailData?.preferTripIdx && preferTrip ? (
               <VStack
                 key={preferTrip?.tripIdx}
-                className="rounded-2xl w-full bg-white shadowed px-6 py-4 mb-4"
+                className="relative rounded-2xl bg-white shadowed m-2 mb-8 p-4 gap-4"
               >
-                <HStack className="w-full justify-between overflow-hidden overflow-ellipsis">
-                  <VStack className="items-start w-64">
-                    <span className="font-bold text-xl">
-                      {preferTrip?.tripName}
-                    </span>
-                    <span className="text-gray-500">
-                      {preferTrip?.countryNameKo} 탐방
-                    </span>
-                    <span className="text-gray-500 !text-wrap">
-                      {preferTrip?.tripContent}
-                    </span>
-                    <span className="text-gray-500">
-                      {preferTrip?.tripStartDay
-                        ? getPeriod(
-                            preferTrip?.tripStartDay,
-                            preferTrip?.tripDay
-                          )
-                        : `총 ${preferTrip?.tripDay}일`}
-                    </span>
+                <span className="absolute right-4 text-xl text-yellow-300">
+                  ★
+                </span>
+                <VStack className="items-start w-64 !gap-0">
+                  <span className="font-bold text-xl line-clamp-2">
+                    {preferTrip?.tripName}
+                  </span>
+                  <span className="text-gray-500">
+                    {preferTrip?.countryNameKo} 탐방
+                  </span>
+                  <span className="text-gray-500 line-clamp-1">
+                    {preferTrip?.tripContent}
+                  </span>
+                  <span className="text-gray-500 text-nowrap">
+                    {preferTrip?.tripStartDay
+                      ? getPeriod(preferTrip?.tripStartDay, preferTrip?.tripDay)
+                      : `총 ${preferTrip?.tripDay}일`}{" "}
                     {preferTrip?.tripStartDay && (
-                      <span className="text-yellow-500 mb-6">
+                      <span className="text-yellow-500">
                         {getDaysRemaining(preferTrip.tripStartDay)}
                       </span>
                     )}
-                  </VStack>
-                </HStack>
-
-                <VStack className="w-full mb-2">
-                  <HStack>
-                    <span className="text-primary font-bold">
-                      {moimDetailData?.accBalance.toLocaleString()}₩
-                    </span>
-                    <span className="text-primary font-bold">
-                      / {preferTrip!.tripGoalAmount.toLocaleString()}₩ (
-                      {preferTrip!.tripGoalAmount !== 0
-                        ? `${((moimDetailData?.accBalance / preferTrip!.tripGoalAmount) * 100).toFixed(2)}%`
-                        : "0.00%"}
-                      )
-                    </span>
-                  </HStack>
-                  <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
-                    <div
-                      className="bg-primary h-4 rounded-full"
-                      style={{
-                        width: `${
-                          preferTrip!.tripGoalAmount !== 0
-                            ? (moimDetailData?.accBalance /
-                                preferTrip!.tripGoalAmount) *
-                              100
-                            : 0
-                        }%`,
-                      }}
-                    ></div>
-                  </div>
+                  </span>
                 </VStack>
+                <VStack className="w-full">
+                  {/* 목표금액 */}
+                  {[
+                    {
+                      value: moimDetailData?.accBalance ?? 0,
+                      label: "계좌 잔액",
+                      textColor: "text-primary",
+                      bgColor: "bg-primary",
+                    },
 
-                <NavigationLink
+                    {
+                      value: preferTrip?.tripGoalAmount ?? 0,
+                      label: "목표 금액",
+                      textColor: "text-blue-400",
+                      bgColor: "bg-blue-400",
+                    },
+
+                    {
+                      value: preferTrip?.tripExpectedAmount ?? 0,
+                      label: "예상 금액",
+                      textColor: "text-red-400",
+                      bgColor: "bg-red-400",
+                    },
+                  ].map(({ value, textColor, bgColor, label }) => {
+                    const portion =
+                      preferTrip?.tripGoalAmount !== 0
+                        ? (value / preferTrip!.tripGoalAmount) * 100
+                        : 0;
+                    return (
+                      <VStack key={uuid()} className="!gap-0">
+                        <HStack className="w-full">
+                          <span className={cn("font-bold", textColor)}>
+                            {label}
+                          </span>
+                          <Spacer />
+                          <span className={cn("font-bold", textColor)}>
+                            {value.toLocaleString()}원
+                          </span>
+                        </HStack>
+                        <HStack className="w-full items-center bg-gray-200 rounded-full h-4">
+                          <HStack
+                            className={cn(
+                              "items-center justify-end h-4 rounded-full transition-all",
+                              bgColor
+                            )}
+                            style={{
+                              width: `${Math.max((value / amountGraphBase) * 100, 3)}%`,
+                            }}
+                          >
+                            {value / amountGraphBase >= 0.15 && (
+                              <span className="text-xs font-bold mr-1 text-white">{`${portion.toFixed(1)}%`}</span>
+                            )}
+                          </HStack>
+                          {value / amountGraphBase < 0.15 && (
+                            <span
+                              className={cn("text-xs font-bold", textColor)}
+                            >{`${portion.toFixed(1)}%`}</span>
+                          )}
+                        </HStack>
+                      </VStack>
+                    );
+                  })}
+                </VStack>
+                <Button
                   className="w-full"
-                  to={{ page: <MoimTripDetailPage trip={preferTrip!} /> }}
+                  onClick={() =>
+                    navigateTo({
+                      page: <MoimTripDetailPage trip={preferTrip!} />,
+                    })
+                  }
                 >
-                  <Button className="w-full">더보기</Button>
-                </NavigationLink>
+                  더보기
+                </Button>
               </VStack>
             ) : (
               <VStack className="items-center justify-center gap-4 bg-white shadowed rounded-2xl h-64 m-2 mb-8">
@@ -271,9 +316,9 @@ function MoimDetailPage({
                     ),
                   }}
                 >
-                  <Button className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl">
+                  <div className="!w-16 !h-16 !p-0 !bg-white border-dashed rounded-xl border border-gray-500 !text-gray-500 text-xl flex items-center justify-center">
                     +
-                  </Button>
+                  </div>
                 </NavigationLink>
               </VStack>
             )}

@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Keypad from "../components/common/Modals/Keypad";
 import Modal from "../components/common/Modals/Modal";
 import { HStack, Spacer, VStack } from "../components/common/Stack";
@@ -13,6 +13,8 @@ import NavigationBar from "../components/common/TopBars/NavigationBar";
 import TripImage from "../components/trip/TripImg";
 import cn from "../utils/cn";
 import { Trip } from "../types/trip/Trip";
+import Button from "../components/common/Button";
+import { useNavigation } from "../contexts/useNavigation";
 
 // {
 //   teamIdx: 1,
@@ -32,6 +34,7 @@ const teamIdx = 1;
 const teamName = "하나로 모여!";
 
 export default function CreateTripPage() {
+  const { navigateTo } = useNavigation();
   // const tripNameInputRef = useRef<HTMLInputElement | null>(null);
   // const tripContentInputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -79,8 +82,6 @@ export default function CreateTripPage() {
     cities: [],
   };
 
-  console.log(info);
-
   // const addTripinfo = () => {
   //   addinfo({
   //     tripName: tripNameInputRef.current?.value || "여행 1",
@@ -102,7 +103,7 @@ export default function CreateTripPage() {
         )}
       >
         <NavigationBar title="여행 계획하기 📆" />
-        <VStack className="p-6 bg-gray-50 gap-3 h-full overflow-y-scroll">
+        <VStack className="p-6 bg-gray-50 gap-3 h-full overflow-y-auto">
           <label htmlFor={"tripTitle"} className="font-bold">
             여행 이름
           </label>
@@ -192,14 +193,15 @@ export default function CreateTripPage() {
 
           <Spacer />
           <div className="w-full">
-            <NavigationLink
+            <Button
               className="text-white text-nowrap transition-all py-2 px-8 w-full h-fit bg-primary rounded-md"
-              to={{
-                page: <SelectCountryPage info={info} />,
-              }}
+              onClick={() =>
+                navigateTo({ page: <SelectCountryPage info={info} /> })
+              }
+              disabled={tripName == ""}
             >
               다음
-            </NavigationLink>
+            </Button>
           </div>
         </VStack>
       </VStack>

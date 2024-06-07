@@ -30,7 +30,7 @@ export default function SelectPlacePage({
   return (
     <VStack className="w-full h-full">
       <NavigationBar title={"장소 선택"} />
-      <HStack className="my-3 mx-2 snap-x py-2 overflow-x-scroll">
+      <HStack className="my-3 mx-2 snap-x py-2 overflow-x-auto">
         {cities.map((city) => (
           <Option
             className="text-nowrap snap-start !min-h-7"
@@ -83,7 +83,7 @@ function PlaceList({
     refetch();
   }, [cityIdx, categoryIdx]);
   return (
-    <VStack className="h-full overflow-y-scroll">
+    <VStack className="h-full overflow-y-auto">
       {(data ?? []).map((place) => (
         <button key={place.placeIdx} onClick={() => onClick(place)}>
           <HStack className="p-2 border-b-0.5 items-center w-full font-bold hover:bg-gray-200">

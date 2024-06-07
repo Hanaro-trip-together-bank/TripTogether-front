@@ -37,7 +37,7 @@ export function useModal(
     >
       <VStack
         className={cn(
-          "items-center gap-8",
+          "items-center gap-8 pt-4",
           modalProps.modalType === "sheet" ? "w-full" : "w-72"
         )}
       >

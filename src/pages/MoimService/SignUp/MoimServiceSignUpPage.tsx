@@ -142,7 +142,11 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
             ))}
           </HStack>
           <Spacer />
-          <Button className="w-full" onClick={addTeam}>
+          <Button
+            className="w-full"
+            onClick={addTeam}
+            disabled={teamName == ""}
+          >
             다음
           </Button>
         </VStack>

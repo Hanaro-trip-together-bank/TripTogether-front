@@ -44,7 +44,7 @@ export default function ExchangeRateSearchPage(
           />
           <span>🔎</span>
         </div>
-        <VStack className="p-2 overflow-y-scroll">
+        <VStack className="p-2 overflow-y-auto">
           {filteredRates.map((rate) => (
             <button
               key={rate.cur_unit}
