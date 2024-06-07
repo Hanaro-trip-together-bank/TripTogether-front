@@ -41,11 +41,13 @@ import Check from "../../../components/common/Check.tsx";
 interface MoimMembersMainPageProps {
   teamIdx: number;
   teamMemberStatus: string;
+  teamMemberIdx: number;
 }
 
 function MoimMembersMainPage({
   teamIdx,
   teamMemberStatus,
+  teamMemberIdx,
 }: MoimMembersMainPageProps) {
   const { home } = useNavigation();
   const { member, login } = useAuth();
@@ -291,8 +293,9 @@ function MoimMembersMainPage({
   const exportTeamModalData = useModal(
     "모임을 나가시겠습니까?",
     () => {
-      exportTeam();
-      exportedTeamModalData.triggerModal();
+      exportMember(currentTeamMemberIdx);
+      alert("모임을 나갔습니다.");
+      home();
     },
     true
   );
@@ -546,7 +549,10 @@ function MoimMembersMainPage({
         <Spacer />
         <button
           className="border-y border-gray-200 py-4 mx-6"
-          onClick={exportTeamModalData.triggerModal}
+          onClick={() => {
+            setCurrentTeamMemberIdx(teamMemberIdx);
+            exportTeamModalData.triggerModal();
+          }}
         >
           <HStack>
             <span> 모임나가기</span>
