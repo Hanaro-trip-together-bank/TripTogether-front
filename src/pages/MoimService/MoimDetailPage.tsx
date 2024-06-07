@@ -73,10 +73,11 @@ function MoimDetailPage({
     requestData
   );
 
-  const { data: preferTrip, isLoading: preferTripIsLoading } = useFetch<
-    null,
-    TripResDto
-  >(TripsGetURL(preferTripIdx), "GET");
+  const preferTripFetch = preferTripIdx
+    ? useFetch<null, TripResDto>(TripsGetURL(preferTripIdx), "GET")
+    : { data: null, isLoading: false };
+
+  const { data: preferTrip, isLoading: preferTripIsLoading } = preferTripFetch;
 
   const { trigger } = useFetchTrigger<UpdateTeamNoticeReq, void>(
     NoticePutURL(),
