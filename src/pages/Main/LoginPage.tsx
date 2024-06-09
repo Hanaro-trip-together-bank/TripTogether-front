@@ -31,13 +31,11 @@ function LoginPage({}: LoginPageProps) {
 
   //비밀번호 6글자 되면 로그인 트리거
   useEffect(() => {
-    if (password.length == 6) {
+    if (password.length == 6 && localStorage.getItem("fcmToken")) {
       const loginReqtDto: LoginReqDto = {
         memberIdx: member.memberIdx,
         memberLoginPw: password,
-        fcmToken: localStorage.getItem("fcmToken")
-          ? localStorage.getItem("fcmToken")
-          : "",
+        fcmToken: localStorage.getItem("fcmToken"),
       };
       trigger(loginReqtDto);
     }

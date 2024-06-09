@@ -16,10 +16,14 @@ if (!firebase.apps.length) {
   firebase.app(); // 이미 초기화되었다면, 초기화 된 것을 사용함
 }
 
+navigator.serviceWorker.register("/firebase-messaging-sw.js", {
+  scope: "/firebase-cloud-messaging-push-scope",
+});
+
 const messaging = firebase.messaging();
 
 export function requestPermission() {
-  void Notification.requestPermission().then((permission) => {
+  return Notification.requestPermission().then((permission) => {
     if (permission === "granted") {
       messaging
         .getToken({
@@ -28,6 +32,7 @@ export function requestPermission() {
         .then((token: string) => {
           console.log(`푸시 토큰 발급 완료 : ${token}`);
           localStorage.setItem("fcmToken", token);
+          alert("loading이 완료되었습니다.");
         })
         .catch((e) => {
           console.log("푸시 토큰 가져오는 중에 에러 발생", e);
