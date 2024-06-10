@@ -71,7 +71,14 @@ function MoimMembersMainPage({
   const closeInvitationModal = () => {
     setShowInvitationModal(false);
   };
-  const changedOwnerModalData = useModal("총무를 변경했습니다.", back, false);
+  const changedOwnerModalData = useModal(
+    "총무를 변경했습니다.",
+    () => {
+      back();
+      back();
+    },
+    false
+  );
   const inviteLinkCopiedModalData = useModal("초대 링크가 복사되었습니다.");
 
   // 초대링크 복사
