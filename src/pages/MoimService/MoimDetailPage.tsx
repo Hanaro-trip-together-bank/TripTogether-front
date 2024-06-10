@@ -155,7 +155,10 @@ function MoimDetailPage({
                 <span className="text-lg font-bold">
                   {moimDetailData?.teamName}
                 </span>
-                <span className="text-lg text-primary font-bold"> 1</span>
+                <span className="text-lg text-primary font-bold">
+                  {" "}
+                  {moimDetailData?.teamMemberCount}
+                </span>
                 <Arrow direction="right" />
                 <Spacer />
                 <span className="text-sm text-gray-500 underline">관리</span>
