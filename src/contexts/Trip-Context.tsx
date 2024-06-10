@@ -4,7 +4,7 @@ import {
   useContext,
   useReducer,
 } from "react";
-import { Trip } from "../types/Trip";
+import { Trip } from "../types/trip/Trip";
 
 type TripBasicInfo = {
   teamIdx: number;

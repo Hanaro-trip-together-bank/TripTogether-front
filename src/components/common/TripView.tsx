@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "./Button";
 import { HStack, VStack } from "./Stack";
 import cn from "../../utils/cn";
 import { useCityCartManager } from "../../contexts/City-Cart-Context";
 import Arrow from "./Arrow";
-import { useTrip } from "../../contexts/Trip-Context";
 
 interface TripViewProps {
   id: number;

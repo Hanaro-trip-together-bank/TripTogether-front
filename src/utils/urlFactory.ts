@@ -208,3 +208,8 @@ export const ExchangeRateGetURL = () => `${BASE_URL}/exchange-rate`;
 
 export const ExchangeRateAlarmsGetURL = (memberIdx: number) =>
   `${BASE_URL}/exchange-rate/${memberIdx}`;
+
+export const ExchangeRateAlarmDeleteURL = (
+  memberIdx: number,
+  alarmIdx: number
+) => `${BASE_URL}/exchange-rate/${memberIdx}/${alarmIdx}`;

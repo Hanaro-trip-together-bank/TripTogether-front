@@ -53,6 +53,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren) => {
   const [prevRoute, setPrevPage] = useState<Route | null>(null);
   const [path, dispatch] = useReducer(reducer, [
     //여기에 페이지 넣으면 초깃값 이걸로 적용됨
+    // { page: <ExchangeRateMainPage /> },
   ]);
   // 홈 버튼 누르면 네비게이션 스택 비워진 후 아래로 채워짐 => 메인페이지로 이동됨
   useEffect(() => {

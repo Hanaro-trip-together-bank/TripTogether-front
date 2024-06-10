@@ -7,9 +7,8 @@ import { useNavigation } from "../contexts/useNavigation";
 import { PlaceResDto } from "../types/Place";
 import { CityResDto } from "../types/City";
 import Arrow from "../components/common/Arrow";
-import { CategoriesGetURL, PlacesGetURL } from "../utils/urlFactory";
+import { PlacesGetURL } from "../utils/urlFactory";
 import { useFetch } from "../hooks/useFetch";
-import { CategoryResDto } from "../types/Category";
 import Select from "../components/common/Select";
 import cn from "../utils/cn";
 

@@ -24,6 +24,11 @@ export type ExchangeRateAlarmsResponse = {
   message: string;
   data: ExchangeRateAlarm[];
 };
+export type ExchangeRateAlarmDelete = {
+  code: number;
+  message: string;
+  data: null;
+};
 
 export type ExchangeRateCreateRequest = {
   memberIdx: number;
