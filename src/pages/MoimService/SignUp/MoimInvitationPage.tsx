@@ -22,6 +22,9 @@ interface MoimInvitationPageProps {
 function MoimInvitationPage({ inviter, teamIdx }: MoimInvitationPageProps) {
   const { member } = useAuth();
   const { navigateTo } = useNavigation();
+  const rejectInvitation = () => {
+    window.location.href = "http://localhost:5173";
+  };
   const moimData = useFetch<null, InviteTeamResDto>(
     InvitedTeamGetURL(inviter, teamIdx),
     "GET"
@@ -52,13 +55,17 @@ function MoimInvitationPage({ inviter, teamIdx }: MoimInvitationPageProps) {
   };
   const { modal: joinedModal, triggerModal: triggerJoinedModal } = useModal(
     "모임에 참여 신청을 보냈습니다. 모임 총무가 수락하면 모임서비스를 이용할 수 있습니다.",
-    () => (window.location.href = "http://localhost:5173"),
+    rejectInvitation,
     false
   );
   return (
     <>
       <VStack className="w-full h-full items-center">
-        <NavigationBar title={"모임서비스 초대"} />
+        <NavigationBar
+          title={"모임서비스 초대"}
+          onBack={rejectInvitation}
+          onHome={rejectInvitation}
+        />
         <VStack className="w-full h-full items-center p-6 pt-12">
           <Spacer />
           <span className="w-full text-2xl text-gray-500 text-center">
