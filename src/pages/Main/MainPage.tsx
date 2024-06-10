@@ -14,6 +14,7 @@ import { requestPermission } from "../../firebaseConfig";
 import { useNavigation } from "../../contexts/useNavigation";
 import { useEffect } from "react";
 import MoimInvitationPage from "../MoimService/SignUp/MoimInvitationPage";
+
 function MainPage() {
   const { member } = useAuth();
   const { setPath } = useNavigation();
