@@ -412,7 +412,7 @@ function MoimDetailPage({
                 alt="main-tab-04"
               />
             </button>
-            <span className="font-semibold text-center">잔액분배</span>
+            <span className="font-semibold text-center">카드관리</span>
           </VStack>
           <VStack>
             <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
