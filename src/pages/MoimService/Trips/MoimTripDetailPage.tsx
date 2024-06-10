@@ -660,6 +660,12 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
               {(currentSchedule?.placeAmount ?? 0) > 0 && (
                 <span className="text-gray-500">
                   {currentSchedule?.placeAmount.toLocaleString()}원
+                  {FX && (
+                    <>
+                      <br />
+                      {`${(+(currentSchedule.placeAmount / +FX.curRate).toFixed()).toLocaleString()} ${FX.curName}`}
+                    </>
+                  )}
                 </span>
               )}
               {currentSchedule?.place && (
