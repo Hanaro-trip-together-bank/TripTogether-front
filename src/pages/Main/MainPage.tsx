@@ -9,7 +9,8 @@ import Arrow from "../../components/common/Arrow";
 import LoginPage from "./LoginPage";
 import MoimServiceMainPage from "../MoimService/MoimServiceMainPage";
 import { useAuth } from "../../contexts/useAuth";
-import { requestPermission } from "../../firebaseConfig";
+import { requestPermission } from "../../firebaseConfig.ts";
+
 function MainPage() {
   const { member } = useAuth();
   requestPermission();

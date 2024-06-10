@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import cn from "../../utils/cn";
 import { HStack, VStack } from "./Stack";
 
@@ -5,10 +6,15 @@ interface AlarmProps {
   show?: boolean;
   title: string;
   body: string;
+  onClickAlarm: () => void;
 }
-function Alarm({ show = false, title, body }: AlarmProps) {
+function Alarm({ show = false, title, body, onClickAlarm }: AlarmProps) {
   return (
-    <div className="absolute z-50 w-full p-4 pointer-events-none rounded-xl">
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+    <div
+      onClick={onClickAlarm}
+      className="absolute z-50 w-full p-4 pointer-events-none rounded-xl"
+    >
       <HStack
         className={cn(
           "items-center w-full h-24 bg-white/75 backdrop-blur-md shadowed rounded-3xl p-4 gap-4 transition-all ease-in-out duration-200 pointer-events-auto",

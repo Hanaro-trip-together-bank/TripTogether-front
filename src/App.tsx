@@ -18,9 +18,14 @@ function App() {
 
   messaging.onMessage((payload) => {
     toggleAlarm();
+    console.log(payload);
     setTitle(payload.notification.title);
     setBody(payload.notification.body);
   });
+
+  // setTimeout(() => {
+  //   toggleAlarm();
+  // }, 5000);
 
   return (
     <>
@@ -34,7 +39,12 @@ function App() {
         />
       </div>
       <IPhoneFrame>
-        <Alarm show={showAlarm} title={alarmTitle} body={alarmBody} />
+        <Alarm
+          show={showAlarm}
+          title={alarmTitle}
+          body={alarmBody}
+          onClickAlarm={toggleAlarm}
+        />
         <NavigationStack />
       </IPhoneFrame>
     </>
