@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import cn from "../../utils/cn";
+import currentTime from "../../utils/currentTime";
 import { HStack, VStack } from "./Stack";
 
 interface AlarmProps {
@@ -26,7 +27,9 @@ function Alarm({ show = false, title, body, onClickAlarm }: AlarmProps) {
           <span className="font-bold">{title}</span>
           <span className="leading-none line-clamp-2">{body}</span>
         </VStack>
-        <span className="h-full text-gray-500 text-nowrap">15:48</span>
+        <span className="h-full text-gray-500 text-nowrap">
+          {currentTime()}
+        </span>
       </HStack>
     </div>
   );
