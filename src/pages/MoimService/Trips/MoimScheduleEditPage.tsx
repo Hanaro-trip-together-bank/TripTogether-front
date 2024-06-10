@@ -41,11 +41,9 @@ function MoimScheduleEditPage({
   onDone,
 }: MoimScheduleEditPageProps) {
   const { exchangeRate } = useExchangeRate();
-  const FX: ExchangeRate = {
-    ...exchangeRate?.data.exchangeRates.find(
-      (er) => er.curCode == FXDictionary[countryNameEn] ?? ""
-    ),
-  };
+  const FX: ExchangeRate = exchangeRate?.data.exchangeRates.find(
+    (er) => er.curCode == FXDictionary[countryNameEn] ?? ""
+  );
   const { member } = useAuth();
   const { back } = useNavigation();
   const [isAmountFocused, toggleIsAmountFocused] = useToggle(); // 금액 포커스하면서 숫자패드 열기
