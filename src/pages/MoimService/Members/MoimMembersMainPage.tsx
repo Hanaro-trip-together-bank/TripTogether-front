@@ -29,14 +29,11 @@ import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import Loading from "../../../components/common/Modals/Loading";
 import { useAuth } from "../../../contexts/useAuth";
 import { useModal } from "../../../hooks/useModal";
-import {
-  ExportTeamReqDto,
-  InviteTeamReqDto,
-} from "../../../types/team/TeamRequestDto";
+import { ExportTeamReqDto } from "../../../types/team/TeamRequestDto";
 import Modal from "../../../components/common/Modals/Modal";
 import { colorPacks } from "../../../utils/colorPack.ts";
 import useToggle from "../../../hooks/useToggle.ts";
-import Check from "../../../components/common/Check.tsx";
+import Check2 from "../../../components/common/Check2.tsx";
 
 interface MoimMembersMainPageProps {
   teamIdx: number;
@@ -49,10 +46,9 @@ function MoimMembersMainPage({
   teamMemberStatus,
   teamMemberIdx,
 }: MoimMembersMainPageProps) {
-  const { home } = useNavigation();
-  const { member, login } = useAuth();
+  const { home, back } = useNavigation();
+  const { member } = useAuth();
   const [showMemberList, toggleShowMemberList] = useToggle(false);
-
   const requestData: TeamMembersReqDto = { teamIdx: teamIdx };
   const [currentTeamMemberIdx, setCurrentTeamMemberIdx] = useState<number>();
 
@@ -75,33 +71,15 @@ function MoimMembersMainPage({
   const closeInvitationModal = () => {
     setShowInvitationModal(false);
   };
-
-  // const { data: link, trigger: inviteLinkTrigger } = useFetchTrigger<
-  //   InviteTeamReqDto,
-  //   string
-  // >(GenerateInviteLinkPostURL(), "POST");
-
-  // const generateInviteLink = () => {
-  //   const inviteTeamDto: InviteTeamReqDto = {
-  //     // Todo: teamIdx 가져오기
-  //     memberIdx: member.memberIdx,
-  //     teamIdx: 1,
-  //   };
-  //   inviteLinkTrigger(inviteTeamDto);
-  //   alert("초대 링크가 복사되었습니다."); // Todo: 복사 기능 추가하기
-  // };
-
-  // useEffect(() => {
-  //   if (link) {
-  //     console.log("링크 확인: " + link);
-  //   }
-  // }, [link]);
+  const changedOwnerModalData = useModal("총무를 변경했습니다.", back, false);
+  const inviteLinkCopiedModalData = useModal("초대 링크가 복사되었습니다.");
 
   // 초대링크 복사
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert("초대 링크가 복사되었습니다!");
+      closeInvitationModal();
+      inviteLinkCopiedModalData.triggerModal();
     } catch (error) {
       console.error(error);
     }
@@ -289,54 +267,23 @@ function MoimMembersMainPage({
       home();
     }, 1500);
   };
+  const exportedTeamModalData = useModal("모임을 나갔습니다.", home, false);
 
   const exportTeamModalData = useModal(
     "모임을 나가시겠습니까?",
     () => {
       exportMember(currentTeamMemberIdx);
-      alert("모임을 나갔습니다.");
-      home();
+      exportedTeamModalData.triggerModal();
     },
     true
   );
-
-  const exportedTeamModalData = useModal("모임을 나갔습니다.");
 
   // 총무 변경
   const [selectedMembers, setSelectedMembers] = useState<TeamMembersResDto[]>(
     []
   );
-  const [canRequest, setCanRequest] = useState<boolean>(false);
   const [currentOwnerTeamMemberIdx, setCurrentOwnerTeamMemberIdx] =
     useState<number>();
-
-  const onCheck = (teamMemberIdx: number) => {
-    if (selectedMembers.length > 0) {
-      alert("한 명의 모임원만 선택할 수 있습니다.");
-    } else {
-      setSelectedMembers((prevMembers) => {
-        const isContains = prevMembers.some(
-          (member) => member.teamMemberIdx === teamMemberIdx
-        );
-
-        let updatedMembers;
-        if (isContains) {
-          updatedMembers = prevMembers.filter(
-            (member) => member.teamMemberIdx !== teamMemberIdx
-          );
-        } else {
-          const memberToAdd = teamMemersData!.find(
-            (member) => member.teamMemberIdx === teamMemberIdx
-          );
-          updatedMembers = memberToAdd
-            ? [...prevMembers, memberToAdd]
-            : prevMembers;
-        }
-        setCanRequest(updatedMembers.length === 0);
-        return updatedMembers;
-      });
-    }
-  };
 
   // 총무 변경 기능
   const { trigger: changeOwnerTrigger, isLoading: changeOwnerIsLoading } =
@@ -352,7 +299,7 @@ function MoimMembersMainPage({
     };
 
     changeOwnerTrigger(changeOwnerDto);
-    alert("총무를 변경했습니다!");
+    changedOwnerModalData.triggerModal();
   };
 
   useEffect(() => {
@@ -424,6 +371,7 @@ function MoimMembersMainPage({
                         onClick={() => {
                           toggleShowMemberList();
                           setCurrentOwnerTeamMemberIdx(member.teamMemberIdx);
+                          setCurrentTeamMemberIdx(undefined);
                         }}
                       >
                         총무변경
@@ -586,6 +534,10 @@ function MoimMembersMainPage({
       {exportTeamModalData.modal}
       {/* 모임을 나갔습니다. */}
       {exportedTeamModalData.modal}
+      {/* 총무를 변경했습니다. */}
+      {changedOwnerModalData.modal}
+      {/* 초대링크가 복사되었습ㄴ디ㅏ. */}
+      {inviteLinkCopiedModalData.modal}
       {/* 초대링크 */}
       <Modal
         xButton
@@ -620,26 +572,23 @@ function MoimMembersMainPage({
             모임원 선택
           </span>
           <VStack className="max-h-72 overflow-scroll">
-            {teamMemersData?.map((member) => {
-              if (member.teamMemberState === "모임원") {
-                return (
-                  <HStack key={member.teamMemberIdx} className="gap-2 my-2">
-                    <Check
-                      onClick={() => {
-                        onCheck(member.teamMemberIdx);
-                        setCurrentTeamMemberIdx(member.teamMemberIdx);
-                      }}
-                    />
-                    <span>{member.memberName}</span>
-                  </HStack>
-                );
-              }
-              return null;
-            })}
+            {teamMemersData
+              ?.filter((member) => member.teamMemberState === "모임원")
+              .map((member) => (
+                <HStack key={member.teamMemberIdx} className="gap-2 my-2">
+                  <Check2
+                    checked={member.teamMemberIdx == currentTeamMemberIdx}
+                    onClick={() => {
+                      setCurrentTeamMemberIdx(member.teamMemberIdx);
+                    }}
+                  />
+                  <span>{member.memberName}</span>
+                </HStack>
+              ))}
           </VStack>
           <Button
             className="w-full"
-            disabled={canRequest}
+            disabled={currentTeamMemberIdx == undefined}
             onClick={() => {
               changeOwner(currentTeamMemberIdx);
               toggleShowMemberList();
