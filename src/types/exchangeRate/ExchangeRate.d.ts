@@ -1,4 +1,4 @@
-import ExchangeRate from "../ExchangeReate";
+import ExchangeRate from "../ExchangeRate";
 
 export type ExchangeRateReqDto = {
   code: number;

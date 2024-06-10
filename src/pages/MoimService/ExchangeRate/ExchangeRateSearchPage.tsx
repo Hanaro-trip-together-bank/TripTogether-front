@@ -2,7 +2,7 @@ import { ChangeEvent, useRef, useState } from "react";
 import { HStack, VStack } from "../../../components/common/Stack";
 import NavigationBar from "../../../components/common/TopBars/NavigationBar";
 import { useNavigation } from "../../../contexts/useNavigation";
-import ExchangeRate from "../../../types/ExchangeReate";
+import { ExchangeRate } from "../../../types/ExchangeRate";
 
 type ExchangeRateSearchPageProps = {
   rates: ExchangeRate[];
@@ -23,7 +23,7 @@ export default function ExchangeRateSearchPage(
     if (search === "") {
       return rates;
     }
-    return rates.filter((rate) => rate.cur_name.includes(search));
+    return rates.filter((rate) => rate.curName.includes(search));
   };
 
   const filteredRates = getFilteredRates();
@@ -47,15 +47,15 @@ export default function ExchangeRateSearchPage(
         <VStack className="p-2 overflow-y-auto">
           {filteredRates.map((rate) => (
             <button
-              key={rate.cur_unit}
+              key={rate.curCode}
               onClick={() => {
                 onClickSelected(rate);
                 back();
               }}
             >
               <HStack className="text-lg">
-                <span className="text-2xl">{rate.cur_icon} </span>
-                {`${rate.cur_name} ${rate.cur_unit}`}
+                <span className="text-2xl">{rate.curIcon} </span>
+                {`${rate.curName} ${rate.curCode}`}
               </HStack>
             </button>
           ))}

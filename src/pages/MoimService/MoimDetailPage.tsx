@@ -37,6 +37,7 @@ import getDaysRemaining from "../../utils/getDaysRemaining.ts";
 import cn from "../../utils/cn.ts";
 import uuid from "../../utils/uuid.ts";
 import { useNavigation } from "../../contexts/useNavigation.tsx";
+import ExchangeRateMainPage from "./ExchangeRate/ExchangeRateMainPage.tsx";
 
 interface MoimDetailPageProps {
   teamIdx: number;
@@ -418,13 +419,20 @@ function MoimDetailPage({
             <span className="font-semibold text-center">카드관리</span>
           </VStack>
           <VStack>
-            <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
-              <img
-                className="h-12 w-12 p-1"
-                src={`/images/moim/moim-menu-05.png`}
-                alt="main-tab-05"
-              />
-            </button>
+            <NavigationLink
+              to={{
+                backgroundColor: "bg-gray-50",
+                page: <ExchangeRateMainPage />,
+              }}
+            >
+              <button className="bg-gray-100 flex items-center justify-center shadowed rounded-xl w-16 h-16">
+                <img
+                  className="h-12 w-12 p-1"
+                  src={`/images/moim/moim-menu-05.png`}
+                  alt="main-tab-05"
+                />
+              </button>
+            </NavigationLink>
             <span className="font-semibold text-center">환율</span>
           </VStack>
           <VStack>

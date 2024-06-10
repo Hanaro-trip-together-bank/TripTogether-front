@@ -205,3 +205,6 @@ export const JoinTeamPostURL = () => `${BASE_URL}/team/join`;
 
 //--------------- 환율 관련 ---------------//
 export const ExchangeRateGetURL = () => `${BASE_URL}/exchange-rate`;
+
+export const ExchangeRateAlarmsGetURL = (memberIdx: number) =>
+  `${BASE_URL}/exchange-rate/${memberIdx}`;
