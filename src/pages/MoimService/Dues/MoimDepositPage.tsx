@@ -84,6 +84,7 @@ function MoimDepositPage({ teamIdx, onDone }: MoimDepositPageProps) {
 
     if (depositData?.accIdx === selectedAccount?.accIdx) {
       alert("동일계좌로의 이체불가 합니다.");
+      return;
     }
 
     if (selectedAccount) {
@@ -97,7 +98,6 @@ function MoimDepositPage({ teamIdx, onDone }: MoimDepositPageProps) {
         accIdx: selectedAccount.accIdx,
       });
     }
-    toggleAccountList();
   };
 
   // 입금 기능
