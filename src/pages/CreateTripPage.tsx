@@ -5,7 +5,6 @@ import { HStack, Spacer, VStack } from "../components/common/Stack";
 import TextArea from "../components/common/TextArea";
 import useKeypadMappedNumber from "../hooks/useKeypadMappedNumber";
 import useToggle from "../hooks/useToggle";
-import NavigationLink from "../components/common/Navigation/NavigationLink";
 import Calendar from "../components/common/Calendar";
 import formatDateToYYYYMMDD from "../utils/formatDateToYYYYMMDD";
 import SelectCountryPage from "./SelectCountryPage";

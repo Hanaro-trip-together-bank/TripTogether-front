@@ -32,7 +32,7 @@ function MoimManagementPage({ teamIdx }: MoimManagementPageProps) {
   const toggleAlarmReqDto: ToggleAlarmReqDto = {
     memberIdx: member.memberIdx,
   };
-  const { data, isLoading, error, refetch } = useFetch<
+  const { data, isLoading, refetch } = useFetch<
     ManageTeamReqDto,
     ManageTeamResDto
   >(ManageTeamPostURL(), "POST", manageTeamReqDto);

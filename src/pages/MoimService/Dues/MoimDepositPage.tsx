@@ -54,10 +54,11 @@ function MoimDepositPage({ teamIdx, onDone }: MoimDepositPageProps) {
     memberIdx: member.memberIdx,
   };
 
-  const { data: depositData, isLoading: isDepositLoading } = useFetch<
-    ManageTeamReqDto,
-    ManageTeamResDto
-  >(ManageTeamPostURL(), "POST", depositReqData);
+  const { data: depositData } = useFetch<ManageTeamReqDto, ManageTeamResDto>(
+    ManageTeamPostURL(),
+    "POST",
+    depositReqData
+  );
 
   // 사용자의 전체 계좌 목록 불러오기
   const [isAccountListOpen, toggleAccountList] = useToggle();

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
 import Modal from "../../../components/common/Modals/Modal";
@@ -21,6 +22,7 @@ import { ExchangeRateGetURL } from "../../../utils/urlFactory";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import ExchangeRateDonePage from "./ExchangeRateDonePage";
 import Loading from "../../../components/common/Modals/Loading";
+import { useAuth } from "../../../contexts/useAuth";
 
 const OVER: OverLessType = {
   nameKo: "이상",
@@ -48,17 +50,8 @@ const concatNameAndUnit = (exchangeRate: ExchangeRate) => {
   return `${name} ${exchangeRate.curCode}`;
 };
 
-// {
-//   "memberIdx":1,
-//   "fcmToken":"bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1...",
-//   "curCode":"EUR",
-//   "curRate":"2001.001",
-//   "rateAlarmType":"OVER"
-// }
-const memberIdx = 1;
-const fcmToken = "bk3RNwTe3H0:CI2k_HHwgIpoDKCIZvvDMExUdFQ3P1";
-
 export default function ExchangeRateSetPage() {
+  const { member } = useAuth();
   const { back, navigateTo } = useNavigation();
   const [selected, setSelected] = useState<ExchangeRate>(
     () => mockData.exchangeRates[0]
@@ -85,10 +78,10 @@ export default function ExchangeRateSetPage() {
   const firstValue = useKeypadMappedNumber(first);
   const secondValue = useKeypadMappedNumber(second);
 
-  const { data, isLoading, error, refetch } = useFetch<
-    null,
-    ExchangeRateReqDto
-  >(ExchangeRateGetURL(), "GET");
+  const { data, isLoading } = useFetch<null, ExchangeRateReqDto>(
+    ExchangeRateGetURL(),
+    "GET"
+  );
 
   const createAlarmFetch = useFetchTrigger<
     ExchangeRateCreateRequest,
@@ -97,14 +90,17 @@ export default function ExchangeRateSetPage() {
 
   const onClickCreateAlarm = () => {
     createAlarmFetch.trigger({
-      memberIdx,
+      memberIdx: member.memberIdx,
       curCode: selected.curCode,
       curRate: `${first}.${second}`,
       rateAlarmType: selectedOverLess.value,
     });
     if (!createAlarmFetch.error) {
       back();
-      navigateTo({ page: <ExchangeRateDonePage /> });
+      navigateTo({
+        page: <ExchangeRateDonePage />,
+        backgroundColor: "bg-gray-50",
+      });
     }
   };
 

@@ -1,5 +1,5 @@
 import { TextareaHTMLAttributes, forwardRef } from "react";
-import { HStack, VStack } from "./Stack";
+import { VStack } from "./Stack";
 import cn from "../../utils/cn";
 
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
