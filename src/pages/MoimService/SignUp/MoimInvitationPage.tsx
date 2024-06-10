@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Arrow from "../../../components/common/Arrow";
 import Button from "../../../components/common/Button";
 import { HStack, Spacer, VStack } from "../../../components/common/Stack";
@@ -12,6 +13,7 @@ import { useAuth } from "../../../contexts/useAuth";
 import { useNavigation } from "../../../contexts/useNavigation";
 import LoginPage from "../../Main/LoginPage";
 import Loading from "../../../components/common/Modals/Loading";
+import { useEffect } from "react";
 
 //[하나은행] 이채원님이 등산 동호회에 초대했어요. http://localhost:5173/invite?inviter=이채원&teamNo=2
 
@@ -58,6 +60,9 @@ function MoimInvitationPage({ inviter, teamIdx }: MoimInvitationPageProps) {
     rejectInvitation,
     false
   );
+  useEffect(() => {
+    if (member.memberName) triggerJoinModal();
+  }, [member]);
   return (
     <>
       <VStack className="w-full h-full items-center">
