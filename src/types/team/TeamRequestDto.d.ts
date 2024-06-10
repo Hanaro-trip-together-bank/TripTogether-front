@@ -15,10 +15,18 @@ export type InviteTeamReqDto = {
   memberIdx: number;
   teamIdx: number;
 };
+export type InvitedTeamReqDto = {
+  inviter: string;
+  teamNo: number;
+};
 
 export type ManageTeamReqDto = {
   teamIdx: number;
   memberIdx: number;
+};
+export type JoinTeamReqDto = {
+  memberIdx: number;
+  teamIdx: number;
 };
 
 export type ToggleAlarmReqDto = {

@@ -28,12 +28,16 @@ import { useNavigation } from "../contexts/useNavigation";
 //   createdBy: 1,
 //   cities: [85, 86, 87],
 // };
-
-const memberIdx = 1;
-const teamIdx = 1;
-const teamName = "하나로 모여!";
-
-export default function CreateTripPage() {
+interface CreateTripPageProps {
+  memberIdx: number;
+  teamIdx: number;
+  teamName: string;
+}
+export default function CreateTripPage({
+  memberIdx,
+  teamIdx,
+  teamName,
+}: CreateTripPageProps) {
   const { navigateTo } = useNavigation();
   // const tripNameInputRef = useRef<HTMLInputElement | null>(null);
   // const tripContentInputRef = useRef<HTMLTextAreaElement | null>(null);

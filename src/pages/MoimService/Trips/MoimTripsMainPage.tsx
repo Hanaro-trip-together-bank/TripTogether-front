@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modals/Modal";
 import NavigationLink from "../../../components/common/Navigation/NavigationLink";
@@ -26,6 +27,7 @@ import { PreferTripReqDto } from "../../../types/team/TeamRequestDto";
 import { useAuth } from "../../../contexts/useAuth";
 import CreateTripPage from "../../CreateTripPage";
 import { useModal } from "../../../hooks/useModal";
+import { useNavigation } from "../../../contexts/useNavigation";
 
 interface MoimTripsMainPageProps {
   teamIdx: number;
@@ -36,6 +38,7 @@ function MoimTripsMainPage({
   teamIdx,
   currentBalance,
 }: MoimTripsMainPageProps) {
+  const { path } = useNavigation();
   const { member } = useAuth();
   const [showNewTripModal, toggleShowNewTripModal] = useToggle();
   const [animationStarted, setAnimationStarted] = useState(false);
@@ -108,6 +111,14 @@ function MoimTripsMainPage({
       refetch();
     }, 500);
   };
+
+  // 뒤로가기로 이 페이지로 돌아왔을 때 리페치
+  const currentPathLength = useMemo(() => path.length, []);
+  useEffect(() => {
+    if (path.length == currentPathLength) {
+      refetch();
+    }
+  }, [path.length]);
 
   return (
     <>
@@ -234,7 +245,13 @@ function MoimTripsMainPage({
               className="flex-grow"
               to={{
                 backgroundColor: "bg-gray-50",
-                page: <CreateTripPage />,
+                page: (
+                  <CreateTripPage
+                    memberIdx={member.memberIdx}
+                    teamIdx={teamIdx}
+                    teamName={""}
+                  />
+                ),
               }}
             >
               <Button className="w-full" onClick={toggleShowNewTripModal}>
