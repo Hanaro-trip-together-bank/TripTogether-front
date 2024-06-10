@@ -39,8 +39,6 @@ export default function CreateTripPage({
   teamName,
 }: CreateTripPageProps) {
   const { navigateTo } = useNavigation();
-  // const tripNameInputRef = useRef<HTMLInputElement | null>(null);
-  // const tripContentInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [tripName, setTripName] = useState("");
   const [tripContent, setTripContent] = useState("");
@@ -48,8 +46,6 @@ export default function CreateTripPage({
   const [tripDay, setTripDay] = useState(4);
   const [tripImg, setTripImg] = useState(0);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-
-  // const { trip, addinfo } = useTrip();
   const [showCalendar, toggleShowCalendar] = useToggle();
   const [showKeypad, toggleShowKeypad] = useToggle();
   const { amount, add, append, remove, clear } = useKeypadMappedNumber();
@@ -85,18 +81,6 @@ export default function CreateTripPage({
     createdBy: memberIdx,
     cities: [],
   };
-
-  // const addTripinfo = () => {
-  //   addinfo({
-  //     tripName: tripNameInputRef.current?.value || "여행 1",
-  //     tripContent: tripContentInputRef.current?.value,
-  //     tripGoalAmount: amount,
-  //     tripDay,
-  //     tripImg,
-  //     tripStartDay: formatDateToYYYYMMDD(startDate),
-  //     createdBy: memberIdx,
-  //   });
-  // };
 
   return (
     <>
