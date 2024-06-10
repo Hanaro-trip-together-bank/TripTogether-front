@@ -404,7 +404,6 @@ function MoimMembersMainPage({
                     className="items-center gap-4"
                   >
                     <Avatar
-                      crown={teamMemberStatus == "총무"}
                       backgroundColor={
                         colorPacks[member.memberIdx % colorPacks.length]
                           .backgroundColor
@@ -465,7 +464,6 @@ function MoimMembersMainPage({
                     className="items-center gap-4"
                   >
                     <Avatar
-                      crown={teamMemberStatus == "총무"}
                       backgroundColor={
                         colorPacks[member.memberIdx % colorPacks.length]
                           .backgroundColor
