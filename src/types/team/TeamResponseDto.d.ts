@@ -5,6 +5,7 @@ export type DetailTeamResDto = {
   accBalance: number;
   teamMemberState: string;
   preferTripIdx: number;
+  teamMemberCount: number;
 };
 
 export type InviteTeamResDto = {
