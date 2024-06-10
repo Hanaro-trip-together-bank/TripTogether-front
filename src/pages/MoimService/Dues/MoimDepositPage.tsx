@@ -31,9 +31,10 @@ import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 
 interface MoimDepositPageProps {
   teamIdx: number;
+  onDone: () => void;
 }
 
-function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
+function MoimDepositPage({ teamIdx, onDone }: MoimDepositPageProps) {
   const { back } = useNavigation();
   const { member } = useAuth();
 
@@ -444,6 +445,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
             roundedFull
             onClick={() => {
               deposit();
+              onDone();
               back();
             }}
           >

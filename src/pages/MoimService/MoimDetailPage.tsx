@@ -185,7 +185,9 @@ function MoimDetailPage({
                   onClick={() =>
                     navigateTo({
                       backgroundColor: "bg-gray-50",
-                      page: <MoimDepositPage teamIdx={teamIdx} />,
+                      page: (
+                        <MoimDepositPage teamIdx={teamIdx} onDone={refetch} />
+                      ),
                     })
                   }
                 >
