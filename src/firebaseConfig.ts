@@ -32,13 +32,13 @@ export function requestPermission() {
         .then((token: string) => {
           console.log(`푸시 토큰 발급 완료 : ${token}`);
           localStorage.setItem("fcmToken", token);
-          alert("loading이 완료되었습니다.");
+          console.log("loading이 완료되었습니다.");
         })
         .catch((e) => {
           console.log("푸시 토큰 가져오는 중에 에러 발생", e);
         });
     } else if (permission === "denied") {
-      console.log("푸시 권한 차단");
+      alert("푸시 권한이 차단되어 있습니다. 푸시 권한을 허용해 주세요.");
     }
   });
 }

@@ -6,7 +6,8 @@ import { useAuth } from "./contexts/useAuth";
 import useToggle from "./hooks/useToggle";
 import "./firebaseConfig.ts";
 import firebase from "firebase/app";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { requestPermission } from "./firebaseConfig.ts";
 
 function App() {
   const [showAlarm, toggleAlarm] = useToggle();
@@ -21,11 +22,14 @@ function App() {
     console.log(payload);
     setTitle(payload.notification.title);
     setBody(payload.notification.body);
+    setTimeout(() => {
+      if (showAlarm) toggleAlarm();
+    }, 5000);
   });
 
-  // setTimeout(() => {
-  //   toggleAlarm();
-  // }, 5000);
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   return (
     <>

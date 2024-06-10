@@ -10,7 +10,6 @@ import Arrow from "../../components/common/Arrow";
 import LoginPage from "./LoginPage";
 import MoimServiceMainPage from "../MoimService/MoimServiceMainPage";
 import { useAuth } from "../../contexts/useAuth";
-import { requestPermission } from "../../firebaseConfig";
 import { useNavigation } from "../../contexts/useNavigation";
 import { useEffect } from "react";
 import MoimInvitationPage from "../MoimService/SignUp/MoimInvitationPage";
@@ -18,7 +17,6 @@ import MoimInvitationPage from "../MoimService/SignUp/MoimInvitationPage";
 function MainPage() {
   const { member } = useAuth();
   const { setPath } = useNavigation();
-  requestPermission();
   //[하나은행] 이채원님이 등산 동호회에 초대했어요. http://localhost:5173/invite?inviter=이채원&teamNo=2
   useEffect(() => {
     // 현재 URL의 쿼리 스트링을 가져옵니다.
