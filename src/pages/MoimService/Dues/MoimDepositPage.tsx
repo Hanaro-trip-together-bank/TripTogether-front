@@ -120,6 +120,11 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
     depositTrigger(depositReqDto);
   };
 
+  const handleToggleAmount = () => {
+    if (isAccountListOpen) toggleAccountList();
+    toggleIsAmountFocused();
+  };
+
   useEffect(() => {
     if (!depositData) return;
   }, [depositData]);
@@ -203,7 +208,7 @@ function MoimDepositPage({ teamIdx }: MoimDepositPageProps) {
             </VStack>
             {/* 금액 */}
             <VStack>
-              <button onClick={toggleIsAmountFocused}>
+              <button onClick={handleToggleAmount}>
                 <VStack
                   className={cn(
                     "items-start bg-white border p-2 rounded-md transition-all box-border",
