@@ -195,5 +195,13 @@ export const NoticePutURL = () => `${BASE_URL}/account/notice`;
 
 // PUT - 선호 여행 등록, 수정
 export const PreferTripPutURL = () => `${BASE_URL}/team/preference`;
+
+// POST - 초대된 모임 정보 표시: InvitedTeamReqDto -> InvitedTeamResDto
+export const InvitedTeamGetURL = (inviter: string, teamIdx: number) =>
+  `${BASE_URL}/invite?inviter=${inviter}&teamNo=${teamIdx}`;
+
+// POST - 모임 가입: JoinTeamReqDto -> 200 ok
+export const JoinTeamPostURL = () => `${BASE_URL}/team/join`;
+
 //--------------- 환율 관련 ---------------//
 export const ExchangeRateGetURL = () => `${BASE_URL}/exchange-rate`;

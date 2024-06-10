@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/scrollbar";
@@ -10,9 +11,31 @@ import LoginPage from "./LoginPage";
 import MoimServiceMainPage from "../MoimService/MoimServiceMainPage";
 import { useAuth } from "../../contexts/useAuth";
 import { requestPermission } from "../../firebaseConfig";
+import { useNavigation } from "../../contexts/useNavigation";
+import { useEffect } from "react";
+import MoimInvitationPage from "../MoimService/SignUp/MoimInvitationPage";
 function MainPage() {
   const { member } = useAuth();
+  const { setPath } = useNavigation();
   requestPermission();
+  //[하나은행] 이채원님이 등산 동호회에 초대했어요. http://localhost:5173/invite?inviter=이채원&teamNo=2
+  useEffect(() => {
+    // 현재 URL의 쿼리 스트링을 가져옵니다.
+    const queryString = window.location.search;
+    // URLSearchParams 객체를 사용하여 쿼리 파라미터를 추출합니다.
+    const params = new URLSearchParams(queryString);
+    const inviterParam = params.get("inviter");
+    const teamNoParam = params.get("teamNo");
+    if (inviterParam && teamNoParam)
+      setPath([
+        { backgroundColor: "bg-[#e3e7e9]", page: <MainPage /> },
+        {
+          page: (
+            <MoimInvitationPage inviter={inviterParam} teamIdx={+teamNoParam} />
+          ),
+        },
+      ]);
+  }, []);
   return (
     <VStack className="!gap-0 bg-gradient-to-b from-[#e3e7e9] to-[#ffffff] h-full pt-4 overflow-y-auto">
       {/* 상단 바로가기메뉴 (이름, 원큐지갑, QR, 알림) */}
