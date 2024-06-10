@@ -37,12 +37,19 @@ import { useAuth } from "../../../contexts/useAuth";
 import MoimScheduleAddPage from "./MoimScheduleAddPage";
 import { colorPacks } from "../../../utils/colorPack.ts";
 import { printMoney } from "../../../utils/printMoney.ts";
+import { useExchangeRate } from "../../../contexts/useExchangeRate.tsx";
+import { ExchangeRate } from "../../../types/ExchangeRate";
+import FXDictionary from "../../../utils/FXDictionary.ts";
 
 interface MoimTripDetailPageProps {
   trip: TripResDto;
 }
 
 function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
+  const { exchangeRate } = useExchangeRate();
+  const FX: ExchangeRate = exchangeRate?.data.exchangeRates.find(
+    (er) => er.curCode == FXDictionary[trip.countryNameEng] ?? ""
+  );
   const { member } = useAuth();
   const { navigateTo, back } = useNavigation();
   const [isEditMode, toggleIsEditMode] = useToggle();
@@ -373,6 +380,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                               cities={trip.cities}
                               tripDate={day}
                               placeOrder={1}
+                              countryNameEn={trip.countryNameEng}
                             />
                           ),
                         })
@@ -541,6 +549,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                                     cities={trip.cities}
                                     tripDate={day}
                                     placeOrder={schedule.placeOrder + 1}
+                                    countryNameEn={trip.countryNameEng}
                                   />
                                 ),
                               })
@@ -568,6 +577,12 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                   data?.reduce((sum, cur) => sum + cur.placeAmount, 0) ?? 0
                 )}
                 원
+                {FX && (
+                  <>
+                    <br />
+                    {`${(+((data?.reduce((sum, cur) => sum + cur.placeAmount, 0) ?? 0) / +FX.curRate).toFixed()).toLocaleString()} ${FX.curName}`}
+                  </>
+                )}
               </span>
             </HStack>
           </VStack>
@@ -645,6 +660,12 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
               {(currentSchedule?.placeAmount ?? 0) > 0 && (
                 <span className="text-gray-500">
                   {currentSchedule?.placeAmount.toLocaleString()}원
+                  {FX && (
+                    <>
+                      <br />
+                      {`${(+(currentSchedule.placeAmount / +FX.curRate).toFixed()).toLocaleString()} ${FX.curName}`}
+                    </>
+                  )}
                 </span>
               )}
               {currentSchedule?.place && (
@@ -664,6 +685,7 @@ function MoimTripDetailPage({ trip }: MoimTripDetailPageProps) {
                       schedule={currentSchedule}
                       onDone={refetch}
                       cities={trip.cities}
+                      countryNameEn={trip.countryNameEng}
                     />
                   ),
                 });

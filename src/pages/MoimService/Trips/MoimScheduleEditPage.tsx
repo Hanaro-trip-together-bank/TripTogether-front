@@ -23,18 +23,29 @@ import NavigationLink from "../../../components/common/Navigation/NavigationLink
 import SelectPlacePage from "../../SelectPlacePage";
 import { PlaceResDto } from "../../../types/Place";
 import { CityResDto } from "../../../types/City";
+import { ExchangeRate } from "../../../types/ExchangeRate";
+import { useExchangeRate } from "../../../contexts/useExchangeRate";
+import FXDictionary from "../../../utils/FXDictionary";
 
 interface MoimScheduleEditPageProps {
   schedule: TripPlaceResDto;
   onDone: () => void;
   cities: CityResDto[];
+  countryNameEn: string;
 }
 
 function MoimScheduleEditPage({
   cities,
   schedule,
+  countryNameEn,
   onDone,
 }: MoimScheduleEditPageProps) {
+  const { exchangeRate } = useExchangeRate();
+  const FX: ExchangeRate = {
+    ...exchangeRate?.data.exchangeRates.find(
+      (er) => er.curCode == FXDictionary[countryNameEn] ?? ""
+    ),
+  };
   const { member } = useAuth();
   const { back } = useNavigation();
   const [isAmountFocused, toggleIsAmountFocused] = useToggle(); // 금액 포커스하면서 숫자패드 열기
@@ -137,7 +148,13 @@ function MoimScheduleEditPage({
             <span className="w-full text-gray-500 text-end">
               {printMoney(amount)}원
               <br />
-              {(30).toLocaleString()}$
+              {FX && (
+                <span>
+                  {`${(+(amount / +FX.curRate).toFixed()).toLocaleString()} ${FX.curName}(${FX.curCode})`}
+                  <br />
+                  {exchangeRate?.data.exchangeRateTime} 기준
+                </span>
+              )}
             </span>
           </VStack>
           <Spacer />
