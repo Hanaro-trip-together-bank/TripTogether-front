@@ -71,6 +71,7 @@ function MoimServiceMainPage({ memberIdx }: MoimServiceMainPageProps) {
                       teamName={moim.teamName}
                       teamMemberStatus={moim.teamMemberState}
                       preferTripIdx={moim.preferTripIdx}
+                      memberIdx={memberIdx}
                     />
                   ),
                 }}

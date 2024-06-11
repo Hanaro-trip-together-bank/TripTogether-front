@@ -34,17 +34,24 @@ interface MoimDuesMainPageProps {
   teamIdx: number;
   accIdx: number;
   teamName: string;
+  teamMemberIdx: number;
+  teamMemberStatus: string;
+  memberIdx: number;
 }
 
 function MoimDuesMainPage({
   accIdx,
   teamIdx,
   teamName,
+  teamMemberIdx,
+  teamMemberStatus,
+  memberIdx
 }: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
   const [showDuesRequest, toggleShowDuesRequest] = useToggle();
   const [dueMembers, setDueMembers] = useState<DueMember[]>([]);
+  const [falseMembers, setFalseMembers] = useState<DueMember[]>([]);
   const [canRequest, setCanRequest] = useState<boolean>(false);
   const [selectedMembers, setSelectedMembers] = useState<TeamMembersResDto[]>(
     []
@@ -55,13 +62,6 @@ function MoimDuesMainPage({
     TeamMembersReqDto,
     TeamMembersResDto[]
   >(TeamMembersPostURL(), "POST");
-
-  const handleRequest = () => {
-    trigger(requestData);
-    toggleShowDuesRequest();
-    setCanRequest(false);
-    setSelectedMembers([]);
-  };
 
   const onCheck = (memberIdx: number) => {
     setSelectedMembers((prevMembers) => {
@@ -110,6 +110,22 @@ function MoimDuesMainPage({
   );
   const months = Array.from(new Array(12), (_, index) => index + 1);
 
+  const getFalseMembers = useFetchTrigger<null, DueMemStatusResDto>(
+    DuesGetStatusUrl(year, month, false, accIdx, teamIdx),
+    "GET"
+  );
+  const handleRequest = () => {
+    trigger(requestData);
+    toggleShowDuesRequest();
+    setCanRequest(false);
+    setSelectedMembers([]);
+    getFalseMembers.trigger(null);
+  };
+
+  useEffect(() => {
+    if (getFalseMembers.data?.data?.memberResponseDtos)
+      setFalseMembers(getFalseMembers.data.data.memberResponseDtos);
+  }, [getFalseMembers.data]);
   // 회비 규칙 조회
   const duesGetRuleFetcher = useFetch<DueRuleReqDto, DueRuleResDto>(
     DuesGetRuleURL(teamIdx),
@@ -126,6 +142,7 @@ function MoimDuesMainPage({
     "GET"
   );
 
+  console.log(teamMemberIdx);
   useEffect(() => {
     if (paidOrNot == 0) duesGetTrueStatusFetcher.trigger(null);
     else duesGetFalseStatusFetcher.trigger(null);
@@ -268,7 +285,7 @@ function MoimDuesMainPage({
                     <NoResultView />
                   )}
                 </VStack>
-                {true ? (
+                {teamMemberStatus === "총무" ? (
                   /* 총무라면 회비요청버튼 */
                   <Button className="!w-full" onClick={handleRequest}>
                     회비 요청하기
@@ -278,7 +295,9 @@ function MoimDuesMainPage({
                   <NavigationLink
                     to={{
                       backgroundColor: "bg-gray-50",
-                      page: <MoimDepositPage />,
+                      page: (
+                        <MoimDepositPage teamIdx={teamIdx} onDone={() => {}} />
+                      ),
                     }}
                   >
                     <Button className="!w-full">회비 입금하기</Button>
@@ -341,8 +360,8 @@ function MoimDuesMainPage({
             모임원 선택
           </span>
           <VStack className="max-h-72 overflow-auto">
-            {data?.map((member) => {
-              if (member.teamMemberState === "모임원") {
+            {falseMembers.map((member) => {
+              if (member.memberIdx != memberIdx) {
                 return (
                   <HStack key={member.memberIdx} className="gap-2 my-2">
                     <Check onClick={() => onCheck(member.memberIdx)} />
