@@ -20,7 +20,6 @@ import {
   ChangeOwnerPutURL,
   ExportTeamMemberPutURL,
   ExportTeamMembersPutURL,
-  ExportTeamPutURL,
   GenerateInviteLinkPostURL,
   RejectTeamMemberPutURL,
   TeamMembersPostURL,
@@ -29,7 +28,6 @@ import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import Loading from "../../../components/common/Modals/Loading";
 import { useAuth } from "../../../contexts/useAuth";
 import { useModal } from "../../../hooks/useModal";
-import { ExportTeamReqDto } from "../../../types/team/TeamRequestDto";
 import Modal from "../../../components/common/Modals/Modal";
 import { colorPacks } from "../../../utils/colorPack.ts";
 import useToggle from "../../../hooks/useToggle.ts";
@@ -258,22 +256,6 @@ function MoimMembersMainPage({
 
   const exportedMemberModalData = useModal("모임원을 내보냈습니다.");
 
-  // 모임나가기
-  const { trigger: exportTeamTrigger } = useFetchTrigger<
-    ExportTeamReqDto,
-    null
-  >(ExportTeamPutURL(), "PUT");
-
-  const exportTeam = () => {
-    const exportTeamDto: ExportTeamReqDto = {
-      teamIdx: teamIdx,
-      memberIdx: member.memberIdx,
-    };
-    exportTeamTrigger(exportTeamDto);
-    setTimeout(() => {
-      home();
-    }, 1500);
-  };
   const exportedTeamModalData = useModal("모임을 나갔습니다.", home, false);
 
   const exportTeamModalData = useModal(
@@ -286,9 +268,9 @@ function MoimMembersMainPage({
   );
 
   // 총무 변경
-  const [selectedMembers, setSelectedMembers] = useState<TeamMembersResDto[]>(
-    []
-  );
+  // const [selectedMembers, setSelectedMembers] = useState<TeamMembersResDto[]>(
+  //   []
+  // );
   const [currentOwnerTeamMemberIdx, setCurrentOwnerTeamMemberIdx] =
     useState<number>();
 
@@ -337,9 +319,9 @@ function MoimMembersMainPage({
 
   return (
     <>
-      <VStack className="min-h-full bg-gray-50 pb-8">
+      <VStack className="min-h-full pb-8 bg-gray-50">
         <NavigationBar title={"모임원 관리"} />
-        <HStack className="justify-between items-center mx-6 py-4 border-b border-gray-200">
+        <HStack className="items-center justify-between py-4 mx-6 border-b border-gray-200">
           <span>{teamMemersData?.length}명 참여 중</span>
           {teamMemberStatus === "총무" ? (
             <Button
@@ -350,7 +332,7 @@ function MoimMembersMainPage({
             </Button>
           ) : null}
         </HStack>
-        <VStack className="min-w-full overflow-y-auto px-6 gap-8">
+        <VStack className="min-w-full gap-8 px-6 overflow-y-auto">
           {/* 총무 */}
           <VStack className="w-full gap-4">
             <span className="text-sm"> 총무 </span>
@@ -501,7 +483,7 @@ function MoimMembersMainPage({
         </VStack>
         <Spacer />
         <button
-          className="border-y border-gray-200 py-4 mx-6"
+          className="py-4 mx-6 border-gray-200 border-y"
           onClick={() => {
             setCurrentTeamMemberIdx(teamMemberIdx);
             exportTeamModalData.triggerModal();
@@ -550,9 +532,9 @@ function MoimMembersMainPage({
         show={showInvitationModal}
         onClose={closeInvitationModal}
       >
-        <VStack className="w-full items-center">
+        <VStack className="items-center w-full">
           <span>초대하기</span>
-          <HStack className="m-6 gap-4" onClick={fetchGenerateLink}>
+          <HStack className="gap-4 m-6" onClick={fetchGenerateLink}>
             <img
               className="h-20"
               src={`/images/moim/invite.png`}
@@ -576,7 +558,7 @@ function MoimMembersMainPage({
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-scroll">
+          <VStack className="overflow-scroll max-h-72">
             {teamMemersData
               ?.filter((member) => member.teamMemberState === "모임원")
               .map((member) => (
