@@ -16,7 +16,6 @@ import {
 import { AccountsReqDto } from "../../../types/account/AccountRequestDto";
 import { AccountsResDto } from "../../../types/account/AccountResponseDto";
 import formatAccNo from "../../../utils/formatAccNo";
-import useToggle from "../../../hooks/useToggle";
 import { AddTeamReqDto } from "../../../types/team/TeamRequestDto";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { useModal } from "../../../hooks/useModal";
@@ -27,7 +26,6 @@ interface MoimServiceSignUpPageProps {
 function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   const { back } = useNavigation();
   const [page, setPage] = useState(0);
-  const [showInvitation, toggleShowInvitation] = useToggle();
   // 생성 요청용 정보: 사용자, 계좌번호, 팀명, 팀타입(여행 고정), 선호지역
   const { member } = useAuth();
   const [selectedAccountIdx, setSelectedAccountIdx] = useState("-1");
@@ -118,14 +116,14 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   // 1: 계좌 선택 페이지
   if (page == 0)
     return (
-      <VStack className="w-full h-full items-center">
+      <VStack className="items-center w-full h-full">
         <NavigationBar title={"서비스가입"} />
-        <VStack className="w-full h-full items-center p-6 gap-6">
+        <VStack className="items-center w-full h-full gap-6 p-6">
           <span className="w-full text-2xl font-bold">
             어떤 계좌로 시작할까요?
           </span>
           <select
-            className="w-full custom-select border-b rounded-none border-black"
+            className="w-full border-b border-black rounded-none custom-select"
             value={selectedAccountIdx}
             onChange={(e) => setSelectedAccountIdx(e.target.value)}
           >
@@ -142,7 +140,7 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
             모임 통장
           </Button>
           <Button className="w-full !bg-gray-50 !text-black py-4 !rounded-2xl font-bold">
-            <HStack className="w-full items-center justify-between">
+            <HStack className="items-center justify-between w-full">
               <span>새로운 계좌 만들기</span>
               <Arrow direction="right" />
             </HStack>
@@ -162,9 +160,9 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   // 2: 모임 정보 입력 페이지
   if (page == 1)
     return (
-      <VStack className="w-full h-full items-center">
+      <VStack className="items-center w-full h-full">
         <NavigationBar title={"서비스가입"} />
-        <VStack className="w-full h-full items-center p-6 gap-6">
+        <VStack className="items-center w-full h-full gap-6 p-6">
           {/* 모임 타입 선택 */}
           <span className="w-full text-2xl font-bold">어떤 모임인가요?</span>
           <img className="h-40" src={`/images/moim/plane.png`} alt="plane" />
@@ -180,7 +178,7 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
           {/* 모임 이름 입력 */}
           <input
             type="text"
-            className="w-full border-b border-black pb-1"
+            className="w-full pb-1 border-b border-black"
             placeholder="모임 이름을 입력해 주세요"
             value={teamName}
             onChange={(e) => setTeamName(e.target.value)}
@@ -213,11 +211,11 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   if (page == 2)
     return (
       <>
-        <VStack className="w-full h-full items-center">
+        <VStack className="items-center w-full h-full">
           <NavigationBar title={"가입완료"} onBack={signUpDone} />
-          <VStack className="w-full h-full items-center p-6 gap-6 pt-12">
+          <VStack className="items-center w-full h-full gap-6 p-6 pt-12">
             {/* 동그라미 속 체크 */}
-            <div className="border-2 border-black rounded-full p-2 text-primary">
+            <div className="p-2 border-2 border-black rounded-full text-primary">
               <svg
                 width="30"
                 height="30"
@@ -232,20 +230,20 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
                 />
               </svg>
             </div>
-            <span className="w-full text-2xl text-gray-500 text-center">
-              <span className="text-black font-bold">{teamName}</span>
+            <span className="w-full text-2xl text-center text-gray-500">
+              <span className="font-bold text-black">{teamName}</span>
               을 <br />
               만들었어요
             </span>
             <Button className="w-full !bg-gray-50 !text-black py-4 !rounded-2xl font-bold">
-              <HStack className="w-full items-center justify-between">
+              <HStack className="items-center justify-between w-full">
                 <span>모임통장 카드 만들기</span>
                 <Arrow direction="right" />
               </HStack>
             </Button>
             <Spacer />
             <VStack className="absolute bottom-16 right-4 !gap-0 items-center">
-              <div className="bg-secondary p-2 rounded-xl text-white">
+              <div className="p-2 text-white bg-secondary rounded-xl">
                 모임원을 초대해보세요! 😊
               </div>
               <div className="border-8 w-0 h-0 border-secondary !border-x-transparent !border-b-transparent" />
@@ -268,16 +266,16 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
           show={showInvitationModal}
           onClose={closeInvitationModal}
         >
-          <VStack className="w-full items-center">
+          <VStack className="items-center w-full">
             <span>초대하기</span>
-            <HStack className="m-6 gap-4" onClick={fetchGenerateLink}>
+            <HStack className="gap-4 m-6" onClick={fetchGenerateLink}>
               <img
                 className="h-20"
                 src={`/images/moim/invite.png`}
                 alt="invite"
               />
             </HStack>
-            <Button className="w-full" onClick={toggleShowInvitation}>
+            <Button className="w-full" onClick={closeInvitationModal}>
               확인
             </Button>
           </VStack>
