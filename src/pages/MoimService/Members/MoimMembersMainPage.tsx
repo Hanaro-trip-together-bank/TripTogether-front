@@ -90,8 +90,6 @@ function MoimMembersMainPage({
     }
   };
 
-  const BASE_URL = import.meta.env.VITE_API_URL;
-
   const fetchGenerateLink = () => {
     fetch(GenerateInviteLinkPostURL(), {
       method: "POST",
@@ -112,7 +110,10 @@ function MoimMembersMainPage({
       })
       .then((data) => {
         // http://localhost:8080을 BASE_URL로 치환
-        const updatedData = data.replace("http://localhost:8080", BASE_URL);
+        const updatedData = data.replace(
+          "http://localhost:8080",
+          "https://trip-together-kro.kr"
+        );
         copyToClipboard(updatedData);
       })
       .catch((error) => {
