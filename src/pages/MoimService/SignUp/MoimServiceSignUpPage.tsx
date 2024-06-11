@@ -19,6 +19,7 @@ import formatAccNo from "../../../utils/formatAccNo";
 import { AddTeamReqDto } from "../../../types/team/TeamRequestDto";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
 import { useModal } from "../../../hooks/useModal";
+import { AddTeamResDto } from "../../../types/team/TeamResponseDto";
 
 interface MoimServiceSignUpPageProps {
   onDone: () => void;
@@ -46,13 +47,14 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
     teamName: teamName,
     preferenceType: selectedPreferenceType,
   };
-  const addTeamData = useFetchTrigger<AddTeamReqDto, null>(
-    AddTeamPostURL(),
-    "POST"
-  );
+
+  const { trigger: addTeamTrigger, data: addTeamIdxData } = useFetchTrigger<
+    AddTeamReqDto,
+    AddTeamResDto
+  >(AddTeamPostURL(), "POST");
 
   const addTeam = () => {
-    addTeamData.trigger(addTeamRequestDto);
+    addTeamTrigger(addTeamRequestDto);
     setPage(2);
   };
 
@@ -93,7 +95,7 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
       },
       body: JSON.stringify({
         memberIdx: member.memberIdx,
-        teamIdx: 1,
+        teamIdx: addTeamIdxData?.teamIdx,
       }),
     })
       .then((response) => {

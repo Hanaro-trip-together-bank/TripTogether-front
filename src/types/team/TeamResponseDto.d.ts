@@ -21,3 +21,7 @@ export type ManageTeamResDto = {
   alarmStatus: boolean;
   accIdx: number;
 };
+
+export type AddTeamResDto = {
+  teamIdx: number;
+};
