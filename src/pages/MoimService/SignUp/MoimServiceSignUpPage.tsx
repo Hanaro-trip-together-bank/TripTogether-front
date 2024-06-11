@@ -8,13 +8,18 @@ import { useNavigation } from "../../../contexts/useNavigation";
 import Modal from "../../../components/common/Modals/Modal";
 import { useAuth } from "../../../contexts/useAuth";
 import { useFetch } from "../../../hooks/useFetch";
-import { AccountListPostURL, AddTeamPostURL } from "../../../utils/urlFactory";
+import {
+  AccountListPostURL,
+  AddTeamPostURL,
+  GenerateInviteLinkPostURL,
+} from "../../../utils/urlFactory";
 import { AccountsReqDto } from "../../../types/account/AccountRequestDto";
 import { AccountsResDto } from "../../../types/account/AccountResponseDto";
 import formatAccNo from "../../../utils/formatAccNo";
 import useToggle from "../../../hooks/useToggle";
 import { AddTeamReqDto } from "../../../types/team/TeamRequestDto";
 import { useFetchTrigger } from "../../../hooks/useFetchTrigger";
+import { useModal } from "../../../hooks/useModal";
 
 interface MoimServiceSignUpPageProps {
   onDone: () => void;
@@ -56,6 +61,58 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
   const signUpDone = () => {
     onDone();
     back();
+  };
+
+  // 초대하기
+  const [showInvitationModal, setShowInvitationModal] = useState(false);
+  const openInvitationModal = () => {
+    setShowInvitationModal(true);
+  };
+  const closeInvitationModal = () => {
+    setShowInvitationModal(false);
+  };
+
+  const inviteLinkCopiedModalData = useModal("초대 링크가 복사되었습니다.");
+
+  // 초대링크 복사
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      closeInvitationModal();
+      inviteLinkCopiedModalData.triggerModal();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
+  const fetchGenerateLink = () => {
+    fetch(GenerateInviteLinkPostURL(), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberIdx: member.memberIdx,
+        teamIdx: 1,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error("오류 발생");
+        }
+      })
+      .then((data) => {
+        // http://localhost:8080을 BASE_URL로 치환
+        const updatedData = data.replace("http://localhost:8080", BASE_URL);
+        copyToClipboard(updatedData);
+      })
+      .catch((error) => {
+        console.error("오류 발생: ", error);
+      });
   };
 
   // 1: 계좌 선택 페이지
@@ -197,21 +254,23 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
               <Button className="!w-1/2" onClick={signUpDone}>
                 확인
               </Button>
-              <Button className="!w-1/2" onClick={toggleShowInvitation}>
+              <Button className="!w-1/2" onClick={openInvitationModal}>
                 초대하기
               </Button>
             </HStack>
           </VStack>
         </VStack>
+        {/* 초대링크가 복사되었습니다. */}
+        {inviteLinkCopiedModalData.modal}
         <Modal
           xButton
           backDrop
-          show={showInvitation}
-          onClose={toggleShowInvitation}
+          show={showInvitationModal}
+          onClose={closeInvitationModal}
         >
           <VStack className="w-full items-center">
             <span>초대하기</span>
-            <HStack className="m-6 gap-4">
+            <HStack className="m-6 gap-4" onClick={fetchGenerateLink}>
               <img
                 className="h-20"
                 src={`/images/moim/invite.png`}
