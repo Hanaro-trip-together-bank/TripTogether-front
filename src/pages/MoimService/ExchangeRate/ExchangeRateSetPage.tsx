@@ -92,7 +92,7 @@ export default function ExchangeRateSetPage() {
     createAlarmFetch.trigger({
       memberIdx: member.memberIdx,
       curCode: selected.curCode,
-      curRate: `${first}.${second}`,
+      curRate: `${firstValue.amount}.${secondValue.amount}`,
       rateAlarmType: selectedOverLess.value,
     });
     if (!createAlarmFetch.error) {
