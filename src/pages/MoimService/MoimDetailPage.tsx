@@ -46,6 +46,7 @@ interface MoimDetailPageProps {
   teamMemberIdx: number;
   teamMemberStatus: string;
   preferTripIdx: number;
+  memberIdx: number;
 }
 
 function MoimDetailPage({
@@ -54,6 +55,7 @@ function MoimDetailPage({
   teamName,
   teamMemberIdx,
   teamMemberStatus,
+  memberIdx
 }: MoimDetailPageProps) {
   const { path, navigateTo } = useNavigation();
   const currentPathLength = useMemo(() => path.length, []);
@@ -344,6 +346,9 @@ function MoimDetailPage({
                     accIdx={accIdx}
                     teamIdx={teamIdx}
                     teamName={teamName}
+                    teamMemberIdx={teamMemberIdx}
+                    teamMemberStatus={teamMemberStatus}
+                    memberIdx={memberIdx}
                   />
                 ),
               }}
