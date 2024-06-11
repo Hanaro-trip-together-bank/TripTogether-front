@@ -31,7 +31,7 @@ function LoginPage({}: LoginPageProps) {
 
   //비밀번호 6글자 되면 로그인 트리거
   useEffect(() => {
-    if (password.length == 6 && localStorage.getItem("fcmToken")) {
+    if (password.length == 6) {
       const loginReqtDto: LoginReqDto = {
         memberIdx: member.memberIdx,
         memberLoginPw: password,
