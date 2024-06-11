@@ -172,7 +172,7 @@ function MoimDuesMainPage({
 
   return (
     <>
-      <VStack className="min-h-full h-full bg-white pb-8">
+      <VStack className="h-full min-h-full pb-8 bg-white">
         <NavigationBar title={"회비내역"} />
         <Select2
           options={["입금", "지출"]}
@@ -212,7 +212,7 @@ function MoimDuesMainPage({
                 <span>원</span>
               </HStack>
             </VStack>
-            <VStack className="p-4 h-full">
+            <VStack className="h-full p-4">
               <NavigationLink
                 className="mb-4"
                 to={{
@@ -225,7 +225,7 @@ function MoimDuesMainPage({
                   ),
                 }}
               >
-                <HStack className="bg-gray-100 rounded-xl p-4 items-center justify-between">
+                <HStack className="items-center justify-between p-4 bg-gray-100 rounded-xl">
                   <span className="text-gray-500">
                     {duesGetRuleFetcher.data?.data != null ? (
                       <>
@@ -244,7 +244,7 @@ function MoimDuesMainPage({
                 </HStack>
               </NavigationLink>
               <HStack className="flex flex-col h-full">
-                <VStack className="items-center flex-grow relative">
+                <VStack className="relative items-center flex-grow">
                   <Select
                     className={"w-full"}
                     options={["회비 낸 사람", "안 낸 사람"]}
@@ -273,7 +273,7 @@ function MoimDuesMainPage({
                           />
                         </NavigationLink>
                       ))}
-                      <HStack className="absolute bottom-0 left-0 right-0 text-sm text-gray-500 items-start">
+                      <HStack className="absolute bottom-0 left-0 right-0 items-start text-sm text-gray-500">
                         <span>※</span>
                         <span>
                           회비내역의 입금인은 총무가 편집할 수 있으므로, 실제
@@ -307,7 +307,7 @@ function MoimDuesMainPage({
             </VStack>
           </>
         ) : (
-          <VStack className="p-4 h-full overflow-y-auto">
+          <VStack className="h-full p-4 overflow-y-auto">
             <HStack className="items-center text-sm">
               <span>2024년 05월</span>
               <Arrow direction="down" />
@@ -317,7 +317,7 @@ function MoimDuesMainPage({
               <span>원</span>
             </HStack>
             {/* 지출내역 1 */}
-            <HStack className="py-4 border-b border-gray-200 justify-between">
+            <HStack className="justify-between py-4 border-b border-gray-200">
               <VStack className="items-start !gap-0">
                 <span className="text-sm text-gray-500">
                   05.23(목) 20:20:45
@@ -331,7 +331,7 @@ function MoimDuesMainPage({
               </VStack>
             </HStack>
             {/* 지출내역 2 */}
-            <HStack className="py-4 border-b border-gray-200 justify-between">
+            <HStack className="justify-between py-4 border-b border-gray-200">
               <VStack className="items-start !gap-0">
                 <span className="text-sm text-gray-500">
                   05.17(금) 14:25:50
@@ -359,8 +359,8 @@ function MoimDuesMainPage({
           <span className="w-full pb-4 text-center border-b border-gray-200">
             모임원 선택
           </span>
-          <VStack className="max-h-72 overflow-auto">
-            {data?.map((member) => {
+          <VStack className="overflow-auto max-h-72">
+            {falseMembers?.map((member) => {
               if (member.memberIdx != memberIdx) {
                 return (
                   <HStack key={member.memberIdx} className="gap-2 my-2">
@@ -409,8 +409,8 @@ export default MoimDuesMainPage;
 // 조회결과 없을 때 표시
 function NoResultView() {
   return (
-    <VStack className="items-center h-full justify-center">
-      <div className="border-2 w-10 h-10 text-center border-gray-500 rounded-full font-serif text-3xl font-bold text-gray-500">
+    <VStack className="items-center justify-center h-full">
+      <div className="w-10 h-10 font-serif text-3xl font-bold text-center text-gray-500 border-2 border-gray-500 rounded-full">
         !
       </div>
       <span className="text-lg">조회 결과가 없어요.</span>
@@ -424,7 +424,7 @@ function MemberRow({ name, amount }: { name: string; amount: number }) {
   return (
     <HStack
       key={name}
-      className="w-full border-b border-gray-100 py-4 items-center"
+      className="items-center w-full py-4 border-b border-gray-100"
     >
       <span>{name}</span>
       <Spacer />
