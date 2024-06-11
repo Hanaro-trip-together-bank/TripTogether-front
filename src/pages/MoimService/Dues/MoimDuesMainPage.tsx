@@ -45,7 +45,7 @@ function MoimDuesMainPage({
   teamName,
   teamMemberIdx,
   teamMemberStatus,
-  memberIdx
+  memberIdx,
 }: MoimDuesMainPageProps) {
   const [depositOrExpenses, setDepositOrExpenses] = useState<number>(0);
   const [paidOrNot, setPaidOrNot] = useState<number>(0);
@@ -360,7 +360,7 @@ function MoimDuesMainPage({
             모임원 선택
           </span>
           <VStack className="max-h-72 overflow-auto">
-            {falseMembers.map((member) => {
+            {data?.map((member) => {
               if (member.memberIdx != memberIdx) {
                 return (
                   <HStack key={member.memberIdx} className="gap-2 my-2">
