@@ -85,8 +85,6 @@ function MoimServiceSignUpPage({ onDone }: MoimServiceSignUpPageProps) {
     }
   };
 
-  const BASE_URL = import.meta.env.VITE_API_URL;
-
   const fetchGenerateLink = () => {
     fetch(GenerateInviteLinkPostURL(), {
       method: "POST",
