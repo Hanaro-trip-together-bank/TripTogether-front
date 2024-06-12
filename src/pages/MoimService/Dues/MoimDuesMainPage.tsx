@@ -360,7 +360,7 @@ function MoimDuesMainPage({
             모임원 선택
           </span>
           <VStack className="overflow-auto max-h-72">
-            {data?.map((member) => {
+            {falseMembers.map((member) => {
               if (member.memberIdx != memberIdx) {
                 return (
                   <HStack key={member.memberIdx} className="gap-2 my-2">
