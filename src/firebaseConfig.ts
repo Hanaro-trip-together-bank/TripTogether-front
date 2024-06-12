@@ -20,9 +20,9 @@ navigator.serviceWorker.register("/firebase-messaging-sw.js", {
   scope: "/firebase-cloud-messaging-push-scope",
 });
 
-const messaging = firebase.messaging();
-
 export function requestPermission() {
+  if (!firebase.messaging.isSupported()) return null;
+  const messaging = firebase.messaging();
   return Notification.requestPermission().then((permission) => {
     if (permission === "granted") {
       messaging
@@ -38,7 +38,7 @@ export function requestPermission() {
           console.log("푸시 토큰 가져오는 중에 에러 발생", e);
         });
     } else if (permission === "denied") {
-      alert("푸시 권한이 차단되어 있습니다. 푸시 권한을 허용해 주세요.");
+      // alert("푸시 권한이 차단되어 있습니다. 푸시 권한을 허용해 주세요.");
     }
   });
 }

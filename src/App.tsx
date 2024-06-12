@@ -15,20 +15,20 @@ function App() {
   const [alarmBody, setBody] = useState<string>("");
   const { member, setIdx } = useAuth();
 
-  const messaging = firebase.messaging();
-
-  messaging.onMessage((payload) => {
-    toggleAlarm();
-    console.log(payload);
-    setTitle(payload.notification.title);
-    setBody(payload.notification.body);
-    setTimeout(() => {
-      if (showAlarm) toggleAlarm();
-    }, 5000);
-  });
-
   useEffect(() => {
-    requestPermission();
+    if (firebase.messaging.isSupported()) {
+      const messaging = firebase.messaging();
+      messaging.onMessage((payload) => {
+        toggleAlarm();
+        console.log(payload);
+        setTitle(payload.notification.title);
+        setBody(payload.notification.body);
+        setTimeout(() => {
+          if (showAlarm) toggleAlarm();
+        }, 5000);
+      });
+      requestPermission();
+    }
   }, []);
 
   return (
