@@ -2,7 +2,11 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", "../.storybook/*"],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        iPhone: "394px",
+      },
+    },
   },
   plugins: [],
 };
