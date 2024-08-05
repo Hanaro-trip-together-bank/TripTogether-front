@@ -1,4 +1,6 @@
 import { useState } from "react";
+import demoData from "../utils/demoData";
+import replaceNumbersWithZero from "../utils/replaceNumberWithZero";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // const {data, error, isLoading, trigger, abort } =  useFetchTrigger<RequestDto, ResponseDto>(uri, method)
@@ -19,39 +21,48 @@ export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
 
   const abort = () => controller.abort();
 
-  const trigger = (requestData: RequestDtoType) => {
-    if (isLoading) return;
+  //데모용 trigger
+  const trigger = () => {
     setIsLoading(true);
-    const headers = { "Content-Type": "application/json" };
-    const body =
-      method === "POST" || method === "PUT" || method === "DELETE"
-        ? JSON.stringify(requestData)
-        : undefined;
-    const { signal } = controller;
-    (async () => {
-      try {
-        console.log(uri, method, body);
-        const res = await fetch(uri, {
-          method,
-          body,
-          signal,
-          headers,
-        });
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        const json = await res.json();
-        console.log(json);
-        setData(json as ResponseDtoType);
-        setError(undefined);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message);
-          setError(error.message ?? "");
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    })();
+    setTimeout(() => {
+      setData(demoData[replaceNumbersWithZero(uri)] as ResponseDtoType);
+      setIsLoading(false);
+    }, 100);
   };
+
+  // const trigger = (requestData: RequestDtoType) => {
+  //   if (isLoading) return;
+  //   setIsLoading(true);
+  //   const headers = { "Content-Type": "application/json" };
+  //   const body =
+  //     method === "POST" || method === "PUT" || method === "DELETE"
+  //       ? JSON.stringify(requestData)
+  //       : undefined;
+  //   const { signal } = controller;
+  //   (async () => {
+  //     try {
+  //       console.log(uri, method, body);
+  //       const res = await fetch(uri, {
+  //         method,
+  //         body,
+  //         signal,
+  //         headers,
+  //       });
+  //       if (!res.ok) throw new Error(`Error: ${res.status}`);
+  //       const json = await res.json();
+  //       console.log(json);
+  //       setData(json as ResponseDtoType);
+  //       setError(undefined);
+  //     } catch (error) {
+  //       if (error instanceof Error) {
+  //         console.log(error.message);
+  //         setError(error.message ?? "");
+  //       }
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   })();
+  // };
 
   return { data, isLoading, error, trigger, abort };
 }

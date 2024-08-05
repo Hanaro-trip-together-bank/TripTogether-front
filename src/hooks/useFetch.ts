@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import useToggle from "./useToggle";
 import { useCommunicationBlock } from "../contexts/useCommunicationBlock";
+import demoData from "../utils/demoData";
+import replaceNumbersWithZero from "../utils/replaceNumberWithZero";
 type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 // const { data, error, isLoading } =  useFetch<RequestDto, ResponseDto>(uri, method, requestData)
@@ -21,38 +23,49 @@ export function useFetch<RequestDtoType, ResponseDtoType>(
   const [data, setData] = useState<ResponseDtoType>();
   const [trigger, toggleTrigger] = useToggle();
 
+  //데모용 fetch
   useEffect(() => {
-    if (blocked || !uri) return;
-    const headers = { "Content-Type": "application/json" };
-    const body =
-      method === "POST" || method === "PUT"
-        ? JSON.stringify(requestData)
-        : undefined;
-    const controller = new AbortController();
-    const { signal } = controller;
     setIsLoading(true);
-    setError("");
-    (async () => {
-      try {
-        console.log(uri, method, body);
-        const res = await fetch(uri, { method, headers, body, signal });
-        if (!res.ok) throw new Error(`Error: ${res.status}`);
-        const json = await res.json();
-        console.log(json);
-        setData(json as ResponseDtoType);
-        setError("");
-        setIsLoading(false);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message);
-          setError(error.message);
-        }
-      } finally {
-        // setIsLoading(false);
-      }
-    })();
-    return () => controller.abort(); //강제중지
+    setTimeout(() => {
+      console.log(replaceNumbersWithZero(uri));
+      console.log(demoData[replaceNumbersWithZero(uri)]);
+      setData(demoData[replaceNumbersWithZero(uri)] as ResponseDtoType);
+      setIsLoading(false);
+    }, 100);
   }, [trigger]);
+
+  // useEffect(() => {
+  //   if (blocked || !uri) return;
+  //   const headers = { "Content-Type": "application/json" };
+  //   const body =
+  //     method === "POST" || method === "PUT"
+  //       ? JSON.stringify(requestData)
+  //       : undefined;
+  //   const controller = new AbortController();
+  //   const { signal } = controller;
+  //   setIsLoading(true);
+  //   setError("");
+  //   (async () => {
+  //     try {
+  //       console.log(uri, method, body);
+  //       const res = await fetch(uri, { method, headers, body, signal });
+  //       if (!res.ok) throw new Error(`Error: ${res.status}`);
+  //       const json = await res.json();
+  //       console.log(json);
+  //       setData(json as ResponseDtoType);
+  //       setError("");
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       if (error instanceof Error) {
+  //         console.log(error.message);
+  //         setError(error.message);
+  //       }
+  //     } finally {
+  //       // setIsLoading(false);
+  //     }
+  //   })();
+  //   return () => controller.abort(); //강제중지
+  // }, [trigger]);
 
   return { data, error, isLoading, setData, refetch: toggleTrigger };
 }
