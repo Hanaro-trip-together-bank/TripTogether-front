@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import useToggle from "./useToggle";
@@ -14,17 +15,18 @@ type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 export function useFetch<RequestDtoType, ResponseDtoType>(
   uri: string,
-  method: FetchMethod,
-  requestData: RequestDtoType | null = null
+  _method: FetchMethod,
+  _requestData: RequestDtoType | null = null
 ) {
   const { blocked } = useCommunicationBlock();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>("");
+  const [error] = useState<string>("");
   const [data, setData] = useState<ResponseDtoType>();
   const [trigger, toggleTrigger] = useToggle();
 
   //데모용 fetch
   useEffect(() => {
+    if (blocked || !uri) return;
     setIsLoading(true);
     setTimeout(() => {
       console.log(replaceNumbersWithZero(uri));

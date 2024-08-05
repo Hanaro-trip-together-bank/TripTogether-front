@@ -22,7 +22,7 @@
     "react-dom": "^18.2.0",
     "swiper": "^11.1.3"
   },
-  "homepage": "https://bam-j.github.io/pages/",
+  "homepage": "https://hanaro-trip-together-bank.github.io/TripTogether-front/",
   "devDependencies": {
     "@chromatic-com/storybook": "^1.4.0",
     "@storybook/addon-essentials": "^8.1.1",

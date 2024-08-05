@@ -33,7 +33,7 @@ export default function SelectCountryPage({ info }: SelectCountryPageProps) {
   );
 
   useEffect(() => {
-    countriesFetch.trigger(null);
+    countriesFetch.trigger();
   }, [selected]);
 
   useEffect(() => {

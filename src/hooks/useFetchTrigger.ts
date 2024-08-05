@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import demoData from "../utils/demoData";
 import replaceNumbersWithZero from "../utils/replaceNumberWithZero";
@@ -10,19 +11,20 @@ type FetchMethod = "GET" | "POST" | "PUT" | "DELETE";
 // 이후 useEffect를 통해 처리 로직 만들면 됨
 // ex) useEffect(()=>{ if(data) alert(data) },[data]);
 
-export function useFetchTrigger<RequestDtoType, ResponseDtoType>(
+export function useFetchTrigger<_RequestDtoType, ResponseDtoType>(
   uri: string,
-  method: FetchMethod
+  _method: FetchMethod
 ) {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  const [error] = useState<string>();
   const [data, setData] = useState<ResponseDtoType>();
   const [controller] = useState(new AbortController());
 
   const abort = () => controller.abort();
 
   //데모용 trigger
-  const trigger = () => {
+  const trigger = (a: unknown = "") => {
+    console.log(a);
     setIsLoading(true);
     setTimeout(() => {
       setData(demoData[replaceNumbersWithZero(uri)] as ResponseDtoType);
