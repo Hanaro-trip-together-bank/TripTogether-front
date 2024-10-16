@@ -1,3 +1,4 @@
+// 개선버전: https://github.com/the-young-hana/theYoungHana-frontend/blob/main/src/components/common/Modal.tsx
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { HTMLAttributes, useEffect, useState } from "react";
